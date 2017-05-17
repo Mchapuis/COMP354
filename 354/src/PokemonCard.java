@@ -2,8 +2,16 @@ import java.util.*;
 
 public class PokemonCard extends Card {
 
-	private String status;
-	private String type;
+	private enum Status {
+		
+	}
+	
+	private enum Type {
+		
+	}
+	
+	private Status status;
+	private Type type;
 	private String name;
 	private String description;
 	private int maxHP;
