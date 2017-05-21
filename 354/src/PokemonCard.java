@@ -25,5 +25,8 @@ public class PokemonCard extends Card {
 		
 	}
 	
+	public void attachEnergy(EnergyCard e){
+		energy.add(e);
+	}
 	
 }
