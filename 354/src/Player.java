@@ -1,5 +1,8 @@
 public abstract class Player {
 
-	private CardManager cardManager;
+	public CardManager cardManager;
+	
+	public abstract void selectActivePokemon();
+	public abstract void playTurn();
 	
 }
