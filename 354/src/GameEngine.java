@@ -4,8 +4,10 @@ public class GameEngine {
 	private static AIPlayer autoPlayer;
 
 	public static void main(String[] args) {
+		Parser.readInAbilities();
+		
 		//instantiate players - this builds their decks, selects a hand and selects 6 prize cards
-		autoPlayer = new AIPlayer();
+		/*autoPlayer = new AIPlayer();
 		player = new HumanPlayer();
 		
 		//have AI player select an active pokemon
@@ -18,7 +20,7 @@ public class GameEngine {
 		autoPlayer.playTurn();
 		
 		//have user play a turn
-		player.playTurn();
+		player.playTurn();*/
 	}
 
 }
