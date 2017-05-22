@@ -26,6 +26,17 @@ public class CardManager {
 			Card card = deck.pop();
 			hand.add(card);
 		}
+		while (getFirstPokemon() == null){
+			for (Card card : hand){
+				deck.push(card);
+				hand.remove(card);
+			}
+			deck.shuffle();
+			for (int i = 0; i < 7; i++){
+				Card card = deck.pop();
+				hand.add(card);
+			}
+		}
 	}
 	
 	public void selectPrizeCards(){
