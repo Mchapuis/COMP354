@@ -21,5 +21,12 @@ public class PokemonCard extends Card {
 	private List<EnergyCard> energy;
 	private int[] retreatCost;
 	
+	public void attack(){
+		
+	}
+	
+	public void attachEnergy(EnergyCard e){
+		energy.add(e);
+	}
 	
 }
