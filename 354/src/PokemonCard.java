@@ -6,8 +6,17 @@ public class PokemonCard extends Card {
 		
 	}
 	
-	private enum Type {
+	private enum TypeCat { BASIC("basic"), STAGEONE("stage-one"), PSYCHIC("psychic"), FIGHTING("fighting");
+
+		private String value;
 		
+		public String getValue() {
+			return this.value;
+		}
+		
+		private TypeCat(String value) {
+			this.value = value;
+		}
 	}
 	
 	private Status status;
@@ -28,5 +37,34 @@ public class PokemonCard extends Card {
 	public void attachEnergy(EnergyCard e){
 		energy.add(e);
 	}
+	
+	
+	//values
+	
+	public String cat;
+	
+	// set
+	
+	@Override
+	public void setcardType(String type) {
+		this.type = "energy";	
+	}
+	
+	public void setCardTypeCat(String cat) {
+		this.cat = cat;
+	}
+	
+	// get
+	public String cardTypeCat() {
+		return cat;
+	}
+	
+	// basic constructor
+
+	public EnergyCard(String name) {
+		super(name);
+		setcardType("energy");
+	}
+
 	
 }
