@@ -22,7 +22,7 @@ public class RandomNumberGenerator {
 		
 	}
 	
-	public static void main(String[]args){
+	/*public static void main(String[]args){
 		
 		int heads =0;
 		int tails = 0;
@@ -40,6 +40,6 @@ public class RandomNumberGenerator {
 		System.out.println("Number of heads: "+heads);
 		System.out.println("Number of tails: " + tails);
 		
-	}
+	}*/
 	
 }

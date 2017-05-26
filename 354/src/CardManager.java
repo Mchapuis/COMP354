@@ -1,12 +1,13 @@
+import java.awt.Window.Type;
 import java.util.*;
 
 public class CardManager {
 
 	private Deck deck;
-	private List<Card> hand;
-	private List<PokemonCard> bench;
-	private List<Card> prizeCards;
-	private List<Card> discardPile;
+	private ArrayList<Card> hand;
+	private ArrayList<PokemonCard> bench;
+	private ArrayList<Card> prizeCards;
+	private ArrayList<Card> discardPile;
 	private PokemonCard activePokemon;
 	
 	public CardManager(){
@@ -16,6 +17,24 @@ public class CardManager {
 	}
 	
 	public void buildDeck(){
+		deck = new Deck();
+		
+		EnergyCard energyCard = new EnergyCard("COLORLESS");
+		for (int i = 0; i < 14; i++){
+			deck.push(energyCard);
+		}
+		
+		// hardcoding Pikachu card
+		HashMap<EnergyCard, Integer> retreatMapPikachu = new HashMap<EnergyCard, Integer>();
+		retreatMapPikachu.put(energyCard, 1);
+		PokemonCard pikachu = new PokemonCard("Pikachu", "A lightning-type pokemon.", "BASIC", "LIGHTNING", 60, retreatMapPikachu);
+		deck.push(pikachu);
+		
+		// hardcoding Glameow card
+		HashMap<EnergyCard, Integer> retreatMapGlameow = new HashMap<EnergyCard, Integer>();
+		retreatMapGlameow.put(energyCard, 2);
+		PokemonCard glameow = new PokemonCard("Glameow", "A normal-type pokemon.", "BASIC", "NORMAL", 60, retreatMapGlameow);
+		deck.push(glameow);
 		
 		//last step: shuffle
 		deck.shuffle();
@@ -40,6 +59,7 @@ public class CardManager {
 	}
 	
 	public void selectPrizeCards(){
+		prizeCards = new ArrayList<Card>(6);
 		for (int i = 0; i < 6; i++){
 			Card card = deck.pop();
 			prizeCards.add(card);
@@ -77,4 +97,26 @@ public class CardManager {
 		hand.remove(energy);
 	}
 	
+	public void addCardToHandFromDeck(int index){
+		Card card = deck.getCardAtIndex(index);
+		hand.add(card);
+		deck.removeCardAtIndex(index);
+	}
+	
+	public void addCardToHandFromDiscard(int index){
+		Card card = discardPile.get(index);
+		hand.add(card);
+		discardPile.remove(index);
+	}
+	
+	public void discardFromHand(int index){
+		Card card = hand.get(index);
+		discardPile.add(card);
+		hand.remove(index);
+	}
+	
+	public void movePokemonToBench(PokemonCard pokemon){
+		bench.add(pokemon);
+		hand.remove(pokemon);
+	}
 }
