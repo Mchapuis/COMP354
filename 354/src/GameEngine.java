@@ -4,7 +4,6 @@ public class GameEngine {
 	private static AIPlayer autoPlayer;
 
 	public static void main(String[] args) {
-		
 		/*Parser.readInAbilities();*/
 		
 		//instantiate players - this builds their decks, selects a hand and selects 6 prize cards
@@ -22,6 +21,12 @@ public class GameEngine {
 		
 		//have user play a turn
 		player.playTurn();*/
+		
+		/*boolean gameOver = false;
+		while (!gameOver){
+			player.playTurn();
+			autoPlayer.playTurn();
+		}*/
 	}
 
 }

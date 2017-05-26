@@ -79,9 +79,23 @@ public class CardManager {
 		hand.remove(pokemon);
 	}
 	
+	public void removeActivePokemon(){
+		discardActivePokemon();
+		activePokemon = null;
+	}
+	
 	//returns the active pokemon
 	public PokemonCard getActivePokemon(){
 		return activePokemon;
+	}
+	
+	public void discardActivePokemon(){
+		ArrayList<EnergyCard> energy = activePokemon.getEnergy();
+		for (EnergyCard card : energy){
+			discardPile.add(card);
+			activePokemon.removeEnergy(card);
+		}
+		discardPile.add(activePokemon);
 	}
 	
 	//returns first energy in the hand 
@@ -115,8 +129,18 @@ public class CardManager {
 		hand.remove(index);
 	}
 	
+	public void discardFromBench(PokemonCard pokemon){
+		discardPile.add(pokemon);
+		hand.remove(pokemon);
+	}
+	
 	public void movePokemonToBench(PokemonCard pokemon){
 		bench.add(pokemon);
 		hand.remove(pokemon);
+	}
+	
+	public void addPrizeCardToHand(Card card){
+		hand.add(card);
+		prizeCards.remove(card);
 	}
 }

@@ -23,8 +23,8 @@ public class PokemonCard extends Card {
 	
 	private Status status;
 	private int currentHP;
-	private List<Attack> attacks;
-	private List<EnergyCard> energy;
+	private ArrayList<Attack> attacks;
+	private ArrayList<EnergyCard> energy;
 	
 	public PokemonCard(String name, String description, String cat, String type, int maxHP, HashMap retreatMap){
 		this.name = name;
@@ -55,6 +55,14 @@ public class PokemonCard extends Card {
 	
 	public void attachEnergy(EnergyCard e){
 		energy.add(e);
+	}
+	
+	public void removeEnergy(EnergyCard e){
+		energy.remove(e);
+	}
+	
+	public ArrayList<EnergyCard> getEnergy(){
+		return this.energy;
 	}
 	
 }
