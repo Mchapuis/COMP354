@@ -5,7 +5,7 @@ public class CardManager {
 
 	private Deck deck;
 	public ArrayList<Card> hand;
-	private ArrayList<PokemonCard> bench;
+	public ArrayList<PokemonCard> bench;
 	private ArrayList<Card> prizeCards;
 	private ArrayList<Card> discardPile;
 	private PokemonCard activePokemon;

@@ -4,21 +4,16 @@ public class AIPlayer extends Player {
 		cardManager = new CardManager();
 	}
 	
-	public void selectActivePokemon(MainWindow w){
+	public void selectActivePokemon(){
 		PokemonCard selectedPokemon = cardManager.getFirstPokemon();
-		int index = cardManager.hand.indexOf(selectedPokemon);
 		cardManager.setActivePokemon(selectedPokemon);
-		w.AIActivePokemon = new GUICard(selectedPokemon);
-		w.AIHand.remove(index);
-		w.updateAIActivePokemon();
-		w.updateAIHandContainer();
 	}
 	
 	public void playTurn(){
-		PokemonCard selectedPokemon = cardManager.getActivePokemon();
+		/*PokemonCard selectedPokemon = cardManager.getActivePokemon();
 		EnergyCard selectedEnergy = cardManager.getFirstEnergy();
 		cardManager.attachEnergy(selectedEnergy, selectedPokemon);
-		cardManager.getActivePokemon().attack();
+		cardManager.getActivePokemon().attack();*/
 	}
 	
 }

@@ -4,7 +4,7 @@ public class HumanPlayer extends Player {
 		cardManager = new CardManager();
 	}
 	
-	public void selectActivePokemon(MainWindow w){
+	public void selectActivePokemon(){
 	
 	}
 	
