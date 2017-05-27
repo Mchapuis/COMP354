@@ -29,6 +29,25 @@ public class CardManager {
 		HashMap<EnergyCard, Integer> retreatMapPikachu = new HashMap<EnergyCard, Integer>();
 		retreatMapPikachu.put(energyCard, 1);
 		PokemonCard pikachu = new PokemonCard("Pikachu", "A lightning-type pokemon.", "BASIC", "LIGHTNING", 60, retreatMapPikachu);
+		
+		//hardcoding Pikachu attacks
+		Attack nuzzle = new Attack();
+		nuzzle.setFlip(true);
+		nuzzle.setTarget("opponent-active");
+		nuzzle.setApplyStatus("paralyzed");
+		nuzzle.addEnergyRequirement(energyCard, 1);
+		pikachu.addAttack(nuzzle);
+		
+		energyCard = new EnergyCard("COLORLESS");
+		Attack quickAttack = new Attack();
+		quickAttack.setDamagePoints(20);
+		quickAttack.setTarget("opponent-active");
+		quickAttack.setFlip(true);
+		quickAttack.setAdditionalDamagePoints(10);
+		quickAttack.setAdditionalTarget("opponent-active");
+		quickAttack.addEnergyRequirement(energyCard, 2);
+		pikachu.addAttack(quickAttack);
+		
 		deck.push(pikachu);
 		
 		// hardcoding Glameow card
@@ -37,8 +56,6 @@ public class CardManager {
 		retreatMapGlameow.put(energyCard, 2);
 		PokemonCard glameow = new PokemonCard("Glameow", "A normal-type pokemon.", "BASIC", "NORMAL", 60, retreatMapGlameow);
 		deck.push(glameow);
-		
-		/*System.out.println(deck.size());*/
 		
 		//last step: shuffle
 		deck.shuffle();

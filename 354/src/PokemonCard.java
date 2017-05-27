@@ -69,7 +69,37 @@ public class PokemonCard extends Card {
 	}
 	
 	public String getDescription(){
-		return this.description;
+		String desc = "<html><body>";
+		desc += this.description;
+		desc += "<br/>";
+		desc += "Energy attached: ";
+		if (this.energy.size() == 0){
+			desc += "None";
+		} else {
+			int i = 0;
+			for (EnergyCard e : this.energy){
+				desc += e.getDescription();
+				if (i == this.energy.size()){
+					desc += ", ";
+				}
+			}
+		}
+		desc += "<br/>";
+		desc += "Attacks: ";
+		if (this.attacks.size() == 0){
+			desc += "None";
+		} else {
+			int i = 0;
+			for (Attack a : this.attacks){
+				desc += a.getDescription();
+				if (i == this.attacks.size()){
+					desc += ", ";
+				}
+			} 
+		}
+		desc += "</html></body>"; 
+		
+		return desc;
 	}
 	
 	public void attack(){
@@ -86,6 +116,10 @@ public class PokemonCard extends Card {
 	
 	public ArrayList<EnergyCard> getEnergy(){
 		return this.energy;
+	}
+	
+	public void addAttack(Attack attack){
+		attacks.add(attack);
 	}
 	
 }
