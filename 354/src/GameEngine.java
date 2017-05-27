@@ -29,16 +29,13 @@ public class GameEngine {
 		
 		w.instructions.setText("Choose a pokemon to be your active pokemon.");
 		
+		//have AI player select an active pokemon
+		autoPlayer.selectActivePokemon(w);
+		
 		w.display();
 		
-		//have AI player select an active pokemon
-		/*autoPlayer.selectActivePokemon();
-		
-		//have user select an active pokemon
-		player.selectActivePokemon();
-		
 		//have AI player play a turn
-		autoPlayer.playTurn();
+		/*autoPlayer.playTurn();
 		
 		//have user play a turn
 		player.playTurn();*/

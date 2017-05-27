@@ -26,13 +26,14 @@ public class MainWindow implements ActionListener {
     public ArrayList<GUICard> playerHand = null;
     public ArrayList<GUICard> AIHand = null;
 
-    public JPanel pHandContainer = null;
-    public JPanel pBenchContainer = null;
-    public JPanel pActivePokemonContainer = null;
-    public JPanel pSidebar = null;
-    public JLabel pSidebarTitle = null;
-    public JLabel pSidebarText = null;
-    public JPanel pLeftSidebar = null;
+    public JPanel playerHandContainer = null;
+    public JPanel playerBenchContainer = null;
+    public JPanel playerActivePokemonContainer = null;
+    public JPanel playerSidebar = null;
+    public JLabel playerSidebarTitle = null;
+    public JLabel playerSidebarText = null;
+    public JButton makeActiveButton = null;
+    public JPanel playerLeftSidebar = null;
     public JPanel playerSide = null;
     public JPanel AIHandContainer = null;
     public JPanel AIBenchContainer = null;
@@ -43,6 +44,8 @@ public class MainWindow implements ActionListener {
     public JPanel AILeftSidebar = null;
     public JPanel AISide = null;
     public JLabel instructions = null;
+    
+    private boolean hasSelectedActive = false;
 
     MainWindow(){
         //Set window properties
@@ -65,8 +68,8 @@ public class MainWindow implements ActionListener {
         //active pokemon buttons
         playerActivePokemon = new GUICard(new PokemonCard());
         playerActivePokemon.button.addActionListener(this);
-        pActivePokemonContainer = new JPanel();
-        pActivePokemonContainer.add(playerActivePokemon.cardDisplay);
+        playerActivePokemonContainer = new JPanel();
+        playerActivePokemonContainer.add(playerActivePokemon.cardDisplay);
         AIActivePokemon = new GUICard(new PokemonCard());
         AIActivePokemon.button.addActionListener(this);
         AIActivePokemonContainer = new JPanel();
@@ -115,19 +118,19 @@ public class MainWindow implements ActionListener {
         constraints.gridy = 0;
         mainFrame.add(AISidebar, constraints);
         
-        pLeftSidebar = new JPanel();
-        pLeftSidebar.setPreferredSize(new Dimension(200, 375));
+        playerLeftSidebar = new JPanel();
+        playerLeftSidebar.setPreferredSize(new Dimension(200, 375));
         /*pLeftSidebar.setBorder(BorderFactory.createLineBorder(Color.black));*/
         GUICard pPrizeCards = new GUICard("Prize cards", "");
-        pLeftSidebar.add(pPrizeCards.cardDisplay);
+        playerLeftSidebar.add(pPrizeCards.cardDisplay);
         GUICard pDeck = new GUICard("Deck", "");
-        pLeftSidebar.add(pDeck.cardDisplay);
+        playerLeftSidebar.add(pDeck.cardDisplay);
         GUICard pDiscard = new GUICard("Discard", "");
-        pLeftSidebar.add(pDiscard.cardDisplay);
+        playerLeftSidebar.add(pDiscard.cardDisplay);
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 0;
         constraints.gridy = 1;
-        mainFrame.add(pLeftSidebar, constraints);
+        mainFrame.add(playerLeftSidebar, constraints);
         
         playerSide = new JPanel();
         playerSide.setPreferredSize(new Dimension(1150, 375));
@@ -137,17 +140,21 @@ public class MainWindow implements ActionListener {
         constraints.gridy = 1;
         mainFrame.add(playerSide, constraints);
         
-        pSidebar = new JPanel(new GridLayout(0, 1));
-        pSidebar.setPreferredSize(new Dimension(200, 375));
-        pSidebar.setBorder(BorderFactory.createLineBorder(Color.black));
-        pSidebarTitle = new JLabel();
-		pSidebar.add(pSidebarTitle);
-		pSidebarText = new JLabel();
-		pSidebar.add(pSidebarText);
+        playerSidebar = new JPanel(new GridLayout(0, 1));
+        playerSidebar.setPreferredSize(new Dimension(200, 375));
+        playerSidebar.setBorder(BorderFactory.createLineBorder(Color.black));
+        playerSidebarTitle = new JLabel();
+		playerSidebar.add(playerSidebarTitle);
+		playerSidebarText = new JLabel();
+		playerSidebar.add(playerSidebarText);
+		makeActiveButton = new JButton("Make Active Pokemon");
+		makeActiveButton.setVisible(false);
+		makeActiveButton.addActionListener(this);
+		playerSidebar.add(makeActiveButton);
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 2;
         constraints.gridy = 1;
-        mainFrame.add(pSidebar, constraints);
+        mainFrame.add(playerSidebar, constraints);
         
         instructions = new JLabel("Instructions");
         instructions.setPreferredSize(new Dimension(1500, 30));
@@ -162,21 +169,21 @@ public class MainWindow implements ActionListener {
         playerSide.setLayout(new GridLayout(0,1));
 
         //active
-        playerSide.add(pActivePokemonContainer);
+        playerSide.add(playerActivePokemonContainer);
 
         //bench
-        pBenchContainer = new JPanel();
-        playerSide.add(pBenchContainer);
+        playerBenchContainer = new JPanel();
+        playerSide.add(playerBenchContainer);
         for(GUICard c : playerBench){
-            pBenchContainer.add(c.cardDisplay);
+            playerBenchContainer.add(c.cardDisplay);
             c.button.addActionListener(this);
         }
 
         //hand
-        pHandContainer = new JPanel();
-        playerSide.add(pHandContainer);
+        playerHandContainer = new JPanel();
+        playerSide.add(playerHandContainer);
         for(GUICard c: playerHand){
-            pHandContainer.add(c.cardDisplay);
+            playerHandContainer.add(c.cardDisplay);
             c.button.addActionListener(this);
         }
 
@@ -217,24 +224,50 @@ public class MainWindow implements ActionListener {
     
     @Override
 	public void actionPerformed(ActionEvent e) {
-    	String buttonName = e.getActionCommand();
-    	JPanel buttonParent = (JPanel)((JButton)e.getSource()).getParent();
-    	JPanel containingPanel = (JPanel)(buttonParent.getParent().getParent());
-    	Component[] children = buttonParent.getComponents();
-    	String description = "";
-    	
-    	for (int i = 0; i < children.length; i++){
-    		if (children[i] instanceof JLabel){
-    			description = ((JLabel)children[i]).getText();
-    		}
-    	}
-    	
-    	if (containingPanel.equals(AISide)){
-    		AISidebarTitle.setText(buttonName);
-        	AISidebarText.setText(description);
+    	if (e.getSource().equals(makeActiveButton)){
+    		//first actually update playerActivePokemon
+    		//then call update method
+    		updatePlayerActivePokemon();
     	} else {
-    		pSidebarTitle.setText(buttonName);
-        	pSidebarText.setText(description);
+    		String buttonName = e.getActionCommand();
+        	JPanel buttonParent = (JPanel)((JButton)e.getSource()).getParent();
+        	JPanel containingPanel = (JPanel)(buttonParent.getParent().getParent());
+        	Component[] children = buttonParent.getComponents();
+        	String description = "";
+        	
+        	for (int i = 0; i < children.length; i++){
+        		if (children[i] instanceof JLabel){
+        			description = ((JLabel)children[i]).getText();
+        		}
+        	}
+        	
+        	if (containingPanel.equals(AISide)){
+        		AISidebarTitle.setText(buttonName);
+            	AISidebarText.setText(description);
+        	} else {
+        		makeActiveButton.setVisible(false);
+        		
+        		playerSidebarTitle.setText(buttonName);
+            	playerSidebarText.setText(description);
+            	
+            	int index = -1;
+            	int i = 0;
+            	Component[] cardsInContainer = buttonParent.getParent().getComponents();
+            	for (Component c : cardsInContainer){
+            		JPanel card = (JPanel)c;
+            		Component[] cardComponents = card.getComponents();
+            		if (cardComponents[0].equals(e.getSource())){
+            			index = i;
+            		}
+            		i++;
+            	}
+            	
+            	String type = playerHand.get(index).card.getClass().toString();
+            	     	
+            	if (!hasSelectedActive && type.equals("class PokemonCard")){
+            		makeActiveButton.setVisible(true);
+            	}
+        	}
     	}
 	}
     
@@ -247,11 +280,23 @@ public class MainWindow implements ActionListener {
     }
     
     public void updatePlayerHandContainer(){
-    	pHandContainer.removeAll();    	
+    	playerHandContainer.removeAll();    	
     	for (GUICard card : playerHand){
-    		pHandContainer.add(card.cardDisplay);
+    		playerHandContainer.add(card.cardDisplay);
             card.button.addActionListener(this);
     	}
+    }
+    
+    public void updateAIActivePokemon(){
+    	AIActivePokemonContainer.removeAll();
+    	AIActivePokemon.button.addActionListener(this);
+        AIActivePokemonContainer.add(AIActivePokemon.cardDisplay);
+    }
+    
+    public void updatePlayerActivePokemon(){
+    	playerActivePokemonContainer.removeAll();
+    	playerActivePokemon.button.addActionListener(this);
+        playerActivePokemonContainer.add(playerActivePokemon.cardDisplay);
     }
 
 }
