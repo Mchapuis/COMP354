@@ -1,4 +1,3 @@
-
 import javax.swing.*;
 import java.awt.*;
 import java.util.LinkedList;
@@ -20,20 +19,24 @@ public class MainWindow {
     LinkedList<GUICard> playerBench = null;
     LinkedList<GUICard> AIBench = null;
 
-    GUICard playerActivePokemonButton = null;
-    GUICard AIActivePokemonButton = null;
+    GUICard playerActivePokemon = null;
+    GUICard AIActivePokemon = null;
 
     LinkedList<GUICard> playerHand = null;
     LinkedList<GUICard> AIHand = null;
 
     private JPanel pHandContainer = null;
     private JPanel pBenchContainer = null;
+    private JPanel pActivePokemonContainer = null;
+    private JPanel pSidebar = null;
     private JPanel AIHandContainer = null;
     private JPanel AIBenchContainer = null;
+    private JPanel AIActivePokemonContainer = null;
+    private JPanel AISidebar = null;
 
     MainWindow(){
         //Set window properties
-        mainFrame = new JFrame("354 Pokémon Game");
+        mainFrame = new JFrame("354 Pokemon Game");
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         mainFrame.setSize(new Dimension(1500,800));
         mainFrame.setLayout(new GridLayout(0,1));
@@ -41,21 +44,26 @@ public class MainWindow {
         //bench buttons
         playerBench = new LinkedList<>();
         AIBench = new LinkedList<>();
+        
         for(int i = 0; i < BENCH_SIZE; i++){
-            playerBench.add(new GUICard(new JButton(String.valueOf(i) + " bench pokémon"), "card description<br>more description<br>even more description<br>moooooore"));
-            AIBench.add(new GUICard(new JButton(String.valueOf(i) + " bench pokémon"), "card description<br>more description<br>even more description<br>moooooore"));
+        	playerBench.add(new GUICard(new PokemonCard()));
+        	AIBench.add(new GUICard(new PokemonCard()));
         }
 
         //active pokemon buttons
-        playerActivePokemonButton = new GUICard(new JButton("Player Active Pokémon"), "description");
-        AIActivePokemonButton = new GUICard(new JButton("AI Active Pokémon"), "description");
+        playerActivePokemon = new GUICard(new PokemonCard());
+        pActivePokemonContainer = new JPanel();
+        pActivePokemonContainer.add(playerActivePokemon.card);
+        AIActivePokemon = new GUICard(new PokemonCard());
+        AIActivePokemonContainer = new JPanel();
+        AIActivePokemonContainer.add(AIActivePokemon.card);
 
         //hand buttons
         playerHand = new LinkedList<>();
         AIHand = new LinkedList<>();
         for(int i = 0; i < 7; i++){
-            playerHand.add(new GUICard(new JButton(String.valueOf(i) + " hand card"), "card description<br>more description<br>even more description<br>moooooore"));
-            AIHand.add(new GUICard(new JButton(String.valueOf(i) + " hand card"), "card description<br>more description<br>even more description<br>moooooore"));
+            playerHand.add(new GUICard(new PokemonCard()));
+            AIHand.add(new GUICard(new PokemonCard()));
         }
 
         //divide window in 2 halves
@@ -70,7 +78,7 @@ public class MainWindow {
             playerSide.setLayout(new GridLayout(0,1));
 
             //active
-            playerSide.add(playerActivePokemonButton.card);
+            playerSide.add(pActivePokemonContainer);
 
             //bench
             pBenchContainer = new JPanel();
@@ -106,7 +114,7 @@ public class MainWindow {
             }
 
             //active
-            AISide.add(AIActivePokemonButton.card);
+            AISide.add(AIActivePokemonContainer);
         }
     }
 
@@ -120,13 +128,6 @@ public class MainWindow {
 
     public void removeCard(){
 
-    }
-
-
-    public static void main(String[] args){
-
-        MainWindow w = new MainWindow();
-        w.display();
     }
 
 }

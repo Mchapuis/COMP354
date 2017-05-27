@@ -4,14 +4,17 @@ public class GameEngine {
 	private static AIPlayer autoPlayer;
 
 	public static void main(String[] args) {
+		MainWindow w = new MainWindow();
+        w.display();
+        
 		/*Parser.readInAbilities();*/
 		
 		//instantiate players - this builds their decks, selects a hand and selects 6 prize cards
-		/*autoPlayer = new AIPlayer();
+		autoPlayer = new AIPlayer();
 		player = new HumanPlayer();
 		
 		//have AI player select an active pokemon
-		autoPlayer.selectActivePokemon();
+		/*autoPlayer.selectActivePokemon();
 		
 		//have user select an active pokemon
 		player.selectActivePokemon();

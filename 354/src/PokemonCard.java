@@ -11,7 +11,7 @@ public class PokemonCard extends Card {
 	}
 	
 	private enum Type {
-		LIGHTNING, UNDEFINED
+		LIGHTNING, NORMAL
 	}
 	
 	private String name;
@@ -26,7 +26,20 @@ public class PokemonCard extends Card {
 	private ArrayList<Attack> attacks;
 	private ArrayList<EnergyCard> energy;
 	
-	public PokemonCard(String name, String description, String cat, String type, int maxHP, HashMap retreatMap){
+	public PokemonCard(){
+		this.name = "Undefined";
+		this.description = "No description";
+		this.cat = Category.BASIC;
+		this.type = Type.NORMAL;
+		this.maxHP = 0;
+		this.retreat = new HashMap<EnergyCard, Integer>();
+		this.status = Status.NORMAL;
+		this.currentHP = 0;
+		this.attacks = new ArrayList<Attack>();
+		this.energy = new ArrayList<EnergyCard>();
+	}
+	
+	public PokemonCard(String name, String description, String cat, String type, int maxHP, HashMap<EnergyCard, Integer> retreatMap){
 		this.name = name;
 		this.description = description;
 		
@@ -39,7 +52,7 @@ public class PokemonCard extends Card {
 		if (type.equals("LIGHTNING")) {
 			this.type = Type.LIGHTNING;
 		} else {
-			this.type = Type.UNDEFINED;
+			this.type = Type.NORMAL;
 		}
 		
 		this.maxHP = maxHP;
@@ -47,6 +60,16 @@ public class PokemonCard extends Card {
 		
 		this.status = Status.NORMAL;
 		this.currentHP = maxHP;
+		this.attacks = new ArrayList<Attack>();
+		this.energy = new ArrayList<EnergyCard>();		
+	}
+	
+	public String getName(){
+		return this.name;
+	}
+	
+	public String getDescription(){
+		return this.description;
 	}
 	
 	public void attack(){

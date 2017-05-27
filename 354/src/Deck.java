@@ -5,7 +5,7 @@ public class Deck {
 	private ArrayList<Card> cards;
 	
 	public Deck(){
-		cards = new ArrayList<Card>(60);
+		cards = new ArrayList<Card>();
 	}
 	
 	public void shuffle(){
@@ -35,6 +35,10 @@ public class Deck {
 	
 	public void removeCardAtIndex(int index){
 		cards.remove(index);
+	}
+	
+	public int size(){
+		return cards.size();
 	}
 	
 }

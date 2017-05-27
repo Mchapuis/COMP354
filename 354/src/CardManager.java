@@ -19,32 +19,39 @@ public class CardManager {
 	public void buildDeck(){
 		deck = new Deck();
 		
-		EnergyCard energyCard = new EnergyCard("COLORLESS");
 		for (int i = 0; i < 14; i++){
+			EnergyCard energyCard = new EnergyCard("COLORLESS");
 			deck.push(energyCard);
 		}
 		
 		// hardcoding Pikachu card
+		EnergyCard energyCard = new EnergyCard("COLORLESS");
 		HashMap<EnergyCard, Integer> retreatMapPikachu = new HashMap<EnergyCard, Integer>();
 		retreatMapPikachu.put(energyCard, 1);
 		PokemonCard pikachu = new PokemonCard("Pikachu", "A lightning-type pokemon.", "BASIC", "LIGHTNING", 60, retreatMapPikachu);
 		deck.push(pikachu);
 		
 		// hardcoding Glameow card
+		energyCard = new EnergyCard("COLORLESS");
 		HashMap<EnergyCard, Integer> retreatMapGlameow = new HashMap<EnergyCard, Integer>();
 		retreatMapGlameow.put(energyCard, 2);
 		PokemonCard glameow = new PokemonCard("Glameow", "A normal-type pokemon.", "BASIC", "NORMAL", 60, retreatMapGlameow);
 		deck.push(glameow);
+		
+		/*System.out.println(deck.size());*/
 		
 		//last step: shuffle
 		deck.shuffle();
 	}
 	
 	public void selectHand(){
+		hand = new ArrayList<Card>();
+		
 		for (int i = 0; i < 7; i++){
 			Card card = deck.pop();
 			hand.add(card);
 		}
+		
 		while (getFirstPokemon() == null){
 			for (Card card : hand){
 				deck.push(card);
@@ -60,6 +67,7 @@ public class CardManager {
 	
 	public void selectPrizeCards(){
 		prizeCards = new ArrayList<Card>(6);
+		
 		for (int i = 0; i < 6; i++){
 			Card card = deck.pop();
 			prizeCards.add(card);
