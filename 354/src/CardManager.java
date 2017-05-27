@@ -4,7 +4,7 @@ import java.util.*;
 public class CardManager {
 
 	private Deck deck;
-	private ArrayList<Card> hand;
+	public ArrayList<Card> hand;
 	private ArrayList<PokemonCard> bench;
 	private ArrayList<Card> prizeCards;
 	private ArrayList<Card> discardPile;
@@ -53,10 +53,14 @@ public class CardManager {
 		}
 		
 		while (getFirstPokemon() == null){
-			for (Card card : hand){
+			Iterator<Card> it = hand.iterator();
+			
+			while (it.hasNext()){
+				Card card = it.next();
 				deck.push(card);
-				hand.remove(card);
+				it.remove();
 			}
+			
 			deck.shuffle();
 			for (int i = 0; i < 7; i++){
 				Card card = deck.pop();

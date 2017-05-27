@@ -3,31 +3,40 @@ import java.awt.*;
 
 public class GUICard {
 	
-    public JPanel card;
-    private JButton button;
-    private JLabel description;
+    public JPanel cardDisplay;
+    public JButton button;
+    public JLabel description;
+    public Card card;
 
     public GUICard(Card c){
-    	card = new JPanel();
-    	card.setPreferredSize(new Dimension(100, 120));
-    	card.setBorder(BorderFactory.createLineBorder(Color.black));
-    	card.setLayout(new GridLayout(0,1));
+    	this.card = c;
+    	
+    	cardDisplay = new JPanel();
+    	cardDisplay.setPreferredSize(new Dimension(100, 120));
+    	cardDisplay.setBorder(BorderFactory.createLineBorder(Color.black));
+    	cardDisplay.setLayout(new GridLayout(0,1));
     	
         this.button = new JButton(c.getName());
-        this.description = new JLabel("<html>" + c.getDescription());
+        
+        this.description = new JLabel(c.getDescription());
 
-        JPanel p1 = new JPanel(new FlowLayout());
-        JPanel p2 = new JPanel(new FlowLayout());
-
-        p1.add(this.button);
-        p2.add(this.description);
-
-        card.add(p1);
-        card.add(p2);
+        cardDisplay.add(this.button);
+        cardDisplay.add(this.description);
     }
+    
+    public GUICard(String buttonText, String description){
+    	this.card = null;
+    	
+    	cardDisplay = new JPanel();
+    	cardDisplay.setPreferredSize(new Dimension(100, 120));
+    	cardDisplay.setBorder(BorderFactory.createLineBorder(Color.black));
+    	cardDisplay.setLayout(new GridLayout(0,1));
+    	
+        this.button = new JButton(buttonText);
+        this.description = new JLabel(description);
 
-    public void updateDescription(String d){
-        this.description.setText("<html>"+d);
+        cardDisplay.add(this.button);
+        cardDisplay.add(this.description);
     }
 
 }
