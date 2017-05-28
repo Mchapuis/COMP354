@@ -6,6 +6,7 @@ public class TrainerCard extends Card {
 		
 	}
 	
+	private int ID;
 	private String name;
 	private String description;
 	private Type type;
@@ -17,6 +18,14 @@ public class TrainerCard extends Card {
 	
 	public String getDescription() {
 		return this.description;
+	}
+	
+	public String getSimpleDescription(){
+		return this.description;
+	}
+	
+	public void setID(int ID){
+		this.ID = ID;
 	}
 	
 }

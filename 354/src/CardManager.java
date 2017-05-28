@@ -1,4 +1,3 @@
-import java.awt.Window.Type;
 import java.util.*;
 
 public class CardManager {
@@ -8,7 +7,7 @@ public class CardManager {
 	public ArrayList<PokemonCard> bench;
 	private ArrayList<Card> prizeCards;
 	private ArrayList<Card> discardPile;
-	private PokemonCard activePokemon;
+	public PokemonCard activePokemon;
 	
 	public CardManager(){
 		buildDeck();
@@ -21,6 +20,7 @@ public class CardManager {
 		
 		for (int i = 0; i < 14; i++){
 			EnergyCard energyCard = new EnergyCard("COLORLESS");
+			energyCard.setID(i + 1);
 			deck.push(energyCard);
 		}
 		
@@ -51,6 +51,7 @@ public class CardManager {
 		quickAttack.addEnergyRequirement(energyCard, 2);
 		pikachu.addAttack(quickAttack);
 		
+		pikachu.setID(15);
 		deck.push(pikachu);
 		
 		// hardcoding Glameow card
@@ -64,7 +65,7 @@ public class CardManager {
 		Attack actCute = new Attack();
 		actCute.setName("Act Cute");
 		actCute.setTarget("opponent-hand");
-		actCute.addEnergyRequirement(energyCard, 2);
+		actCute.addEnergyRequirement(energyCard, 1);
 		actCute.setDestination("deck-bottom");
 		glameow.addAttack(actCute);
 		
@@ -76,6 +77,7 @@ public class CardManager {
 		scratch.addEnergyRequirement(energyCard, 2);
 		glameow.addAttack(scratch);
 		
+		pikachu.setID(16);
 		deck.push(glameow);
 		
 		//last step: shuffle
@@ -192,5 +194,14 @@ public class CardManager {
 	public void addPrizeCardToHand(Card card){
 		hand.add(card);
 		prizeCards.remove(card);
+	}
+	
+	public Card getFirstCardOfHand(){
+		return this.hand.get(0);
+	}
+	
+	public void moveCardFromHandToBottomOfDeck(Card card){
+		this.deck.push(card);
+		this.hand.remove(card);
 	}
 }

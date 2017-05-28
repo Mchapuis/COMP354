@@ -4,11 +4,13 @@ public class EnergyCard extends Card {
 		COLORLESS, OTHER
 	}
 	
+	private int ID;
 	private String name;
 	private String description;
 	private Type type;
 
 	public EnergyCard(String type){
+		this.ID = 0;
 		this.name = "Energy";
 		
 		if (type.equals("COLORLESS")){
@@ -28,8 +30,16 @@ public class EnergyCard extends Card {
 		return this.description;
 	}
 	
-	public Type getType(){
-		return this.type;
+	public String getSimpleDescription(){
+		return this.description;
+	}
+	
+	public String getType(){
+		return this.type.toString();
+	}
+	
+	public void setID(int ID){
+		this.ID = ID;
 	}
 	
 }
