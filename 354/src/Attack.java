@@ -57,12 +57,8 @@ public class Attack {
 		}
 		desc += "Flip required: ";
 		desc += flip;
-		desc += "<br/>";
-		desc += "Status to apply: ";
 		if (statusToApply == Status.PARALYZED){
-			desc += "Paralyzed";
-		} else {
-			desc += "None";
+			desc += "<br/>Status to apply: Paralyzed";
 		}
 		if (additionalDamagePoints > 0) {
 			desc += "<br/>";
@@ -75,6 +71,38 @@ public class Attack {
 			desc += destination;
 		}
 		return desc;
+	}
+	
+	public String getTarget(){
+		return this.target.toString();
+	}
+	
+	public int getDamagePoints(){
+		return this.damagePoints;
+	}
+	
+	public HashMap<EnergyCard, Integer> getEnergyRequired(){
+		return this.energyRequired;
+	}
+	
+	public boolean getFlipRequired(){
+		return this.flip;
+	}
+	
+	public String getStatusToApply(){
+		return this.statusToApply.toString();
+	}
+	
+	public String getAdditionalTarget(){
+		return this.additionalTarget.toString();
+	}
+	
+	public int getAdditionalDamagePoints(){
+		return this.additionalDamagePoints;
+	}
+	
+	public String getDestination(){
+		return this.destination.toString();
 	}
 	
 	public void setName(String name){
