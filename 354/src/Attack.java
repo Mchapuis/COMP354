@@ -9,7 +9,6 @@ public class Attack {
 	
 	private enum Status{
 		PARALYZED, NONE
-		//OMG SUCH A BAD PUSH. MUST REVERTTTTTTTTTTTTTTTTTTTTTT
 	}
 	
 	private enum Destination{
