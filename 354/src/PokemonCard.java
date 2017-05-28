@@ -23,7 +23,7 @@ public class PokemonCard extends Card {
 	
 	private Status status;
 	private int currentHP;
-	private ArrayList<Attack> attacks;
+	public ArrayList<Attack> attacks;
 	private ArrayList<EnergyCard> energy;
 	
 	public PokemonCard(){
@@ -74,6 +74,9 @@ public class PokemonCard extends Card {
 		desc += "<br/>";
 		desc += "=================";
 		desc += "<br/>";
+		desc += "HP: ";
+		desc += this.currentHP;
+		desc += "<br/>";
 		desc += "Energy attached: ";
 		if (this.energy.size() == 0){
 			desc += "None";
@@ -110,6 +113,10 @@ public class PokemonCard extends Card {
 		return desc;
 	}
 	
+	public String getSimpleDescription(){
+		return this.description;
+	}
+	
 	public void attack(){
 		
 	}
@@ -128,6 +135,35 @@ public class PokemonCard extends Card {
 	
 	public void addAttack(Attack attack){
 		attacks.add(attack);
+	}
+	
+	public void removeHP(int points){
+		this.currentHP -= points;
+	}
+	
+	public boolean hasEnoughEnergy(int attackIndex){
+		Attack attack = this.attacks.get(attackIndex);
+		
+		boolean enough = true;
+		HashMap<EnergyCard, Integer> energyRequired = attack.getEnergyRequired();
+		for (Map.Entry<EnergyCard, Integer> entry : energyRequired.entrySet()) {
+			String type = entry.getKey().getType();
+			
+			int count = 0;
+			for (EnergyCard energy : this.energy){
+				String typeToCompare = energy.getType();
+				if (typeToCompare.equals(type)){
+					count++;
+				}
+			}
+			
+			int amount = entry.getValue();
+			if (count < amount){
+				enough = false;
+			}
+		}
+		
+		return enough;
 	}
 	
 }

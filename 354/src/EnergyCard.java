@@ -28,8 +28,12 @@ public class EnergyCard extends Card {
 		return this.description;
 	}
 	
-	public Type getType(){
-		return this.type;
+	public String getSimpleDescription(){
+		return this.description;
+	}
+	
+	public String getType(){
+		return this.type.toString();
 	}
 	
 }

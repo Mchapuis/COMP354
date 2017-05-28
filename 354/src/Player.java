@@ -2,7 +2,6 @@ public abstract class Player {
 
 	public CardManager cardManager;
 	
-	public abstract void selectActivePokemon();
-	public abstract void playTurn();
+	public abstract boolean attack(int attackIndex, Player opponent);
 	
 }

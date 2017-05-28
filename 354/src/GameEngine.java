@@ -18,7 +18,7 @@ public class GameEngine {
 		
 		//have AI player select an active pokemon
 		autoPlayer.selectActivePokemon();
-		w.updateAIActivePokemon(autoPlayer);
+		w.updateAIActivePokemon();
 		
 		w.display();
 	}

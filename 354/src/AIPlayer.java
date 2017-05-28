@@ -9,11 +9,7 @@ public class AIPlayer extends Player {
 		cardManager.setActivePokemon(selectedPokemon);
 	}
 	
-	public void playTurn(){
-		/*PokemonCard selectedPokemon = cardManager.getActivePokemon();
-		EnergyCard selectedEnergy = cardManager.getFirstEnergy();
-		cardManager.attachEnergy(selectedEnergy, selectedPokemon);
-		cardManager.getActivePokemon().attack();*/
+	public boolean attack(int attackIndex, Player opponent){
+		return true;
 	}
-	
 }

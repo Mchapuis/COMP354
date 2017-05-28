@@ -8,7 +8,7 @@ public class CardManager {
 	public ArrayList<PokemonCard> bench;
 	private ArrayList<Card> prizeCards;
 	private ArrayList<Card> discardPile;
-	private PokemonCard activePokemon;
+	public PokemonCard activePokemon;
 	
 	public CardManager(){
 		buildDeck();
@@ -64,7 +64,7 @@ public class CardManager {
 		Attack actCute = new Attack();
 		actCute.setName("Act Cute");
 		actCute.setTarget("opponent-hand");
-		actCute.addEnergyRequirement(energyCard, 2);
+		actCute.addEnergyRequirement(energyCard, 1);
 		actCute.setDestination("deck-bottom");
 		glameow.addAttack(actCute);
 		

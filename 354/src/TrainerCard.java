@@ -19,4 +19,8 @@ public class TrainerCard extends Card {
 		return this.description;
 	}
 	
+	public String getSimpleDescription(){
+		return this.description;
+	}
+	
 }
