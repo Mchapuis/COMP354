@@ -9,7 +9,7 @@ public class RandomNumberGenerator {
 		int lands = flip.nextInt(2);
 		
 		if (lands == 1){
-			System.out.println("Tails");
+			/*System.out.println("Tails");*/
 			return false;
 		}
 				
@@ -17,7 +17,7 @@ public class RandomNumberGenerator {
 			System.out.println("Heads");
 			return true;
 		}*/
-		System.out.println("Heads");
+		/*System.out.println("Heads");*/
 		return true;
 		
 	}

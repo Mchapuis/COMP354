@@ -6,13 +6,14 @@ public class HumanPlayer extends Player {
 		cardManager = new CardManager();
 	}
 	
-	public boolean attack(int attackIndex, Player opponent){
+	public String attack(int attackIndex, Player opponent){
+		String resultString = "";
 		Attack attack = this.cardManager.activePokemon.attacks.get(attackIndex);
 		AIPlayer op = (AIPlayer)opponent;
 		PokemonCard activePokemon = this.cardManager.activePokemon;
 		
 		if (!activePokemon.hasEnoughEnergy(attackIndex)){
-			return false;
+			return resultString;
 		}
 		
 		String target = attack.getTarget();
@@ -21,14 +22,42 @@ public class HumanPlayer extends Player {
 			int damagePoints = attack.getDamagePoints();
 			if (damagePoints > 0){
 				targetObj.removeHP(damagePoints);
+				resultString += "Opponent's active pokemon lost " + damagePoints + " HP. ";
+			}
+			if (attack.getFlipRequired()){
+				boolean flip = RandomNumberGenerator.flipACoin();
+				if (flip){
+					resultString += "Coin flip returned heads. ";
+					String statusToApply = attack.getStatusToApply();
+					if (!statusToApply.equals("NONE")){
+						resultString += "Status " + statusToApply + " was applied to opponent's active pokemon. ";
+						targetObj.applyStatus(statusToApply);
+					} else {
+						String additionalTarget = attack.getAdditionalTarget();
+						
+						if (additionalTarget.equals("OPPONENTACTIVE")){
+							PokemonCard additionalTargetObj = op.cardManager.activePokemon;
+							int additionalDamage = attack.getAdditionalDamagePoints();
+							if (additionalDamage > 0){
+								additionalTargetObj.removeHP(additionalDamage);
+								resultString += "Opponent's active pokemon lost another " + additionalDamage + " points. ";
+							}
+						}						
+					}
+				} else {
+					resultString += "Coin flip returned tails. ";
+				}
 			}
 		} else if (target.equals("OPPONENTHAND")){
-			ArrayList<Card> targetObj = op.cardManager.hand;
+			if (attack.getDestination().equals("BOTTOMOFDECK")){
+				op.moveCardFromHandToBottomOfDeck();
+				resultString += "Opponent moved one card from their hand to the bottom of their deck.";
+			}
 		} else {
 			Object targetObj = null;
 		}
 		
-		return true;
+		return resultString;
 	}
 
 }

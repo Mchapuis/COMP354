@@ -3,7 +3,7 @@ import java.util.*;
 public class PokemonCard extends Card {
 
 	private enum Status {
-		NORMAL
+		NORMAL, PARALYZED
 	}
 	
 	private enum Category {
@@ -77,6 +77,9 @@ public class PokemonCard extends Card {
 		desc += "HP: ";
 		desc += this.currentHP;
 		desc += "<br/>";
+		desc += "Status: ";
+		desc += this.status;
+		desc += "<br/>";
 		desc += "Energy attached: ";
 		if (this.energy.size() == 0){
 			desc += "None";
@@ -84,7 +87,7 @@ public class PokemonCard extends Card {
 			int i = 0;
 			for (EnergyCard e : this.energy){
 				desc += e.getDescription();
-				if (i == this.energy.size()){
+				if (i + 1 < this.energy.size()){
 					desc += ", ";
 				}
 			}
@@ -164,6 +167,12 @@ public class PokemonCard extends Card {
 		}
 		
 		return enough;
+	}
+	
+	public void applyStatus(String status){
+		if (status.equals("PARALYZED")){
+			this.status = Status.PARALYZED;
+		}
 	}
 	
 }

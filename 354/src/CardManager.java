@@ -193,4 +193,13 @@ public class CardManager {
 		hand.add(card);
 		prizeCards.remove(card);
 	}
+	
+	public Card getFirstCardOfHand(){
+		return this.hand.get(0);
+	}
+	
+	public void moveCardFromHandToBottomOfDeck(Card card){
+		this.deck.push(card);
+		this.hand.remove(card);
+	}
 }

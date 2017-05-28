@@ -29,6 +29,7 @@ public class MainWindow {
     public JButton attack1 = null;
     public JButton attack2 = null;
     public JButton attack3 = null;
+    public JButton letAIPlay = null;
     public JPanel playerLeftSidebar = null;
     public JPanel playerSide = null;
     
@@ -42,6 +43,7 @@ public class MainWindow {
     private boolean hasSelectedActive = false;
     private boolean hasClickedAttach = false;
     private boolean hasAttachedEnergy = false;
+    private boolean mustMoveCardToBottomOfDeck = false;
     private int energySourceIndex;
     
     public class GenericButtonActionListener implements ActionListener{
@@ -85,8 +87,23 @@ public class MainWindow {
         		type = playerActivePokemon.getClass().toString();
         		targetLocation = "active";
         		targetIndex = 0;
+        		attack1.setEnabled(true);
+        		if (playerActivePokemon.attacks.size() > 1)
+        			attack2.setEnabled(true);
+        		if (playerActivePokemon.attacks.size() > 2)
+        			attack3.setEnabled(true);
         	} else if (buttonParent.getParent().equals(playerHandContainer)){
         		type = playerHand.get(index).getClass().toString();
+        		if (mustMoveCardToBottomOfDeck){
+        			Card card = player.cardManager.hand.get(index);
+        			player.cardManager.moveCardFromHandToBottomOfDeck(card);
+        		    hasClickedAttach = false;
+        		    hasAttachedEnergy = false;
+        			mustMoveCardToBottomOfDeck = false;
+        			updatePlayerSide();
+        			instructions.setText("(Optional) Click on an energy card to select it. Then click \"Attach to a pokemon\" in the sidebar on the right. If you don't want to attach energy, click on your active pokemon to see its attacks.");
+        			return;
+        		}
         	} else {
         		//type = playerBench.get(index).getClass().toString();
         	}
@@ -95,14 +112,10 @@ public class MainWindow {
         		attack1.setVisible(true);
         		attack2.setVisible(true);
         		attack3.setVisible(true);
-        	}
-        	
-        	if (buttonParent.getParent().equals(playerActivePokemonContainer)){
-        		attack1.setEnabled(true);
-        		if (playerActivePokemon.attacks.size() > 1)
-        			attack2.setEnabled(true);
-        		if (playerActivePokemon.attacks.size() > 2)
-        			attack3.setEnabled(true);
+        	} else {
+        		attack1.setVisible(false);
+        		attack2.setVisible(false);
+        		attack3.setVisible(false);
         	}
         	     	
         	if (!hasSelectedActive && type.equals("class PokemonCard")){
@@ -112,8 +125,6 @@ public class MainWindow {
         		energySourceIndex = index;
         	} else if (hasClickedAttach && type.equals("class PokemonCard")){
         		attachEnergy(targetLocation, targetIndex, energySourceIndex);
-        	} else if (hasSelectedActive && hasAttachedEnergy){
-
         	}
         }
     	
@@ -130,14 +141,17 @@ public class MainWindow {
     		else
     			index = 2;
     		
-    		boolean success = player.attack(index, autoPlayer);
+    		String resultString = player.attack(index, autoPlayer);
     		
-    		if (success){
+    		if (!resultString.equals("")){
     			updateAISide();
-    			instructions.setText("Your turn is done.");
+    			String newText = "Your turn is done. " + resultString;
+    			instructions.setText(newText);
     			attack1.setVisible(false);
     			attack2.setVisible(false);
     			attack3.setVisible(false);
+    			updateAISide();
+    			letAIPlay.setVisible(true);
     		} else {
     			instructions.setText("Your pokemon doesn't have enough energy for that attack.");
     		}
@@ -298,6 +312,28 @@ public class MainWindow {
         constraints.gridy = 5;
         constraints.gridwidth = 3;
 		sidebar.add(attachButton, constraints);
+		letAIPlay = new JButton("Let AI play");
+		letAIPlay.setVisible(false);
+		letAIPlay.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){
+				String resultString = autoPlayer.playTurn(player);
+				updateAISide();
+				letAIPlay.setVisible(false);
+				instructions.setText("AI's turn is over. " + resultString);
+				if (resultString.equals("You must put a card at the bottom of your deck. Click on a card from your hand to do so.")){
+					mustMoveCardToBottomOfDeck = true;
+				} else {
+					instructions.setText("<html><body>" + instructions.getText() + " (Optional) Click on an energy card to select it. Then click \"Attach to a pokemon\" in the sidebar on the right.<br/>If you don't want to attach energy, click on your active pokemon to see its attacks.</body></html>");
+				}
+				updatePlayerSide();
+				hasClickedAttach = false;
+    		    hasAttachedEnergy = false;
+			}
+		});
+		constraints.gridx = 0;
+        constraints.gridy = 6;
+        constraints.gridwidth = 3;
+        sidebar.add(letAIPlay, constraints);
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 2;
         constraints.gridy = 0;
@@ -376,6 +412,9 @@ public class MainWindow {
     	for (Card c : AIHand){
     		AIHandContainer.add(createJPanelFromCard(c));
     	}
+    	AIHandContainer.invalidate();
+    	AIHandContainer.validate();
+    	AIHandContainer.repaint();
     }
     
     public void setPlayerActivePokemon(int index){
@@ -407,9 +446,6 @@ public class MainWindow {
     	removeFromPlayerHand(sourceIndex);
     	
     	updatePlayerActivePokemon();
-    	playerActivePokemonContainer.invalidate();
-    	playerActivePokemonContainer.validate();
-    	playerActivePokemonContainer.repaint();
     	
     	hasClickedAttach = false;
     	instructions.setText("Click on your active pokemon to see its attacks.");
@@ -422,9 +458,28 @@ public class MainWindow {
     	hasAttachedEnergy = true;
     }
     
+    public void updatePlayerSide(){
+    	updatePlayerActivePokemon();
+    	updatePlayerHand();
+    }
+    
     public void updatePlayerActivePokemon(){
     	playerActivePokemonContainer.removeAll();
     	playerActivePokemonContainer.add(createJPanelFromCard(playerActivePokemon));
+    	playerActivePokemonContainer.invalidate();
+    	playerActivePokemonContainer.validate();
+    	playerActivePokemonContainer.repaint();
+    }
+    
+    public void updatePlayerHand(){
+    	playerHandContainer.removeAll();
+    	playerHand = player.cardManager.hand;
+    	for (Card c : playerHand){
+    		playerHandContainer.add(createJPanelFromCard(c));
+    	}
+    	playerHandContainer.invalidate();
+    	playerHandContainer.validate();
+    	playerHandContainer.repaint();
     }
 
     public JPanel createJPanelFromCard(Card c){

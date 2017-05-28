@@ -85,6 +85,26 @@ public class Attack {
 		return this.energyRequired;
 	}
 	
+	public boolean getFlipRequired(){
+		return this.flip;
+	}
+	
+	public String getStatusToApply(){
+		return this.statusToApply.toString();
+	}
+	
+	public String getAdditionalTarget(){
+		return this.additionalTarget.toString();
+	}
+	
+	public int getAdditionalDamagePoints(){
+		return this.additionalDamagePoints;
+	}
+	
+	public String getDestination(){
+		return this.destination.toString();
+	}
+	
 	public void setName(String name){
 		this.name = name;
 	}
