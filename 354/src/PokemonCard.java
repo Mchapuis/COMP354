@@ -14,6 +14,7 @@ public class PokemonCard extends Card {
 		LIGHTNING, NORMAL
 	}
 	
+	private int ID;
 	private String name;
 	private String description;
 	private Category cat;
@@ -27,6 +28,7 @@ public class PokemonCard extends Card {
 	private ArrayList<EnergyCard> energy;
 	
 	public PokemonCard(){
+		this.ID = 0;
 		this.name = "Undefined";
 		this.description = "No description";
 		this.cat = Category.BASIC;
@@ -173,6 +175,10 @@ public class PokemonCard extends Card {
 		if (status.equals("PARALYZED")){
 			this.status = Status.PARALYZED;
 		}
+	}
+	
+	public void setID(int ID){
+		this.ID = ID;
 	}
 	
 }
