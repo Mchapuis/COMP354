@@ -31,7 +31,9 @@ public class CardManager {
 		PokemonCard pikachu = new PokemonCard("Pikachu", "A lightning-type pokemon.", "BASIC", "LIGHTNING", 60, retreatMapPikachu);
 		
 		//hardcoding Pikachu attacks
+		energyCard = new EnergyCard("COLORLESS");
 		Attack nuzzle = new Attack();
+		nuzzle.setName("Nuzzle");
 		nuzzle.setFlip(true);
 		nuzzle.setTarget("opponent-active");
 		nuzzle.setApplyStatus("paralyzed");
@@ -40,6 +42,7 @@ public class CardManager {
 		
 		energyCard = new EnergyCard("COLORLESS");
 		Attack quickAttack = new Attack();
+		quickAttack.setName("Quick Attack");
 		quickAttack.setDamagePoints(20);
 		quickAttack.setTarget("opponent-active");
 		quickAttack.setFlip(true);
@@ -55,6 +58,24 @@ public class CardManager {
 		HashMap<EnergyCard, Integer> retreatMapGlameow = new HashMap<EnergyCard, Integer>();
 		retreatMapGlameow.put(energyCard, 2);
 		PokemonCard glameow = new PokemonCard("Glameow", "A normal-type pokemon.", "BASIC", "NORMAL", 60, retreatMapGlameow);
+		
+		//hardcoding Glameow attacks
+		energyCard = new EnergyCard("COLORLESS");
+		Attack actCute = new Attack();
+		actCute.setName("Act Cute");
+		actCute.setTarget("opponent-hand");
+		actCute.addEnergyRequirement(energyCard, 2);
+		actCute.setDestination("deck-bottom");
+		glameow.addAttack(actCute);
+		
+		energyCard = new EnergyCard("COLORLESS");
+		Attack scratch = new Attack();
+		scratch.setName("Scratch");
+		scratch.setDamagePoints(20);
+		scratch.setTarget("opponent-active");
+		scratch.addEnergyRequirement(energyCard, 2);
+		glameow.addAttack(scratch);
+		
 		deck.push(glameow);
 		
 		//last step: shuffle

@@ -20,10 +20,10 @@ public class MainWindow {
     public JPanel playerHandContainer = null;
     public JPanel playerBenchContainer = null;
     public JPanel playerActivePokemonContainer = null;
-    public JPanel playerSidebar = null;
-    public JLabel playerSidebarIndex = null;
-    public JLabel playerSidebarTitle = null;
-    public JLabel playerSidebarText = null;
+    public JPanel sidebar = null;
+    public JLabel sidebarIndex = null;
+    public JLabel sidebarTitle = null;
+    public JLabel sidebarText = null;
     public JButton makeActiveButton = null;
     public JButton attachButton = null;
     public JPanel playerLeftSidebar = null;
@@ -92,19 +92,6 @@ public class MainWindow {
         constraints.gridy = 0;
         mainFrame.add(AISide, constraints);
         
-        AISidebar = new JPanel(new GridLayout(0, 1));
-        AISidebar.setPreferredSize(new Dimension(200, 375));
-        AISidebar.setBorder(BorderFactory.createLineBorder(Color.black));
-        AISidebarTitle = new JLabel();
-        AISidebarTitle.setBorder(BorderFactory.createLineBorder(Color.red));
-		AISidebar.add(AISidebarTitle);
-		AISidebarText = new JLabel();
-		AISidebar.add(AISidebarText);
-        constraints.fill = GridBagConstraints.HORIZONTAL;
-        constraints.gridx = 2;
-        constraints.gridy = 0;
-        mainFrame.add(AISidebar, constraints);
-        
         playerLeftSidebar = new JPanel();
         playerLeftSidebar.setPreferredSize(new Dimension(200, 375));
         /*playerLeftSidebar.setBorder(BorderFactory.createLineBorder(Color.black));*/
@@ -127,16 +114,25 @@ public class MainWindow {
         constraints.gridy = 1;
         mainFrame.add(playerSide, constraints);
         
-        playerSidebar = new JPanel(new GridLayout(0, 1));
-        playerSidebar.setPreferredSize(new Dimension(200, 375));
-        playerSidebar.setBorder(BorderFactory.createLineBorder(Color.black));
-        playerSidebarIndex = new JLabel();
-        playerSidebarIndex.setVisible(false);
-        playerSidebar.add(playerSidebarIndex);
-        playerSidebarTitle = new JLabel();
-		playerSidebar.add(playerSidebarTitle);
-		playerSidebarText = new JLabel();
-		playerSidebar.add(playerSidebarText);
+        sidebar = new JPanel(new GridBagLayout());
+        sidebar.setPreferredSize(new Dimension(200, 750));
+        sidebar.setBorder(BorderFactory.createLineBorder(Color.black));
+        sidebarIndex = new JLabel();
+        sidebarIndex.setVisible(false);
+        sidebarIndex.setPreferredSize(new Dimension(1, 1));
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        sidebar.add(sidebarIndex, constraints);
+        sidebarTitle = new JLabel();
+        sidebarTitle.setPreferredSize(new Dimension(195, 15));
+        constraints.gridx = 0;
+        constraints.gridy = 1;
+		sidebar.add(sidebarTitle, constraints);
+		sidebarText = new JLabel();
+		sidebarText.setPreferredSize(new Dimension(195, 600));
+		constraints.gridx = 0;
+        constraints.gridy = 2;
+		sidebar.add(sidebarText, constraints);
 		makeActiveButton = new JButton("Make Active Pokemon");
 		makeActiveButton.setVisible(false);
 		makeActiveButton.addActionListener(new ActionListener()
@@ -155,7 +151,9 @@ public class MainWindow {
 	    		instructions.setText("Click on an energy card to select it. Then click \"Attach to a pokemon\" in the sidebar on the right.");
 		    }
 		});
-		playerSidebar.add(makeActiveButton);
+		constraints.gridx = 0;
+        constraints.gridy = 3;
+		sidebar.add(makeActiveButton, constraints);
 		attachButton = new JButton("Attach to a pokemon");
 		attachButton.setVisible(false);
 		attachButton.addActionListener(new ActionListener()
@@ -166,11 +164,14 @@ public class MainWindow {
 	    		instructions.setText("Now click a pokemon you want to attach the energy card to.");
 		    }
 		});
-		playerSidebar.add(attachButton);
+		constraints.gridx = 0;
+        constraints.gridy = 4;
+		sidebar.add(attachButton, constraints);
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 2;
-        constraints.gridy = 1;
-        mainFrame.add(playerSidebar, constraints);
+        constraints.gridy = 0;
+        constraints.gridheight = 2;
+        mainFrame.add(sidebar, constraints);
         
         instructions = new JLabel("Instructions");
         instructions.setPreferredSize(new Dimension(1500, 30));
@@ -259,7 +260,6 @@ public class MainWindow {
     }
     
     public void attachEnergy(String targetLocation, int targetIndex, int sourceIndex){
-    	System.out.println(sourceIndex);
     	EnergyCard energy = (EnergyCard)playerHand.get(sourceIndex);
     	PokemonCard pokemon;
     	if (targetLocation.equals("active")){
@@ -278,8 +278,8 @@ public class MainWindow {
     	attachClicked = false;
     	instructions.setText("Click on your active pokemon to see its attacks.");
     	
-		playerSidebarTitle.setText("");
-    	playerSidebarText.setText("");
+		sidebarTitle.setText("");
+    	sidebarText.setText("");
     }
     
     public void updatePlayerActivePokemon(){
@@ -310,52 +310,46 @@ public class MainWindow {
 	        		}
 	        	}
 	        	
-	        	if (containingPanel.equals(AISide)){
-	        		AISidebarTitle.setText(buttonName);
-	            	AISidebarText.setText(description);
-	        	} else {
-	        		makeActiveButton.setVisible(false);
-	        		attachButton.setVisible(false);
-	        		playerSidebarTitle.setText(buttonName);
-	            	playerSidebarText.setText(description);
-	        		
-	        		int index = -1;
-	            	int i = 0;
-	            	Component[] cardsInContainer = buttonParent.getParent().getComponents();
-	            	for (Component c : cardsInContainer){
-	            		JPanel card = (JPanel)c;
-	            		Component[] cardComponents = card.getComponents();
-	            		if (cardComponents[0].equals(e.getSource())){
-	            			index = i;
-	            		}
-	            		i++;
-	            	}
-	            	
-	            	playerSidebarIndex.setText(String.valueOf(index));
-	            	
-	            	String type = "";
-	            	String targetLocation = "";
-	            	int targetIndex = 0;
-	            	if (buttonParent.getParent().equals(playerActivePokemonContainer)){
-	            		type = playerActivePokemon.getClass().toString();
-	            		targetLocation = "active";
-	            		targetIndex = 0;
-	            	} else if (buttonParent.getParent().equals(playerHandContainer)){
-	            		type = playerHand.get(index).getClass().toString();
-	            	} else {
-	            		// deal with bench click here
-	            	}
-	            	     	
-	            	if (!hasSelectedActive && type.equals("class PokemonCard")){
-	            		makeActiveButton.setVisible(true);
-	            	} else if (!attachClicked && type.equals("class EnergyCard")){
-	            		attachButton.setVisible(true);
-	            		energySourceIndex = index;
-	            	} else if (attachClicked && type.equals("class PokemonCard")){
-	            		attachEnergy(targetLocation, targetIndex, energySourceIndex);
-	            	}
-	        		
-	        	}
+	        	makeActiveButton.setVisible(false);
+        		attachButton.setVisible(false);
+        		sidebarTitle.setText(buttonName);
+            	sidebarText.setText(description);
+        		
+        		int index = -1;
+            	int i = 0;
+            	Component[] cardsInContainer = buttonParent.getParent().getComponents();
+            	for (Component c : cardsInContainer){
+            		JPanel card = (JPanel)c;
+            		Component[] cardComponents = card.getComponents();
+            		if (cardComponents[0].equals(e.getSource())){
+            			index = i;
+            		}
+            		i++;
+            	}
+            	
+            	sidebarIndex.setText(String.valueOf(index));
+            	
+            	String type = "";
+            	String targetLocation = "";
+            	int targetIndex = 0;
+            	if (buttonParent.getParent().equals(playerActivePokemonContainer)){
+            		type = playerActivePokemon.getClass().toString();
+            		targetLocation = "active";
+            		targetIndex = 0;
+            	} else if (buttonParent.getParent().equals(playerHandContainer)){
+            		type = playerHand.get(index).getClass().toString();
+            	} else {
+            		// deal with bench click here
+            	}
+            	     	
+            	if (!hasSelectedActive && type.equals("class PokemonCard")){
+            		makeActiveButton.setVisible(true);
+            	} else if (!attachClicked && type.equals("class EnergyCard") && hasSelectedActive){
+            		attachButton.setVisible(true);
+            		energySourceIndex = index;
+            	} else if (attachClicked && type.equals("class PokemonCard")){
+            		attachEnergy(targetLocation, targetIndex, energySourceIndex);
+            	}
 		    }
 		});
     	JLabel description = new JLabel(c.getDescription());
@@ -387,53 +381,48 @@ public class MainWindow {
 	        		}
 	        	}
 	        	
-	        	if (containingPanel.equals(AISide)){
-	        		AISidebarTitle.setText(buttonName);
-	            	AISidebarText.setText(description);
-	        	} else {
-	        		makeActiveButton.setVisible(false);
-	        		attachButton.setVisible(false);
-	        		
-	        		int index = -1;
-	            	int i = 0;
-	            	Component[] cardsInContainer = buttonParent.getParent().getComponents();
-	            	for (Component c : cardsInContainer){
-	            		JPanel card = (JPanel)c;
-	            		Component[] cardComponents = card.getComponents();
-	            		if (cardComponents[0].equals(e.getSource())){
-	            			index = i;
-	            		}
-	            		i++;
-	            	}
-	            	
-	            	playerSidebarIndex.setText(String.valueOf(index));
-	            	
-	            	String type = "";
-	            	String targetLocation = "";
-	            	int targetIndex = 0;
-	            	if (buttonParent.getParent().equals(playerActivePokemonContainer)){
-	            		type = playerActivePokemon.getClass().toString();
-	            		targetLocation = "active";
-	            		targetIndex = 0;
-	            	} else if (buttonParent.getParent().equals(playerHandContainer)){
-	            		type = playerHand.get(index).getClass().toString();
-	            	} else {
-	            		// deal with bench click here
-	            	}
-	            	     	
-	            	if (!hasSelectedActive && type.equals("class PokemonCard")){
-	            		makeActiveButton.setVisible(true);
-	            	} else if (!attachClicked && type.equals("class EnergyCard")){
-	            		attachButton.setVisible(true);
-	            		energySourceIndex = index;
-	            	} else if (attachClicked && type.equals("class PokemonCard")){
-	            		attachEnergy(targetLocation, targetIndex, energySourceIndex);
-	            	}
-	        		
-	        		playerSidebarTitle.setText(buttonName);
-	            	playerSidebarText.setText(description);
-	        	}
-		    }
+	        	makeActiveButton.setVisible(false);
+        		attachButton.setVisible(false);
+        		
+        		int index = -1;
+            	int i = 0;
+            	Component[] cardsInContainer = buttonParent.getParent().getComponents();
+            	for (Component c : cardsInContainer){
+            		JPanel card = (JPanel)c;
+            		Component[] cardComponents = card.getComponents();
+            		if (cardComponents[0].equals(e.getSource())){
+            			index = i;
+            		}
+            		i++;
+            	}
+            	
+            	sidebarIndex.setText(String.valueOf(index));
+            	
+            	String type = "";
+            	String targetLocation = "";
+            	int targetIndex = 0;
+            	if (buttonParent.getParent().equals(playerActivePokemonContainer)){
+            		type = playerActivePokemon.getClass().toString();
+            		targetLocation = "active";
+            		targetIndex = 0;
+            	} else if (buttonParent.getParent().equals(playerHandContainer)){
+            		type = playerHand.get(index).getClass().toString();
+            	} else {
+            		// deal with bench click here
+            	}
+            	     	
+            	if (!hasSelectedActive && type.equals("class PokemonCard")){
+            		makeActiveButton.setVisible(true);
+            	} else if (!attachClicked && type.equals("class EnergyCard")){
+            		attachButton.setVisible(true);
+            		energySourceIndex = index;
+            	} else if (attachClicked && type.equals("class PokemonCard")){
+            		attachEnergy(targetLocation, targetIndex, energySourceIndex);
+            	}
+        		
+        		sidebarTitle.setText(buttonName);
+            	sidebarText.setText(description);
+        	}
 		});
     	JLabel description = new JLabel(descriptionString);
     	card.add(button);

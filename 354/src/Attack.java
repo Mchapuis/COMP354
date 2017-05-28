@@ -4,11 +4,15 @@ import java.util.Map;
 public class Attack {
 
 	private enum Target{
-		OPPONENTACTIVE, UNDEFINED
+		OPPONENTACTIVE, OPPONENTHAND, UNDEFINED
 	}
 	
 	private enum Status{
 		PARALYZED, NONE
+	}
+	
+	private enum Destination{
+		BOTTOMOFDECK, NONE
 	}
 	
 	private String name;
@@ -19,6 +23,7 @@ public class Attack {
 	private int additionalDamagePoints;
 	private Status statusToApply;
 	private Target additionalTarget;
+	private Destination destination;
 	
 	public Attack(){
 		this.name = "";
@@ -29,10 +34,11 @@ public class Attack {
 		this.additionalDamagePoints = 0;
 		this.statusToApply = Status.NONE;
 		this.additionalTarget = Target.UNDEFINED;
+		this.destination = Destination.NONE;
 	}
 
 	public String getDescription(){
-		String desc = "<html><body>Name: " + name;
+		String desc = "Name: " + name;
 		desc += "<br/>";
 		desc += "Target: ";
 		desc += target;
@@ -43,6 +49,7 @@ public class Attack {
 		desc += "Energy required: ";
 		desc += "<br/>";
 		for (Map.Entry<EnergyCard, Integer> entry : energyRequired.entrySet()){
+			desc += "&nbsp;&nbsp;&nbsp;";
 			desc += entry.getKey().getType();
 			desc += ": ";
 			desc += entry.getValue();
@@ -58,11 +65,20 @@ public class Attack {
 			desc += "None";
 		}
 		if (additionalDamagePoints > 0) {
+			desc += "<br/>";
 			desc += "Potential additional damage: ";
 			desc += additionalDamagePoints;
 		}
-		desc += "</body></html>";
+		if (destination != Destination.NONE){
+			desc += "<br/>";
+			desc += "Destination: ";
+			desc += destination;
+		}
 		return desc;
+	}
+	
+	public void setName(String name){
+		this.name = name;
 	}
 	
 	public void setFlip(boolean flag){
@@ -76,6 +92,8 @@ public class Attack {
 	public void setTarget(String target){
 		if (target.equals("opponent-active")){
 			this.target = Target.OPPONENTACTIVE;
+		} else if (target.equals("opponent-hand")) {
+			this.target = Target.OPPONENTHAND;
 		} else {
 			this.target = Target.UNDEFINED;
 		}
@@ -107,5 +125,13 @@ public class Attack {
 	
 	public void addEnergyRequirement(EnergyCard energy, int amount){
 		this.energyRequired.put(energy, amount);
+	}
+	
+	public void setDestination(String dest){
+		if (dest.equals("deck-bottom")){
+			this.destination = Destination.BOTTOMOFDECK;
+		} else {
+			this.destination = Destination.NONE;
+		}
 	}
 }
