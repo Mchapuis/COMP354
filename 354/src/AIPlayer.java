@@ -4,6 +4,10 @@ public class AIPlayer extends Player {
 		cardManager = new CardManager();
 	}
 	
+	public PokemonCard getActivePokemon(){
+		return this.cardManager.getActivePokemon();
+	}
+	
 	public void selectActivePokemon(){
 		PokemonCard selectedPokemon = cardManager.getFirstPokemon();
 		cardManager.setActivePokemon(selectedPokemon);
@@ -17,11 +21,11 @@ public class AIPlayer extends Player {
 	public String playTurn(Player opponent){
 		EnergyCard firstEnergy = cardManager.getFirstEnergy();
 		if (firstEnergy != null){
-			cardManager.attachEnergy(firstEnergy, cardManager.activePokemon);
+			cardManager.attachEnergy(firstEnergy, getActivePokemon());
 		}
 		
 		String resultString = "";
-		int numberOfAttacks = cardManager.activePokemon.attacks.size();
+		int numberOfAttacks = getActivePokemon().getAttacks().size();
 		for (int i = numberOfAttacks - 1; i >= 0; i--){
 			resultString = attack(i, opponent);
 			if (!resultString.equals("")){
@@ -34,9 +38,9 @@ public class AIPlayer extends Player {
 	
 	public String attack(int attackIndex, Player opponent){
 		String resultString = "";
-		Attack attack = this.cardManager.activePokemon.attacks.get(attackIndex);
+		Attack attack = getActivePokemon().getAttacks().get(attackIndex);
 		HumanPlayer op = (HumanPlayer)opponent;
-		PokemonCard activePokemon = this.cardManager.activePokemon;
+		PokemonCard activePokemon = getActivePokemon();
 		
 		if (!activePokemon.hasEnoughEnergy(attackIndex)){
 			return resultString;
@@ -44,7 +48,7 @@ public class AIPlayer extends Player {
 		
 		String target = attack.getTarget();
 		if (target.equals("OPPONENTACTIVE")){
-			PokemonCard targetObj = op.cardManager.activePokemon;
+			PokemonCard targetObj = op.getActivePokemon();
 			int damagePoints = attack.getDamagePoints();
 			if (damagePoints > 0){
 				targetObj.removeHP(damagePoints);
@@ -62,7 +66,7 @@ public class AIPlayer extends Player {
 						String additionalTarget = attack.getAdditionalTarget();
 						
 						if (additionalTarget.equals("OPPONENTACTIVE")){
-							PokemonCard additionalTargetObj = op.cardManager.activePokemon;
+							PokemonCard additionalTargetObj = op.getActivePokemon();
 							int additionalDamage = attack.getAdditionalDamagePoints();
 							if (additionalDamage > 0){
 								additionalTargetObj.removeHP(additionalDamage);
