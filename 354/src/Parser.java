@@ -20,7 +20,15 @@ public class Parser {
 		- Removed the combing array because it didn't address the needs of deck1/deck2.txt, 
 					--> changed parser to produce blanks when encountering "#" and increment the card number allocator 
 					--> now card objects are correctly instantiated and aligned with their line number placement in cards.txt
+									
+	x - x - x - x - x - x - x - x - x - x - x - x - x - x - x - x - x - x - x - x - x - x
 	
+	changes v1.2:
+		- finished the trainer and energy constructors (more or less; at least relating to what is parsable via cards.txt)
+		- created a nested loop in readInCards() for creating two types of pokemon cards depending on pokemon stage (uses two different constructors)
+		- still in the process of roughly parsing the entirety of a pokemon card type / roughly finishing the constructor
+		
+		
 */
 	
 	// only changed one thing; buffered reader now catches null lines
@@ -44,8 +52,15 @@ public class Parser {
 			e.printStackTrace();
 		}
 		
+		// Gonna parse the ability.txt and create ability objects
+		//ArrayList<Ability> abilities = new ArrayList<Ability>();
+		
 		for (String l : abilityLines){
-			parseLine(l);
+			//parseLine(l);
+			
+			
+			
+			
 		}
 	}
 
@@ -81,7 +96,7 @@ public class Parser {
 
 		ArrayList<Card> newCards = new ArrayList<Card>(); 
 
-		// creates rudimentary cards of the three card types out of only some of the information locted in cards.txt
+		// creates rudimentary cards of the three card types out of only some of the information located in cards.txt
 		// if '#' sysprints blank and increments card number allocator
 		for (String l : cardLines){
 			String[] cS = l.split("[,:\\n]");
@@ -91,15 +106,22 @@ public class Parser {
 					System.out.println("Blank");
 				}
 				else if (cS[1].equals("pokemon")) {
-					newCards.add(new PokemonCard(cS[0]));
-					System.out.println("New Pokemon card created.");
+					// depending on the stage of the pokemon card, uses two different constructors, one of which references basic stage evolution via name
+					if (cS[3].equals("basic")){
+						newCards.add(new PokemonCard(cS[0], cS[3], cS[5], Integer.parseInt(cS[6])));
+						System.out.println("New Basic Pokemon card created.");
+					}
+					else if (cS[3].equals("stage-one")){
+						newCards.add(new PokemonCard(cS[0], cS[3], cS[4], cS[6], Integer.parseInt(cS[7])));
+						System.out.println("New Stage-One Pokemon card created.");
+					}
 				}
 				else if (cS[1].equals("trainer")){
-					newCards.add(new TrainerCard(cS[0]));
+					newCards.add(new TrainerCard(cS[0], cS[3], Integer.parseInt(cS[4])));
 					System.out.println("New Trainer card created.");
 				}
 				else if (cS[1].equals("energy")) {
-					newCards.add(new EnergyCard(cS[0])); 
+					newCards.add(new EnergyCard(cS[0], cS[3])); 
 					System.out.println("New Energy card created.");
 				}
 			} catch (ArrayIndexOutOfBoundsException o){
