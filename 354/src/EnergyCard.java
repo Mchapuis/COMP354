@@ -1,9 +1,9 @@
 
 public class EnergyCard extends Card {
 	
-	// energy categories enum
+/*	// energy categories enum
 	
-	enum TypeCat { COLORLESS("colorless"), WATER("water"), LIGHTNING("lightning");
+	enum TypeCat { COLORLESS("colorless"), WATER("water"), LIGHTNING("lightning"), PSYCHIC("psychic"), FIGHTING("fighting");
 
 		private String value;
 		
@@ -14,7 +14,7 @@ public class EnergyCard extends Card {
 		private TypeCat(String value) {
 			this.value = value;
 		}
-	}
+	}*/
 
 	//values
 	
@@ -23,7 +23,7 @@ public class EnergyCard extends Card {
 	// set
 	
 	@Override
-	public void setcardType(String type) {
+	public void setCardType(String type) {
 		this.type = "energy";	
 	}
 	
@@ -36,12 +36,22 @@ public class EnergyCard extends Card {
 		return cat;
 	}
 	
-	// basic constructor
-
-	public EnergyCard(String name) {
-		super(name);
-		setcardType("energy");
+	public String cardType() {
+		return type;
 	}
+	
+	// constructor
 
+	public EnergyCard(String name, String cat) {
+		super(name);
+		setCardTypeCat(cat);
+		setCardType("energy");
+	}
+	
+	// toString() method
+	@Override
+	public String toString() {
+		return ("Card number " + cardNumber() + " is called " + cardName() + " and is a " + cardTypeCat() +" type "+cardType()+" card");		
+	}
 	
 }
