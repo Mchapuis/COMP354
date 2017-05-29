@@ -3,16 +3,28 @@ import java.util.*;
 public class CardManager {
 
 	private Deck deck;
-	public ArrayList<Card> hand;
-	public ArrayList<PokemonCard> bench;
+	private ArrayList<Card> hand;
+	private ArrayList<PokemonCard> bench;
 	private ArrayList<Card> prizeCards;
 	private ArrayList<Card> discardPile;
-	public PokemonCard activePokemon;
+	private PokemonCard activePokemon;
 	
 	public CardManager(){
 		buildDeck();
 		selectHand();
 		selectPrizeCards();
+	}
+	
+	public ArrayList<Card> getHand(){
+		return this.hand;
+	}
+	
+	public ArrayList<PokemonCard> getBench(){
+		return this.bench;
+	}
+	
+	public PokemonCard getActivePokemon(){
+		return this.activePokemon;
 	}
 	
 	public void buildDeck(){
@@ -134,11 +146,6 @@ public class CardManager {
 	public void removeActivePokemon(){
 		discardActivePokemon();
 		activePokemon = null;
-	}
-	
-	//returns the active pokemon
-	public PokemonCard getActivePokemon(){
-		return activePokemon;
 	}
 	
 	public void discardActivePokemon(){

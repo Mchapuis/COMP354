@@ -22,6 +22,10 @@ public class EnergyCard extends Card {
 		}
 	}
 	
+	public int getID() {
+		return this.ID;
+	}
+	
 	public String getName(){
 		return this.name;
 	}

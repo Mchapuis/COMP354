@@ -24,7 +24,7 @@ public class PokemonCard extends Card {
 	
 	private Status status;
 	private int currentHP;
-	public ArrayList<Attack> attacks;
+	private ArrayList<Attack> attacks;
 	private ArrayList<EnergyCard> energy;
 	
 	public PokemonCard(){
@@ -64,6 +64,14 @@ public class PokemonCard extends Card {
 		this.currentHP = maxHP;
 		this.attacks = new ArrayList<Attack>();
 		this.energy = new ArrayList<EnergyCard>();		
+	}
+	
+	public ArrayList<Attack> getAttacks(){
+		return this.attacks;
+	}
+	
+	public int getID() {
+		return this.ID;
 	}
 	
 	public String getName(){
