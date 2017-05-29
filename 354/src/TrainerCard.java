@@ -27,5 +27,9 @@ public class TrainerCard extends Card {
 	public void setID(int ID){
 		this.ID = ID;
 	}
+
+	public int getID() {
+		return this.ID;
+	}
 	
 }

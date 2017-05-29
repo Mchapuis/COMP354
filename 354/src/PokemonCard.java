@@ -70,6 +70,10 @@ public class PokemonCard extends Card {
 		return this.attacks;
 	}
 	
+	public int getID() {
+		return this.ID;
+	}
+	
 	public String getName(){
 		return this.name;
 	}
