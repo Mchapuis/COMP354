@@ -1,11 +1,7 @@
-import java.util.*;
 
 public class TrainerCard extends Card {
-
-	private Type type;
-	private List<Action> actions;
 	
-		// trainer categories enum
+	/*// trainer categories enum
 	
 	private enum TypeCat { STADIUM("stadium"), SUPPORTER("supporter"), ITEM("item");
 
@@ -18,16 +14,17 @@ public class TrainerCard extends Card {
 		private TypeCat(String value) {
 			this.value = value;
 		}
-	}
+	}*/
 
 	// values
 
 	public String cat;
+	public int num;
 	
 	// set
 	
 	@Override
-	public void setcardType(String type) {
+	public void setCardType(String type) {
 		this.type = "trainer";	
 	}
 	
@@ -35,17 +32,36 @@ public class TrainerCard extends Card {
 		this.cat = cat;
 	}
 	
+	public void setTNum(int num) {
+		this.num = num;
+	}
+	
 	// get
+	
+	public String cardType() {
+		return type;
+	}
 	
 	public String cardTypeCat() {
 		return cat;
 	}
 	
-	// basic constructor
+	public int tNum() {
+		return num;
+	}
+	
+	// constructor
 
-	public TrainerCard(String name) {
+	public TrainerCard(String name, String cat, int num) {
 		super(name);
-		setcardType("trainer");
+		setCardTypeCat(cat);
+		setCardType("trainer");
+		setTNum(num);
+	}
+
+	// toString() method
+	@Override
+	public String toString() {
+		return ("Card number " + cardNumber() + " is called " + cardName() + " and is a " +cardTypeCat()+" type "+ cardType() +" card [TNum: " + tNum() +"]");		
 	}
 }
-
