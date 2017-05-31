@@ -1,5 +1,6 @@
 import static org.junit.Assert.*;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 
 import org.junit.Test;
@@ -41,6 +42,15 @@ public class CardManager_JUnit {
 				fail("Card removed from hand must be deleted");
 			}
 		}
+		
+		//TODO: this creates a mistake
+		// because the deck was not initialized.
+		// Check what happens if an active pokemon has
+		// no energy and we try to discard it the pokemon
+//		PokemonCard myActivePokemon_test = new PokemonCard();
+//		cm_test.setActivePokemon(myActivePokemon_test);
+//		if(cm_test.getActivePokemon() != null)
+//			cm_test.discardActivePokemon();
 		
 		// TODO: find cards in the deck.
 		// TODO: find cards in the discard.
