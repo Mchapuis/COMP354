@@ -23,7 +23,7 @@ public class GameEngine {
 		
 		w = new MainWindow(autoPlayer, player);
 		
-		w.instructions.setText("Choose a pokemon to be your active pokemon.");
+		w.updateInstructions("Choose a pokemon to be your active pokemon.");
 		
 		//have AI player select an active pokemon
 		autoPlayer.selectActivePokemon();

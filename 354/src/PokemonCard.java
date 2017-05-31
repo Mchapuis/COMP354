@@ -86,6 +86,8 @@ public class PokemonCard extends Card {
 		desc += "<br/>";
 		desc += "HP: ";
 		desc += this.currentHP;
+		desc += "/";
+		desc += this.maxHP;
 		desc += "<br/>";
 		desc += "Status: ";
 		desc += this.status;

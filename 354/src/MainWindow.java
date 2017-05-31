@@ -17,11 +17,11 @@ public class MainWindow {
     private JPanel playerHandContainer = null;
     private JPanel playerBenchContainer = null;
     private JPanel playerActivePokemonContainer = null;
-    private JPanel sidebar = null;
     private JPanel playerLeftSidebar = null;
     private JPanel playerSide = null;
     
-    public JLabel instructions = null;
+    private JLabel instructions = null;
+    private JPanel sidebar = null;
     private JLabel sidebarIndex = null;
     private JLabel sidebarTitle = null;
     private JLabel sidebarText = null;
