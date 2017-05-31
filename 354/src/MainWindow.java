@@ -399,12 +399,6 @@ public class MainWindow {
     public Card getDisplayedCard(){
     	return this.displayedCard;
     }
-    
-    public void refresh(){
-    	mainFrame.invalidate();
-    	mainFrame.validate();
-    	mainFrame.repaint();
-    }
 
     public void display(){
         mainFrame.setVisible(true);
