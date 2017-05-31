@@ -4,8 +4,12 @@ import java.awt.event.*;
 import java.util.*;
 
 public class MainWindow {
+	public static Object lock;
+    public static PriorityQueue<Message> queue;
+	
     private static final int BENCH_SIZE = 5;
     private JFrame mainFrame = null;
+    private Card displayedCard;
     
     private AIPlayer autoPlayer;
     private HumanPlayer player;
@@ -34,92 +38,54 @@ public class MainWindow {
     private JPanel AILeftSidebar = null;
     private JPanel AISide = null;
     
-    private boolean hasSelectedActive = false;
-    private boolean hasClickedAttach = false;
-    private boolean hasAttachedEnergy = false;
-    private boolean mustMoveCardToBottomOfDeck = false;
-    private int energySourceIndex;
-    
     public class GenericButtonActionListener implements ActionListener{
     	
     	public void actionPerformed(ActionEvent e)
         {
-        	String buttonName = e.getActionCommand();
-        	JPanel buttonParent = (JPanel)((JButton)e.getSource()).getParent();
-        	Component[] children = buttonParent.getComponents();
-        	String description = "";
-        
-        	for (int i = 0; i < children.length; i++){
-        		if (children[i] instanceof JLabel){
-        			description = ((JLabel)children[i]).getText();
-        		}
-        	}
-        	
-        	makeActiveButton.setVisible(false);
-    		attachButton.setVisible(false);
-    		sidebarTitle.setText(buttonName);
-        	sidebarText.setText(description);
+    		String side;
+    		String type;
+    		int index = 0;
     		
-    		int index = -1;
-        	int i = 0;
-        	Component[] cardsInContainer = buttonParent.getParent().getComponents();
+    		JPanel buttonParent = (JPanel)((JButton)e.getSource()).getParent();
+    		JPanel container = (JPanel)buttonParent.getParent();
+    		
+    		int i = 0;
+        	Component[] cardsInContainer = container.getComponents();
         	for (Component c : cardsInContainer){
         		JPanel card = (JPanel)c;
         		Component[] cardComponents = card.getComponents();
         		if (cardComponents[0].equals(e.getSource())){
         			index = i;
+        			break;
         		}
         		i++;
         	}
-        	
-        	sidebarIndex.setText(String.valueOf(index));
-        	
-        	String type = "";
-        	String targetLocation = "";
-        	int targetIndex = 0;
-        	if (buttonParent.getParent().equals(playerActivePokemonContainer)){
-        		type = player.getActivePokemon().getClass().toString();
-        		targetLocation = "active";
-        		targetIndex = 0;
-        		attack1.setEnabled(true);
-        		if (player.getActivePokemon().getAttacks().size() > 1)
-        			attack2.setEnabled(true);
-        		if (player.getActivePokemon().getAttacks().size() > 2)
-        			attack3.setEnabled(true);
-        	} else if (buttonParent.getParent().equals(playerHandContainer)){
-        		type = player.getHand().get(index).getClass().toString();
-        		if (mustMoveCardToBottomOfDeck){
-        			Card card = player.getHand().get(index);
-        			player.moveCardFromHandToBottomOfDeck(card);
-        		    hasClickedAttach = false;
-        		    hasAttachedEnergy = false;
-        			mustMoveCardToBottomOfDeck = false;
-        			updatePlayerSide();
-        			instructions.setText("(Optional) Click on an energy card to select it. Then click \"Attach to a pokemon\" in the sidebar on the right. If you don't want to attach energy, click on your active pokemon to see its attacks.");
-        			return;
-        		}
-        	} else {
-        		
-        	}
-        	
-        	if (type.equals("class PokemonCard")){
-        		attack1.setVisible(true);
-        		attack2.setVisible(true);
-        		attack3.setVisible(true);
-        	} else {
-        		attack1.setVisible(false);
-        		attack2.setVisible(false);
-        		attack3.setVisible(false);
-        	}
-        	     	
-        	if (!hasSelectedActive && type.equals("class PokemonCard")){
-        		makeActiveButton.setVisible(true);
-        	} else if (!hasClickedAttach && type.equals("class EnergyCard") && hasSelectedActive && !hasAttachedEnergy){
-        		attachButton.setVisible(true);
-        		energySourceIndex = index;
-        	} else if (hasClickedAttach && type.equals("class PokemonCard")){
-        		attachEnergy(targetLocation, targetIndex, energySourceIndex);
-        	}
+    		
+    		if (container.equals(playerActivePokemonContainer)){
+    			side = "player";
+    			type = "active";
+    		} else if (container.equals(AIActivePokemonContainer)){
+    			side = "AI";
+    			type = "active";
+    		} else if (container.equals(playerBenchContainer)){
+    			side = "player";
+    			type = "bench";
+    		} else if (container.equals(AIBenchContainer)){
+    			side = "AI";
+    			type = "bench";
+    		} else if (container.equals(playerHandContainer)){
+    			side = "player";
+    			type = "hand";
+    		} else {
+    			side = "AI";
+    			type = "hand";
+    		}
+    		
+            synchronized(lock){
+            	Message message = new Message(side, type, index);
+                queue.add(message);
+                lock.notifyAll();
+            }
         }
     	
     }
@@ -127,7 +93,10 @@ public class MainWindow {
     public class AttackButtonActionListener implements ActionListener{
     	
     	public void actionPerformed(ActionEvent e){
+    		String side = "player";
+    		String type = "attack";
     		int index;
+    		
     		if (e.getSource().equals(attack1))
     			index = 0;
     		else if (e.getSource().equals(attack2))
@@ -135,20 +104,11 @@ public class MainWindow {
     		else
     			index = 2;
     		
-    		String resultString = player.attack(index, autoPlayer);
-    		
-    		if (!resultString.equals("")){
-    			updateAISide();
-    			String newText = "Your turn is done. " + resultString;
-    			instructions.setText(newText);
-    			attack1.setVisible(false);
-    			attack2.setVisible(false);
-    			attack3.setVisible(false);
-    			updateAISide();
-    			letAIPlay.setVisible(true);
-    		} else {
-    			instructions.setText("Your pokemon doesn't have enough energy for that attack.");
-    		}
+            synchronized(lock){
+            	Message message = new Message(side, type, index);
+                queue.add(message);
+                lock.notifyAll();
+            }
     	}
     	
     }
@@ -175,7 +135,6 @@ public class MainWindow {
 
         AILeftSidebar = new JPanel();
         AILeftSidebar.setPreferredSize(new Dimension(200, 375));
-        /*AILeftSidebar.setBorder(BorderFactory.createLineBorder(Color.black));*/
         JPanel AIDiscard = createJPanelFromStrings("Discard", "");
         AILeftSidebar.add(AIDiscard);
         JPanel AIDeck = createJPanelFromStrings("Deck", "");
@@ -189,7 +148,6 @@ public class MainWindow {
         
         AISide = new JPanel();
         AISide.setPreferredSize(new Dimension(1050, 375));
-        /*AISide.setBorder(BorderFactory.createLineBorder(Color.black));*/
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 1;
         constraints.gridy = 0;
@@ -197,7 +155,6 @@ public class MainWindow {
         
         playerLeftSidebar = new JPanel();
         playerLeftSidebar.setPreferredSize(new Dimension(200, 375));
-        /*playerLeftSidebar.setBorder(BorderFactory.createLineBorder(Color.black));*/
         JPanel playerPrizeCards = createJPanelFromStrings("Prize cards", "");
         playerLeftSidebar.add(playerPrizeCards);
         JPanel playerDeck = createJPanelFromStrings("Deck", "");
@@ -211,7 +168,6 @@ public class MainWindow {
         
         playerSide = new JPanel();
         playerSide.setPreferredSize(new Dimension(1050, 375));
-        /*playerSide.setBorder(BorderFactory.createLineBorder(Color.black));*/
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 1;
         constraints.gridy = 1;
@@ -268,16 +224,15 @@ public class MainWindow {
 		{
 		    public void actionPerformed(ActionEvent e)
 		    {
-		    	JPanel buttonParent = (JPanel)((JButton)e.getSource()).getParent();
-	    		Component[] children = buttonParent.getComponents();
+		    	String side = "player";
+	    		String type = "makeactive";
+	    		int index = 0;
 	    		
-	    		int index = Integer.parseInt(((JLabel)children[0]).getText());
-	    		setPlayerActivePokemon(index);
-	    		removeFromPlayerHand(index);
-	    		makeActiveButton.setVisible(false);
-	    		hasSelectedActive = true;
-	    		
-	    		instructions.setText("(Optional) Click on an energy card to select it. Then click \"Attach to a pokemon\" in the sidebar on the right. If you don't want to attach energy, click on your active pokemon to see its attacks.");
+	            synchronized(lock){
+	            	Message message = new Message(side, type, index);
+	                queue.add(message);
+	                lock.notifyAll();
+	            }
 		    }
 		});
 		constraints.gridx = 0;
@@ -290,8 +245,15 @@ public class MainWindow {
 		{
 		    public void actionPerformed(ActionEvent e)
 		    {
-		    	hasClickedAttach = true;
-	    		instructions.setText("Now click a pokemon you want to attach the energy card to.");
+		    	String side = "player";
+	    		String type = "attachenergy";
+	    		int index = 0;
+	    		
+	            synchronized(lock){
+	            	Message message = new Message(side, type, index);
+	                queue.add(message);
+	                lock.notifyAll();
+	            }
 		    }
 		});
 		constraints.gridx = 0;
@@ -302,18 +264,15 @@ public class MainWindow {
 		letAIPlay.setVisible(false);
 		letAIPlay.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
-				String resultString = autoPlayer.playTurn(player);
-				updateAISide();
-				letAIPlay.setVisible(false);
-				instructions.setText("AI's turn is over. " + resultString);
-				if (resultString.equals("You must put a card at the bottom of your deck. Click on a card from your hand to do so.")){
-					mustMoveCardToBottomOfDeck = true;
-				} else {
-					instructions.setText("<html><body>" + instructions.getText() + " (Optional) Click on an energy card to select it. Then click \"Attach to a pokemon\" in the sidebar on the right.<br/>If you don't want to attach energy, click on your active pokemon to see its attacks.</body></html>");
-				}
-				updatePlayerSide();
-				hasClickedAttach = false;
-    		    hasAttachedEnergy = false;
+				String side = "player";
+	    		String type = "letAIplay";
+	    		int index = 0;
+	    		
+	            synchronized(lock){
+	            	Message message = new Message(side, type, index);
+	                queue.add(message);
+	                lock.notifyAll();
+	            }
 			}
 		});
 		constraints.gridx = 0;
@@ -329,7 +288,6 @@ public class MainWindow {
         
         instructions = new JLabel("Instructions");
         instructions.setPreferredSize(new Dimension(1500, 30));
-        /*instructions.setBorder(BorderFactory.createLineBorder(Color.black));*/
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 0;
         constraints.gridy = 2;
@@ -376,6 +334,77 @@ public class MainWindow {
         //active
         AISide.add(AIActivePokemonContainer);
     }
+    
+    public void updateInstructions(String text){
+    	instructions.setText(text);
+    }
+    
+    public void displayCard(Card card, boolean showMakeActive, boolean showAttachToPokemon, boolean showAttacks, boolean showLetAIPlay){
+    	if (card != null) {
+	    	sidebarTitle.setText(card.getName());
+	    	sidebarText.setText(card.getDescription());
+	    	
+	    	if (showMakeActive){
+	    		makeActiveButton.setVisible(true);
+	    	} else {
+	    		makeActiveButton.setVisible(false);
+	    	}
+	    	
+	    	if (showAttachToPokemon){
+	    		attachButton.setVisible(true);
+	    	} else {
+	    		attachButton.setVisible(false);
+	    	}
+	    	
+	    	if (showAttacks){
+	    		attack1.setVisible(true);
+    			attack2.setVisible(true);
+    			attack3.setVisible(true);
+    			
+    			attack1.setEnabled(true);
+        		if (player.getActivePokemon().getAttacks().size() > 1)
+        			attack2.setEnabled(true);
+        		if (player.getActivePokemon().getAttacks().size() > 2)
+        			attack3.setEnabled(true);
+	    	} else {
+	    		attack1.setVisible(false);
+    			attack2.setVisible(false);
+    			attack3.setVisible(false);
+    			
+    			attack1.setEnabled(false);
+    			attack2.setEnabled(false);
+    			attack3.setEnabled(false);
+	    	}
+	    	
+	    	if (showLetAIPlay){
+	    		letAIPlay.setVisible(true);
+	    	} else {
+	    		letAIPlay.setVisible(false);
+	    	}
+    	} else {
+    		sidebarTitle.setText("Undefined");
+	    	sidebarText.setText("No description");
+    	}
+    	displayedCard = card;
+    	
+    	sidebar.invalidate();
+    	sidebar.validate();
+    	sidebar.repaint();
+    }
+    
+    public String getInstructions(){
+    	return instructions.getText();
+    }
+    
+    public Card getDisplayedCard(){
+    	return this.displayedCard;
+    }
+    
+    public void refresh(){
+    	mainFrame.invalidate();
+    	mainFrame.validate();
+    	mainFrame.repaint();
+    }
 
     public void display(){
         mainFrame.setVisible(true);
@@ -401,10 +430,8 @@ public class MainWindow {
     	AIHandContainer.repaint();
     }
     
-    public void setPlayerActivePokemon(int index){
+    public void setPlayerActivePokemon(){
     	playerActivePokemonContainer.removeAll();
-    	PokemonCard activePokemon = (PokemonCard)player.getHand().get(index);
-    	player.setActivePokemon(activePokemon);
     	playerActivePokemonContainer.add(createJPanelFromCard(player.getActivePokemon()));
     	playerActivePokemonContainer.invalidate();
     	playerActivePokemonContainer.validate();
@@ -418,29 +445,6 @@ public class MainWindow {
     	playerHandContainer.repaint();
     }
     
-    public void attachEnergy(String targetLocation, int targetIndex, int sourceIndex){
-    	EnergyCard energy = (EnergyCard)player.getHand().get(sourceIndex);
-    	PokemonCard pokemon;
-    	if (targetLocation.equals("active")){
-    		pokemon = player.getActivePokemon();
-    	} else {
-    		pokemon = (PokemonCard)player.getHand().get(targetIndex);
-    	}
-    	player.attachEnergy(energy, pokemon);
-    	removeFromPlayerHand(sourceIndex);
-    	
-    	updatePlayerActivePokemon();
-    	
-    	hasClickedAttach = false;
-    	instructions.setText("Click on your active pokemon to see its attacks.");
-    	
-		sidebarTitle.setText("");
-    	sidebarText.setText("");
-    	attack1.setVisible(false);
-		attack2.setVisible(false);
-		attack3.setVisible(false);
-    	hasAttachedEnergy = true;
-    }
     
     public void updatePlayerSide(){
     	updatePlayerActivePokemon();

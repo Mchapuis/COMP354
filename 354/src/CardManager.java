@@ -13,6 +13,8 @@ public class CardManager {
 		buildDeck();
 		selectHand();
 		selectPrizeCards();
+		discardPile = new ArrayList<Card>();
+		bench = new ArrayList<PokemonCard>();
 	}
 	
 	public ArrayList<Card> getHand(){
