@@ -4,42 +4,36 @@ import java.awt.event.*;
 import java.util.*;
 
 public class MainWindow {
-    public static final int BENCH_SIZE = 5;
-    public JFrame mainFrame = null;
+    private static final int BENCH_SIZE = 5;
+    private JFrame mainFrame = null;
     
-    public AIPlayer autoPlayer;
-    public HumanPlayer player;
+    private AIPlayer autoPlayer;
+    private HumanPlayer player;
 
-    public ArrayList<PokemonCard> playerBench;
-    public ArrayList<PokemonCard> AIBench;
-    public ArrayList<Card> playerHand;
-    public ArrayList<Card> AIHand;
-    public PokemonCard playerActivePokemon;
-    public PokemonCard AIActivePokemon;
-    
-    public JPanel playerHandContainer = null;
-    public JPanel playerBenchContainer = null;
-    public JPanel playerActivePokemonContainer = null;
-    public JPanel sidebar = null;
-    public JLabel sidebarIndex = null;
-    public JLabel sidebarTitle = null;
-    public JLabel sidebarText = null;
-    public JButton makeActiveButton = null;
-    public JButton attachButton = null;
-    public JButton attack1 = null;
-    public JButton attack2 = null;
-    public JButton attack3 = null;
-    public JButton letAIPlay = null;
-    public JPanel playerLeftSidebar = null;
-    public JPanel playerSide = null;
-    
-    public JPanel AIHandContainer = null;
-    public JPanel AIBenchContainer = null;
-    public JPanel AIActivePokemonContainer = null;
-    public JPanel AILeftSidebar = null;
-    public JPanel AISide = null;
+    private JPanel playerHandContainer = null;
+    private JPanel playerBenchContainer = null;
+    private JPanel playerActivePokemonContainer = null;
+    private JPanel sidebar = null;
+    private JPanel playerLeftSidebar = null;
+    private JPanel playerSide = null;
     
     public JLabel instructions = null;
+    private JLabel sidebarIndex = null;
+    private JLabel sidebarTitle = null;
+    private JLabel sidebarText = null;
+    private JButton makeActiveButton = null;
+    private JButton attachButton = null;
+    private JButton attack1 = null;
+    private JButton attack2 = null;
+    private JButton attack3 = null;
+    private JButton letAIPlay = null;
+    
+    private JPanel AIHandContainer = null;
+    private JPanel AIBenchContainer = null;
+    private JPanel AIActivePokemonContainer = null;
+    private JPanel AILeftSidebar = null;
+    private JPanel AISide = null;
+    
     private boolean hasSelectedActive = false;
     private boolean hasClickedAttach = false;
     private boolean hasAttachedEnergy = false;
@@ -84,19 +78,19 @@ public class MainWindow {
         	String targetLocation = "";
         	int targetIndex = 0;
         	if (buttonParent.getParent().equals(playerActivePokemonContainer)){
-        		type = playerActivePokemon.getClass().toString();
+        		type = player.getActivePokemon().getClass().toString();
         		targetLocation = "active";
         		targetIndex = 0;
         		attack1.setEnabled(true);
-        		if (playerActivePokemon.attacks.size() > 1)
+        		if (player.getActivePokemon().getAttacks().size() > 1)
         			attack2.setEnabled(true);
-        		if (playerActivePokemon.attacks.size() > 2)
+        		if (player.getActivePokemon().getAttacks().size() > 2)
         			attack3.setEnabled(true);
         	} else if (buttonParent.getParent().equals(playerHandContainer)){
-        		type = playerHand.get(index).getClass().toString();
+        		type = player.getHand().get(index).getClass().toString();
         		if (mustMoveCardToBottomOfDeck){
-        			Card card = player.cardManager.hand.get(index);
-        			player.cardManager.moveCardFromHandToBottomOfDeck(card);
+        			Card card = player.getHand().get(index);
+        			player.moveCardFromHandToBottomOfDeck(card);
         		    hasClickedAttach = false;
         		    hasAttachedEnergy = false;
         			mustMoveCardToBottomOfDeck = false;
@@ -105,7 +99,7 @@ public class MainWindow {
         			return;
         		}
         	} else {
-        		//type = playerBench.get(index).getClass().toString();
+        		
         	}
         	
         	if (type.equals("class PokemonCard")){
@@ -172,10 +166,6 @@ public class MainWindow {
         
         GridBagConstraints constraints = new GridBagConstraints();
 
-        //bench buttons
-        playerBench = player.cardManager.bench;
-        AIBench = autoPlayer.cardManager.bench;
-        
         //active pokemon buttons
         playerActivePokemonContainer = new JPanel();
         playerActivePokemonContainer.add(createJPanelFromStrings("Undefined", "No description"));
@@ -183,10 +173,6 @@ public class MainWindow {
         AIActivePokemonContainer = new JPanel();
         AIActivePokemonContainer.add(createJPanelFromStrings("Undefined", "No description"));
 
-        //hand buttons
-        playerHand = player.cardManager.hand;
-        AIHand = autoPlayer.cardManager.hand;
-        
         AILeftSidebar = new JPanel();
         AILeftSidebar.setPreferredSize(new Dimension(200, 375));
         /*AILeftSidebar.setBorder(BorderFactory.createLineBorder(Color.black));*/
@@ -366,7 +352,7 @@ public class MainWindow {
         //hand
         playerHandContainer = new JPanel();
         playerSide.add(playerHandContainer);
-        for(Card c: playerHand){
+        for(Card c: player.getHand()){
             playerHandContainer.add(createJPanelFromCard(c));
         }
 
@@ -376,7 +362,7 @@ public class MainWindow {
         //hand
         AIHandContainer = new JPanel();
         AISide.add(AIHandContainer);
-        for(Card c: AIHand){
+        for(Card c: autoPlayer.getHand()){
             AIHandContainer.add(createJPanelFromCard(c));
         }
 
@@ -401,15 +387,13 @@ public class MainWindow {
     
     public void updateAIActivePokemon(){
     	AIActivePokemonContainer.removeAll();
-    	AIActivePokemon = autoPlayer.cardManager.getActivePokemon();
-    	AIActivePokemonContainer.add(createJPanelFromCard(AIActivePokemon));
+    	AIActivePokemonContainer.add(createJPanelFromCard(autoPlayer.getActivePokemon()));
     	updateAIHand();
     }
     
     public void updateAIHand(){
     	AIHandContainer.removeAll();
-    	AIHand = autoPlayer.cardManager.hand;
-    	for (Card c : AIHand){
+    	for (Card c : autoPlayer.getHand()){
     		AIHandContainer.add(createJPanelFromCard(c));
     	}
     	AIHandContainer.invalidate();
@@ -419,9 +403,9 @@ public class MainWindow {
     
     public void setPlayerActivePokemon(int index){
     	playerActivePokemonContainer.removeAll();
-    	playerActivePokemon = (PokemonCard)playerHand.get(index);
-    	player.cardManager.setActivePokemon(playerActivePokemon);
-    	playerActivePokemonContainer.add(createJPanelFromCard(playerActivePokemon));
+    	PokemonCard activePokemon = (PokemonCard)player.getHand().get(index);
+    	player.setActivePokemon(activePokemon);
+    	playerActivePokemonContainer.add(createJPanelFromCard(player.getActivePokemon()));
     	playerActivePokemonContainer.invalidate();
     	playerActivePokemonContainer.validate();
     	playerActivePokemonContainer.repaint();
@@ -435,14 +419,14 @@ public class MainWindow {
     }
     
     public void attachEnergy(String targetLocation, int targetIndex, int sourceIndex){
-    	EnergyCard energy = (EnergyCard)playerHand.get(sourceIndex);
+    	EnergyCard energy = (EnergyCard)player.getHand().get(sourceIndex);
     	PokemonCard pokemon;
     	if (targetLocation.equals("active")){
-    		pokemon = playerActivePokemon;
+    		pokemon = player.getActivePokemon();
     	} else {
-    		pokemon = (PokemonCard)playerHand.get(targetIndex);
+    		pokemon = (PokemonCard)player.getHand().get(targetIndex);
     	}
-    	player.cardManager.attachEnergy(energy, pokemon);
+    	player.attachEnergy(energy, pokemon);
     	removeFromPlayerHand(sourceIndex);
     	
     	updatePlayerActivePokemon();
@@ -465,7 +449,7 @@ public class MainWindow {
     
     public void updatePlayerActivePokemon(){
     	playerActivePokemonContainer.removeAll();
-    	playerActivePokemonContainer.add(createJPanelFromCard(playerActivePokemon));
+    	playerActivePokemonContainer.add(createJPanelFromCard(player.getActivePokemon()));
     	playerActivePokemonContainer.invalidate();
     	playerActivePokemonContainer.validate();
     	playerActivePokemonContainer.repaint();
@@ -473,8 +457,7 @@ public class MainWindow {
     
     public void updatePlayerHand(){
     	playerHandContainer.removeAll();
-    	playerHand = player.cardManager.hand;
-    	for (Card c : playerHand){
+    	for (Card c : player.getHand()){
     		playerHandContainer.add(createJPanelFromCard(c));
     	}
     	playerHandContainer.invalidate();

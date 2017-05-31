@@ -8,9 +8,9 @@ public class HumanPlayer extends Player {
 	
 	public String attack(int attackIndex, Player opponent){
 		String resultString = "";
-		Attack attack = this.cardManager.activePokemon.attacks.get(attackIndex);
+		Attack attack = getActivePokemon().getAttacks().get(attackIndex);
 		AIPlayer op = (AIPlayer)opponent;
-		PokemonCard activePokemon = this.cardManager.activePokemon;
+		PokemonCard activePokemon = getActivePokemon();
 		
 		if (!activePokemon.hasEnoughEnergy(attackIndex)){
 			return resultString;
@@ -18,7 +18,7 @@ public class HumanPlayer extends Player {
 		
 		String target = attack.getTarget();
 		if (target.equals("OPPONENTACTIVE")){
-			PokemonCard targetObj = op.cardManager.activePokemon;
+			PokemonCard targetObj = op.getActivePokemon();
 			int damagePoints = attack.getDamagePoints();
 			if (damagePoints > 0){
 				targetObj.removeHP(damagePoints);
@@ -36,7 +36,7 @@ public class HumanPlayer extends Player {
 						String additionalTarget = attack.getAdditionalTarget();
 						
 						if (additionalTarget.equals("OPPONENTACTIVE")){
-							PokemonCard additionalTargetObj = op.cardManager.activePokemon;
+							PokemonCard additionalTargetObj = op.getActivePokemon();
 							int additionalDamage = attack.getAdditionalDamagePoints();
 							if (additionalDamage > 0){
 								additionalTargetObj.removeHP(additionalDamage);
