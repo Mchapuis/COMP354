@@ -61,7 +61,7 @@ public class AIPlayer extends Player {
 					String statusToApply = attack.getStatusToApply();
 					if (!statusToApply.equals("NONE")){
 						resultString += "Status " + statusToApply + " was applied to your active pokemon. ";
-						targetObj.applyStatus(statusToApply);
+						//targetObj.applyStatus(statusToApply);
 					} else {
 						String additionalTarget = attack.getAdditionalTarget();
 						
