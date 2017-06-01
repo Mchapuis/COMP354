@@ -1,5 +1,7 @@
 import java.util.*;
 
+/*import Message.Side;*/
+
 public class GameEngine {
 	
 	private static AIPlayer autoPlayer = new AIPlayer();
@@ -243,5 +245,59 @@ public class GameEngine {
         
         return cardToDisplay;
 	}
+	
+	public static PokemonCard getChoiceOfCard(Player p, Ability.Target target){
+		Message msg = queue.remove();
+		PokemonCard cardToReturn;
+		
+		if (target == Ability.Target.OPPONENT_BENCH && msg.getSide() == Message.Side.AI && msg.getType() == Message.ButtonType.BENCH){
+			cardToReturn = autoPlayer.getBench().get(msg.getIndex());
+		} else if (target == Ability.Target.YOUR_BENCH && msg.getSide() == Message.Side.PLAYER && msg.getType() == Message.ButtonType.BENCH){
+			cardToReturn = player.getBench().get(msg.getIndex());
+		} else if (target == Ability.Target.OPPONENT_POKEMON && msg.getSide() == Message.Side.AI){
+			if (msg.getType() == Message.ButtonType.ACTIVE){
+				cardToReturn = autoPlayer.getActivePokemon();
+			} else if (msg.getType() == Message.ButtonType.BENCH) {
+				cardToReturn = autoPlayer.getBench().get(msg.getIndex());
+			} else {
+				cardToReturn = null;
+			}
+		} else if (target == Ability.Target.YOUR_POKEMON && msg.getSide() == Message.Side.PLAYER){
+			if (msg.getType() == Message.ButtonType.ACTIVE){
+				cardToReturn = player.getActivePokemon();
+			} else if (msg.getType() == Message.ButtonType.BENCH) {
+				cardToReturn = player.getBench().get(msg.getIndex());
+			} else {
+				cardToReturn = null;
+			}
+		} else {
+			cardToReturn = null;
+		}
+		
+		return cardToReturn;
+	}
 
+	public static PokemonCard choosePokemonCard(Player p, Ability.Target target){
+		PokemonCard cardToReturn;
+		
+		if (p.equals(player)){
+			waitForInput();
+			cardToReturn = getChoiceOfCard(p, target);
+			while (cardToReturn == null) {
+				cardToReturn = getChoiceOfCard(p, target);
+			}
+		} else {
+			if (target == Ability.Target.OPPONENT_BENCH){
+				cardToReturn = player.cardManager.getFirstCardOfBench();
+			} else if (target == Ability.Target.YOUR_BENCH){
+				cardToReturn = autoPlayer.cardManager.getFirstCardOfBench();
+			} else if (target == Ability.Target.OPPONENT_POKEMON){
+				cardToReturn = player.cardManager.getActivePokemon();
+			} else {
+				cardToReturn = autoPlayer.cardManager.getFirstCardOfBench();
+			}
+		}
+		return cardToReturn;
+	}
+	
 }

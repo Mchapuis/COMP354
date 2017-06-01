@@ -218,4 +218,8 @@ public class CardManager {
 		this.deck.push(card);
 		this.hand.remove(card);
 	}
+	
+	public PokemonCard getFirstCardOfBench(){
+		return this.bench.get(0);
+	}
 }

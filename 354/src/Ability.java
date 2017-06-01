@@ -2,7 +2,7 @@ abstract class Ability {
     public static CardManager playerCardManager;
     public static CardManager AICardManager;
 
-	public enum Target{
+	public static enum Target{
 		YOUR_ACTIVE, OPPONENT_ACTIVE, //targets the active pokemon
 		YOUR_POKEMON, OPPONENT_POKEMON, //targets choice of pokemon active or bench
 		YOUR_BENCH, OPPONENT_BENCH, //targets choice of pokemon on bench
