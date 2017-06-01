@@ -13,6 +13,8 @@ public class CardManager {
 		buildDeck();
 		selectHand();
 		selectPrizeCards();
+		discardPile = new ArrayList<Card>();
+		bench = new ArrayList<PokemonCard>();
 	}
 	
 	public ArrayList<Card> getHand(){
@@ -30,7 +32,7 @@ public class CardManager {
 	public void buildDeck(){
 		deck = new Deck();
 		
-		for (int i = 0; i < 14; i++){
+		/*for (int i = 0; i < 14; i++){
 			EnergyCard energyCard = new EnergyCard("COLORLESS");
 			energyCard.setID(i + 1);
 			deck.push(energyCard);
@@ -89,11 +91,11 @@ public class CardManager {
 		scratch.addEnergyRequirement(energyCard, 2);
 		glameow.addAttack(scratch);
 		
-		pikachu.setID(16);
+		glameow.setID(16);
 		deck.push(glameow);
 		
 		//last step: shuffle
-		deck.shuffle();
+		deck.shuffle();*/
 	}
 	
 	public void selectHand(){
@@ -201,6 +203,11 @@ public class CardManager {
 	public void addPrizeCardToHand(Card card){
 		hand.add(card);
 		prizeCards.remove(card);
+	}
+
+	public void addToDiscard(Card card){
+		//NOTE: DOES NOT REMOVE CARD FROM ANYTHING
+		discardPile.add(card);
 	}
 	
 	public Card getFirstCardOfHand(){

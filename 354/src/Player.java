@@ -18,6 +18,10 @@ public abstract class Player {
 		return this.cardManager.getHand();
 	}
 	
+	public ArrayList<PokemonCard> getBench(){
+		return this.cardManager.getBench();
+	}
+	
 	public void setActivePokemon(PokemonCard pokemon){
 		this.cardManager.setActivePokemon(pokemon);
 	}
