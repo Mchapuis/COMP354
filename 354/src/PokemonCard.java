@@ -22,6 +22,8 @@ public class PokemonCard extends Card {
 	private int currentHP;
 	private ArrayList<Attack> attacks;
 	private ArrayList<EnergyCard> energy;
+
+	private boolean hasBeenHealed = false;
 	
 	public PokemonCard(){
 		this.ID = 0;
@@ -197,6 +199,13 @@ public class PokemonCard extends Card {
 	
 	public void setID(int ID){
 		this.ID = ID;
+	}
+
+	public boolean getHasBeenHealed(){
+		return hasBeenHealed;
+	}
+	public void setHasBeenHealed(boolean healed){
+		this.hasBeenHealed = healed;
 	}
 	
 }

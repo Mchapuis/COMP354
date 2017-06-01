@@ -3,7 +3,7 @@ import java.util.Arrays;
 class DamageAbility extends Ability{
   private int damage;
 
-  public void realUse(Player player){
+  public boolean realUse(Player player){
     CardManager sourcePlayer = null, otherPlayer = null;
     switch(player){
         case PLAYER:
@@ -37,6 +37,7 @@ class DamageAbility extends Ability{
             break;
     }
 
+    return true;
   }
 
   DamageAbility(String [] description) throws UnimplementedException{

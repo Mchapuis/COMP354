@@ -1,7 +1,7 @@
 
 public class DestatAbility extends Ability {
 
-    public void realUse(Player player){
+    public boolean realUse(Player player){
         CardManager sourcePlayer = null, otherPlayer = null;
         switch(player){
             case PLAYER:
@@ -34,6 +34,8 @@ public class DestatAbility extends Ability {
                 //TODO: need to implement method to get selection
                 break;
         }
+
+        return true;
     }
 
     DestatAbility(String[] description) throws UnimplementedException{

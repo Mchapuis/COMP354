@@ -3,7 +3,7 @@ import java.util.ArrayList;
 public class DeenergizeAbility extends Ability{
     int amountToRemove;
 
-    public void realUse(Player player){
+    public boolean realUse(Player player){
         //TODO: find out if deenergized energy goes to discard or hand
         //until we find out. it is discarded
 
@@ -50,6 +50,8 @@ public class DeenergizeAbility extends Ability{
 
             }
         }
+
+        return true;
     }
 
     DeenergizeAbility(String[] description) throws UnimplementedException{

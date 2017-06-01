@@ -2,7 +2,7 @@
 public class DrawAbility extends Ability{
     int amountToDraw;
 
-    public void realUse(Player player){
+    public boolean realUse(Player player){
         CardManager sourcePlayer = null;
         switch(player){
             case PLAYER:
@@ -17,6 +17,8 @@ public class DrawAbility extends Ability{
         for(int i = 0; i < amountToDraw; i++){
             sourcePlayer.addCardToHandFromDeck(0);
         }
+
+        return true;
     }
 
     DrawAbility(String[] description) throws UnimplementedException{

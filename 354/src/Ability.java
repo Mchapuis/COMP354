@@ -1,4 +1,18 @@
+//TODO: add to subclasses ability to handle complicated [amount]
 abstract class Ability {
+
+	public static void main(String[] args){
+		//this method doesn't matter it just let nelson do quick tests
+		String damageAbility = "Misty's Determination:cond:ability:deck:destination:discard:target:choice:you:1:(search:target:you:source:deck:filter:top:8:1,shuffle:target:you)";
+
+		Ability test = parseAbilitiesLine(damageAbility);
+
+		System.out.println(test.name);
+		if(test instanceof DamageAbility){
+			System.out.println("yep");
+		}
+	}
+
     public static CardManager playerCardManager;
     public static CardManager AICardManager;
 
@@ -17,15 +31,17 @@ abstract class Ability {
 	Target targetType;
 	Ability subsequentAbility = null;
 
-	public void use(Player player){
+	public boolean use(Player player){
 	    realUse(player);
 
 	    if(subsequentAbility != null){
 	        subsequentAbility.use(player);
         }
+
+        return true;
     }
 
-    public abstract void realUse(Player player);
+    public abstract boolean realUse(Player player);
 
 	public void setName(String name){
 		this.name = name;
@@ -89,7 +105,7 @@ abstract class Ability {
                     returnAbility = new DrawAbility(description);
                     break;
                 case "cond":
-                    returnAbility = new UnimplementedAbility(); //TODO:
+                    returnAbility = new ConditionAbility(description); //TODO:
                     break;
                 case "applystat":
                     returnAbility = new ApplyStatAbility(description);
@@ -101,7 +117,7 @@ abstract class Ability {
                     returnAbility = new HealAbility(description);
                     break;
                 case "deenergize":
-                    returnAbility = new UnimplementedAbility(); //TODO:
+                    returnAbility = new DeenergizeAbility(description);
                     break;
                 case "reenergize":
                     returnAbility = new UnimplementedAbility(); //TODO:

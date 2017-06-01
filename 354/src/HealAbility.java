@@ -2,7 +2,7 @@
 public class HealAbility extends Ability{
     public int healAmount = 0;
 
-    public void realUse(Player player){
+    public boolean realUse(Player player){
         CardManager sourcePlayer = null, otherPlayer = null;
         switch(player){
             case PLAYER:
@@ -42,7 +42,9 @@ public class HealAbility extends Ability{
         int maxHealAmount = targetPokemon.getMaxHP() - targetPokemon.getCurrentHP();
         int amountToHeal = Math.min(healAmount, maxHealAmount);
         targetPokemon.removeHP(-amountToHeal);
+        targetPokemon.setHasBeenHealed(true);
 
+        return true;
     }
 
     HealAbility(String[] description) throws UnimplementedException{
@@ -69,5 +71,13 @@ public class HealAbility extends Ability{
             index++;
         }
         targetType = parseTarget(description[index]);
+
+        //set heal amount
+        index++;
+        try{
+            healAmount = Integer.valueOf(description[index]);
+        }catch(Exception e){
+            throw new UnimplementedException();
+        }
     }
 }

@@ -4,7 +4,7 @@ public class ApplyStatAbility extends Ability{
 
     private Status givenStatus;
 
-    public void realUse(Player player){
+    public boolean realUse(Player player){
         CardManager sourcePlayer = null, otherPlayer = null;
         switch(player){
             case PLAYER:
@@ -37,6 +37,8 @@ public class ApplyStatAbility extends Ability{
                 //TODO: need to implement method to get selection
                 break;
         }
+
+        return true;
     }
 
     ApplyStatAbility(String [] description) throws UnimplementedException{

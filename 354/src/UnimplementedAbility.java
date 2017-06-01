@@ -1,6 +1,8 @@
 class UnimplementedAbility extends Ability{
-  public void realUse(Player player){
+  public boolean
+  realUse(Player player){
     System.out.println("NOT IMPLEMENTED! OH NOOOOOOOOOOOOOO!");
+    return true;
   }
 
   UnimplementedAbility(){
