@@ -2,10 +2,6 @@ import java.util.*;
 
 public class PokemonCard extends Card {
 
-	private enum Status {
-		NORMAL, PARALYZED
-	}
-	
 	private enum Category {
 		BASIC, STAGEONE
 	}
@@ -151,6 +147,14 @@ public class PokemonCard extends Card {
 	public void addAttack(Attack attack){
 		attacks.add(attack);
 	}
+
+	public int getMaxHP(){
+	    return maxHP;
+    }
+
+    public int getCurrentHP(){
+	    return currentHP;
+    }
 	
 	public void removeHP(int points){
 		this.currentHP -= points;
@@ -180,7 +184,11 @@ public class PokemonCard extends Card {
 		
 		return enough;
 	}
-	
+
+	public void applyStatus(Status status){
+		this.status = status;
+	}
+	//TODO: remove this method when it is no longer being used by methods being refactored out
 	public void applyStatus(String status){
 		if (status.equals("PARALYZED")){
 			this.status = Status.PARALYZED;

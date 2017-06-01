@@ -204,6 +204,11 @@ public class CardManager {
 		hand.add(card);
 		prizeCards.remove(card);
 	}
+
+	public void addToDiscard(Card card){
+		//NOTE: DOES NOT REMOVE CARD FROM ANYTHING
+		discardPile.add(card);
+	}
 	
 	public Card getFirstCardOfHand(){
 		return this.hand.get(0);
