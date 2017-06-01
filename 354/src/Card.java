@@ -1,7 +1,7 @@
 
 public abstract class Card {
 
-	// my initial attempt at an enum of general card types
+/*	// my initial attempt at an enum of general card types
 	
 	enum Type { ENERGY("energy"), POKEMON("pokemon"), TRAINER("trainer");
 	
@@ -14,54 +14,57 @@ public abstract class Card {
 		private Type(String value) {
 			this.value = value;
 		}
-	}
+	}*/
 	
 	// current values of the abstract card class
 	
 	protected static int cardnumber = 1;
-	private final int cnum;
+	private final int cID;
 	public String name;
 	public String type;
 	
 	// basic card constructor (?)
 	
 	public Card(String name) {
-		cnum = cardnumber++;
+		cID = cardnumber++;
 		this.name = name;
 	}
 	
 	public Card(){
-		cnum = cardnumber++;
+		cID = cardnumber++;
 		name = "card name";
-		type = "card type";
 	}
 	
-	//set
+	public abstract void setCardType(String type);
 	
-	public abstract void setcardType(String type);
-	
-	public void setcardName(String name) {
+	public void setCardName(String name) {
 		this.name = name;
 	}
 	
 	//get
 
-	public int cardNumber()	{
-		return cnum;
+	public int cardID()	{
+		return cID;
 	}
 	
 	public String cardName()	{
 		return name;
 	}
 	
-	public String cardType()	{
+	public String getType()	{
 		return type;
 	}
 	
-	// toString() method
+/*	// toString() method
 	public String toString() {
 		return ("Card number " + cnum + " is called " + cardName() + "and is an " + cardType() +" type card");
 	}
+	*/
+	
+	// superclass toString() method
+		public String toString() {
+			return ("Card number " + cardID() + " is called " + cardName());
+		}
 
 	public void equals(Card c){
 		// tbw
