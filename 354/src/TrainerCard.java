@@ -62,6 +62,6 @@ public class TrainerCard extends Card {
 	// toString() method
 	@Override
 	public String toString() {
-		return ("Card number " + cardNumber() + " is called " + cardName() + " and is a " +cardTypeCat()+" type "+ cardType() +" card [TNum: " + tNum() +"]");		
+		return ("Card number " + cardID() + " is called " + cardName() + " and is a " +cardTypeCat()+" type "+ cardType() +" card [TNum: " + tNum() +"]");		
 	}
 }
