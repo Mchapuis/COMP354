@@ -4,7 +4,8 @@ public class GameEngine {
 	
 	private static MainWindow w;
 
-	public static void main(String[] args) {        
+	public static void main(String[] args) {    
+  
 		/*Parser.readInAbilities();*/
 		
 		//instantiate players - this builds their decks, selects a hand and selects 6 prize cards
