@@ -22,6 +22,7 @@ public class PokemonCard extends Card {
 	private int currentHP;
 	private ArrayList<Ability> abilities;
 	private ArrayList<EnergyCard> energy;
+	private int numColorlessEnergy;
 
 	private boolean hasBeenHealed = false;
 	
@@ -37,6 +38,7 @@ public class PokemonCard extends Card {
 		this.currentHP = 0;
 		this.abilities = new ArrayList<Ability>();
 		this.energy = new ArrayList<EnergyCard>();
+		this.numColorlessEnergy = 0;
 	}
 	
 	public PokemonCard(String name, String description, String cat, String type, int maxHP, int energyToRetreat){
@@ -100,6 +102,8 @@ public class PokemonCard extends Card {
 		} else {
 			int i = 0;
 			for (EnergyCard e : this.energy){
+				if (e.getType() == EnergyCard.Type.COLORLESS)
+					continue;
 				desc += e.getDescription();
 				if (i + 1 < this.energy.size()){
 					desc += ", ";
@@ -140,6 +144,7 @@ public class PokemonCard extends Card {
 	
 	public void attachEnergy(EnergyCard e){
 		energy.add(e);
+		numColorlessEnergy++;
 	}
 	
 	public void removeEnergy(EnergyCard e){
@@ -167,24 +172,48 @@ public class PokemonCard extends Card {
 	}
 	
 	public boolean hasEnoughEnergy(int attackIndex){
+		numColorlessEnergy = this.energy.size();
 		Ability ability = this.abilities.get(attackIndex);
 		
 		boolean enough = true;
 		HashMap<EnergyCard, Integer> energyRequired = ability.getEnergyRequired();
+		
 		for (Map.Entry<EnergyCard, Integer> entry : energyRequired.entrySet()) {
 			EnergyCard.Type type = entry.getKey().getType();
 			
+			if (type == EnergyCard.Type.COLORLESS)
+				continue;
+			int amount = entry.getValue();
+			
+			/*System.out.println("Type needed: " + type + " (" + amount + ")");*/
+		
 			int count = 0;
 			for (EnergyCard energy : this.energy){
 				EnergyCard.Type typeToCompare = energy.getType();
-				if (typeToCompare == type || type == EnergyCard.Type.COLORLESS){
+				if (typeToCompare == type){
 					count++;
+					numColorlessEnergy--;
+					if (count == amount){
+						break;
+					}
 				}
 			}
 			
-			int amount = entry.getValue();
+			/*System.out.println("Available of type " + type + ": " + count);*/
+			
 			if (count < amount){
 				enough = false;
+			}
+			
+		}
+		
+		for (Map.Entry<EnergyCard, Integer> entry : energyRequired.entrySet()) {
+			EnergyCard.Type type = entry.getKey().getType();
+			if (type == EnergyCard.Type.COLORLESS){
+				int amount = entry.getValue();
+				if (numColorlessEnergy < amount){
+					enough = false;
+				}
 			}
 		}
 		

@@ -32,7 +32,7 @@ public class ConditionAbility extends Ability{
                 if (conditionPassed)
                 	resultString += "Coin flip returned heads. ";
                 else 
-                	resultString += "Coin flip returned tails. ";
+                	resultString += "Coin flip returned tails. No action was taken. ";
                 break;
             case CHOICE:
                 //TODO: get anastasia to make a GUI prompt for this
@@ -208,6 +208,7 @@ public class ConditionAbility extends Ability{
     
     public String getDescription(){
     	String desc = "";
+    	desc += "Name: " + name + "<br/>";
 		desc += "Energy required: ";
 		desc += "<br/>";
 		for (Map.Entry<EnergyCard, Integer> entry : energyRequired.entrySet()){

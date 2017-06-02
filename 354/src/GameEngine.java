@@ -56,6 +56,7 @@ public class GameEngine {
 	
 	public static Card handleButtonPress(){
 		Message msg = queue.remove();
+		queue.clear();
 		
         Card cardToDisplay;
         boolean showMakeActive = false;

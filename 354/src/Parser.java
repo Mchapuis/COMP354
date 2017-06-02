@@ -33,6 +33,8 @@ public class Parser {
 		}
 		
 		for (String l : lines){
+			if (l.equals("#"))
+				continue;
 			Integer i = Integer.parseInt(l);
 			cardNumbers.add(i);
 		}
@@ -105,13 +107,13 @@ public class Parser {
 			PokemonCard poke = new PokemonCard(splitString[0], "Generic description", splitString[3], splitString[5], Integer.parseInt(splitString[6]), Integer.parseInt(splitString[10]));
 			try{
 				Ability ability1 = abilities.get(Integer.parseInt(splitString[15]) - 1);
-				System.out.println(poke.getName() + ": " + ability1.name + " - " + ability1.getClass());
+				/*System.out.println(poke.getName() + ": " + ability1.name + " - " + ability1.getClass());*/
 				EnergyCard energy1 = new EnergyCard(splitString[13]);
 				ability1.addEnergyRequired(energy1, Integer.parseInt(splitString[14]));
 				poke.addAbility(ability1);
 			} catch (NumberFormatException e){
 				Ability ability1 = abilities.get(Integer.parseInt(splitString[18]) - 1);
-				System.out.println(poke.getName() + ": " + ability1.name + " - " + ability1.getClass());
+				/*System.out.println(poke.getName() + ": " + ability1.name + " - " + ability1.getClass());*/
 				EnergyCard energy1 = new EnergyCard(splitString[13]);
 				ability1.addEnergyRequired(energy1, Integer.parseInt(splitString[14]));
 				EnergyCard energy2 = new EnergyCard(splitString[16]);
@@ -139,13 +141,13 @@ public class Parser {
 			if (splitString.length > 16 && moreAbilities){
 				try{
 					Ability ability2 = abilities.get(Integer.parseInt(splitString[19]) - 1);
-					System.out.println(poke.getName() + ": " + ability2.name + " - " + ability2.getClass());
+					/*System.out.println(poke.getName() + ": " + ability2.name + " - " + ability2.getClass());*/
 					EnergyCard energy2 = new EnergyCard(splitString[17]);
 					ability2.addEnergyRequired(energy2, Integer.parseInt(splitString[18]));
 					poke.addAbility(ability2);
 				} catch (NumberFormatException e){
 					Ability ability2 = abilities.get(Integer.parseInt(splitString[22]) - 1);
-					System.out.println(poke.getName() + ": " + ability2.name + " - " + ability2.getClass());
+					/*System.out.println(poke.getName() + ": " + ability2.name + " - " + ability2.getClass());*/
 					EnergyCard energy2 = new EnergyCard(splitString[17]);
 					ability2.addEnergyRequired(energy2, Integer.parseInt(splitString[18]));
 					EnergyCard energy3 = new EnergyCard(splitString[20]);
