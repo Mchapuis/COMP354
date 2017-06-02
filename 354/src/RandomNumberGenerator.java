@@ -8,7 +8,7 @@ public class RandomNumberGenerator {
 		
 		int lands = flip.nextInt(2);
 		
-		if (lands == 1){
+		if (lands == 0){
 			return false;
 		}
 				

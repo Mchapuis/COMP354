@@ -362,9 +362,9 @@ public class MainWindow {
     			attack3.setVisible(true);
     			
     			attack1.setEnabled(true);
-        		if (player.getActivePokemon().getAttacks().size() > 1)
+        		if (player.getActivePokemon().getAbilities().size() > 1)
         			attack2.setEnabled(true);
-        		if (player.getActivePokemon().getAttacks().size() > 2)
+        		if (player.getActivePokemon().getAbilities().size() > 2)
         			attack3.setEnabled(true);
 	    	} else {
 	    		attack1.setVisible(false);
@@ -469,9 +469,17 @@ public class MainWindow {
     	card.setBorder(BorderFactory.createLineBorder(Color.black));
     	card.setLayout(new GridLayout(0,1));
     	
-    	JButton button = new JButton(c.getName());
+    	JButton button;
+    	JLabel description;
+    	
+    	if (c != null){
+	    	button = new JButton(c.getName());
+	    	description = new JLabel(c.getDescription());
+    	} else {
+    		button = new JButton("Undefined");
+    		description = new JLabel("No description");
+    	}
     	button.addActionListener(new GenericButtonActionListener());
-    	JLabel description = new JLabel(c.getDescription());
     	card.add(button);
     	card.add(description);
     	return card;

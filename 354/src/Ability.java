@@ -1,4 +1,8 @@
+import java.util.HashMap;
+
+//TODO: add to subclasses ability to handle complicated [amount]
 abstract class Ability {
+
     public static CardManager playerCardManager;
     public static CardManager AICardManager;
 
@@ -16,19 +20,31 @@ abstract class Ability {
 	public String name;
 	Target targetType;
 	Ability subsequentAbility = null;
+	protected HashMap<EnergyCard, Integer> energyRequired = new HashMap<EnergyCard, Integer>();
 
-	public void use(Player player){
-	    realUse(player);
+	public String use(Player player){
+	    String resultString = realUse(player);
 
 	    if(subsequentAbility != null){
-	        subsequentAbility.use(player);
+	        resultString += subsequentAbility.use(player);
         }
+
+        return resultString;
     }
 
-    public abstract void realUse(Player player);
+    public abstract String realUse(Player player);
+    public abstract String getDescription();
 
 	public void setName(String name){
 		this.name = name;
+	}
+	
+	public void addEnergyRequired(EnergyCard energy, int amount){
+		this.energyRequired.put(energy, amount);
+	}
+	
+	public HashMap<EnergyCard, Integer> getEnergyRequired(){
+		return this.energyRequired;
 	}
 
 	public void setSubsequentAbility(Ability subAbility){
@@ -89,7 +105,7 @@ abstract class Ability {
                     returnAbility = new DrawAbility(description);
                     break;
                 case "cond":
-                    returnAbility = new UnimplementedAbility(); //TODO:
+                    returnAbility = new ConditionAbility(description); //TODO:
                     break;
                 case "applystat":
                     returnAbility = new ApplyStatAbility(description);
@@ -101,7 +117,7 @@ abstract class Ability {
                     returnAbility = new HealAbility(description);
                     break;
                 case "deenergize":
-                    returnAbility = new UnimplementedAbility(); //TODO:
+                    returnAbility = new DeenergizeAbility(description);
                     break;
                 case "reenergize":
                     returnAbility = new UnimplementedAbility(); //TODO:
@@ -149,4 +165,6 @@ abstract class Ability {
 		}
 		return Target.OPPONENT_ACTIVE;
 	}
+	
+	
 }

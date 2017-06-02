@@ -1,9 +1,17 @@
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map.Entry;
 
 class DamageAbility extends Ability{
   private int damage;
 
-  public void realUse(Player player){
+  public DamageAbility(){
+  	this.energyRequired = new HashMap<EnergyCard, Integer>();
+  }
+  
+  public String realUse(Player player){
+	String resultString = "";
+	  
     CardManager sourcePlayer = null, otherPlayer = null;
     switch(player){
         case PLAYER:
@@ -19,9 +27,17 @@ class DamageAbility extends Ability{
     switch(targetType){
         case OPPONENT_ACTIVE:
             otherPlayer.getActivePokemon().removeHP(damage);
+            if (sourcePlayer.equals(playerCardManager))
+            	resultString += "Opponent's pokemon lost " + damage + " HP. ";
+            else 
+            	resultString += "Your pokemon lost " + damage + " HP. ";
             break;
         case YOUR_ACTIVE:
             sourcePlayer.getActivePokemon().removeHP(damage);
+            if (sourcePlayer.equals(playerCardManager))
+            	resultString += "Your pokemon lost " + damage + " HP. ";
+            else 
+            	resultString += "Opponent's pokemon lost " + damage + " HP. ";
             break;
         case OPPONENT_BENCH:
             //TODO: need to implement method to get selection
@@ -37,6 +53,7 @@ class DamageAbility extends Ability{
             break;
     }
 
+    return resultString;
   }
 
   DamageAbility(String [] description) throws UnimplementedException{
@@ -73,100 +90,22 @@ class DamageAbility extends Ability{
           throw new UnimplementedException();
       }
   }
+  
+  public String getDescription(){
+  	String desc = "Name: " + this.name;
+  	desc += "<br/>";
+  	desc += "Damage to inflict: ";
+  	desc += this.damage;
+  	desc += "<br/>";
+  	desc += "Energy required: ";
+	desc += "<br/>";
+	for (Entry<EnergyCard, Integer> entry : energyRequired.entrySet()){
+		desc += "&nbsp;&nbsp;&nbsp;";
+		desc += entry.getKey().getType();
+		desc += ": ";
+		desc += entry.getValue();
+		desc += "<br/>";
+	}
+  	return desc;
+  }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

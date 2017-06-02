@@ -14,12 +14,14 @@ public class GameEngine {
     private static boolean hasSelectedActive = false;
     private static boolean hasClickedAttach = false;
     private static boolean hasAttachedEnergy = false;
-    private static boolean turnOver = false;
     private static boolean mustMoveCardToBottomOfDeck = false;
 
 	public static void main(String[] args) {        
 		MainWindow.lock = lock;
         MainWindow.queue = queue;
+        
+        Ability.playerCardManager = player.cardManager;
+        Ability.AICardManager = autoPlayer.cardManager;
 		
 		//instantiate players - this builds their decks, selects a hand and selects 6 prize cards
 		
@@ -159,10 +161,9 @@ public class GameEngine {
         		if (player.getActivePokemon().hasEnoughEnergy(msg.getIndex())){
         			/* set some necessary values */
         			showAttacks = false;
-            		turnOver = true;
             		
             		/* carry out the attack */
-        			resultString = player.attack(msg.getIndex(), autoPlayer);
+        			resultString = player.attack(msg.getIndex());
         			
         			/* update the view */
         			w.updateInstructions("Your turn is done. " + resultString);
@@ -180,11 +181,13 @@ public class GameEngine {
         	/* if "let AI play" button clicked */
         	} else {
         		/* get the result of AI playing a turn */
-        		String resultString = autoPlayer.playTurn(player);
+        		String resultString = autoPlayer.playTurn();
         		
         		/* update the view */
         		w.updateAISide();
         		w.updatePlayerSide();
+        		if (resultString.equals(""))
+        			resultString = "No attack was carried out. ";
         		w.updateInstructions("AI's turn is done. " + resultString);
         		
         		/* hide the "let AI play" button */
@@ -217,7 +220,6 @@ public class GameEngine {
         		/* reset values */
         		hasClickedAttach = false;
         		hasAttachedEnergy = false;
-        		turnOver = false;
         		cardToDisplay = null;
         	}
         
@@ -236,7 +238,7 @@ public class GameEngine {
         }
         
         /* if the player's turn is over, show the "let AI play" button */
-        if (turnOver){
+        if (hasSelectedActive){
         	showLetAIPlay = true;
         }
         

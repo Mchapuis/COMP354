@@ -4,7 +4,7 @@ public abstract class Player {
 
 	protected CardManager cardManager;
 	
-	public abstract String attack(int attackIndex, Player opponent);
+	public abstract String attack(int attackIndex);
 	
 	public void moveCardFromHandToBottomOfDeck(Card card){
 		this.cardManager.moveCardFromHandToBottomOfDeck(card);

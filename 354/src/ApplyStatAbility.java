@@ -1,10 +1,17 @@
+import java.util.HashMap;
+import java.util.Map.Entry;
 
 public class ApplyStatAbility extends Ability{
 
-
     private Status givenStatus;
+    
+    public ApplyStatAbility(){
+    	this.energyRequired = new HashMap<EnergyCard, Integer>();
+    }
 
-    public void realUse(Player player){
+    public String realUse(Player player){
+    	String resultString = "";
+    	
         CardManager sourcePlayer = null, otherPlayer = null;
         switch(player){
             case PLAYER:
@@ -20,9 +27,17 @@ public class ApplyStatAbility extends Ability{
         switch(targetType){
             case OPPONENT_ACTIVE:
                 otherPlayer.getActivePokemon().applyStatus(givenStatus);
+                if (sourcePlayer.equals(playerCardManager))
+                	resultString += "Status " + givenStatus + " applied to opponent's active pokemon. ";
+                else 
+                	resultString += "Status " + givenStatus + " applied to your active pokemon. ";
                 break;
             case YOUR_ACTIVE:
                 sourcePlayer.getActivePokemon().applyStatus(givenStatus);
+                if (sourcePlayer.equals(playerCardManager))
+                	resultString += "Status " + givenStatus + " applied to your active pokemon. ";
+                else 
+                	resultString += "Status " + givenStatus + " applied to opponent's active pokemon. ";
                 break;
             case OPPONENT_BENCH:
                 //TODO: need to implement method to get selection
@@ -37,6 +52,8 @@ public class ApplyStatAbility extends Ability{
                 //TODO: need to implement method to get selection
                 break;
         }
+
+        return resultString;
     }
 
     ApplyStatAbility(String [] description) throws UnimplementedException{
@@ -86,6 +103,24 @@ public class ApplyStatAbility extends Ability{
         }
         this.targetType = parseTarget(description[index++]);
 
+    }
+    
+    public String getDescription(){
+    	String desc = "Name: " + this.name;
+    	desc += "<br/>";
+    	desc += "Status to apply: ";
+    	desc += this.givenStatus;
+    	desc += "<br/>";
+    	desc += "Energy required: ";
+		desc += "<br/>";
+		for (Entry<EnergyCard, Integer> entry : energyRequired.entrySet()){
+			desc += "&nbsp;&nbsp;&nbsp;";
+			desc += entry.getKey().getType();
+			desc += ": ";
+			desc += entry.getValue();
+			desc += "<br/>";
+		}
+    	return desc;
     }
 
 }
