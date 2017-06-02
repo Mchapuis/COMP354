@@ -84,7 +84,7 @@ public class ConditionAbility extends Ability{
             if(description[i].equals("else")){
                 indexOfElse = i;
                 try{
-                    elseAbility = makeAbility(Arrays.copyOfRange(description, i, description.length));
+                    elseAbility = makeAbility(Arrays.copyOfRange(description, i+1, description.length));
                 }catch(Exception e){
                     elseAbility = new UnimplementedAbility();
                 }

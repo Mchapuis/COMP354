@@ -3,7 +3,7 @@ abstract class Ability {
 
 	public static void main(String[] args){
 		//this method doesn't matter it just let nelson do quick tests
-		String damageAbility = "Misty's Determination:cond:ability:deck:destination:discard:target:choice:you:1:(search:target:you:source:deck:filter:top:8:1,shuffle:target:you)";
+		String damageAbility = "Nyan Press:dam:target:opponent-active:40,cond:flip:dam:target:opponent-active:40:else:applystat:status:paralyzed:opponent-active";
 
 		Ability test = parseAbilitiesLine(damageAbility);
 
@@ -105,7 +105,7 @@ abstract class Ability {
                     returnAbility = new DrawAbility(description);
                     break;
                 case "cond":
-                    returnAbility = new ConditionAbility(description); //TODO:
+                    returnAbility = new ConditionAbility(description);
                     break;
                 case "applystat":
                     returnAbility = new ApplyStatAbility(description);
