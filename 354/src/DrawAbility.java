@@ -10,7 +10,6 @@ public class DrawAbility extends Ability{
     
     public String realUse(Player player){
     	String resultString = "";
-    	
         CardManager sourcePlayer = null;
         switch(player){
             case PLAYER:

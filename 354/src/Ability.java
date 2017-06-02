@@ -24,7 +24,6 @@ abstract class Ability {
 
 	public String use(Player player){
 	    String resultString = realUse(player);
-
 	    if(subsequentAbility != null){
 	        resultString += subsequentAbility.use(player);
         }
@@ -106,6 +105,7 @@ abstract class Ability {
                     break;
                 case "cond":
                     returnAbility = new ConditionAbility(description); //TODO:
+                    returnAbility = new ConditionAbility(description);
                     break;
                 case "applystat":
                     returnAbility = new ApplyStatAbility(description);

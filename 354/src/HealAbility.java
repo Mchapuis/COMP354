@@ -10,7 +10,6 @@ public class HealAbility extends Ability{
 
     public String realUse(Player player){
     	String resultString = "";
-    	
         CardManager sourcePlayer = null, otherPlayer = null;
         switch(player){
             case PLAYER:
@@ -55,7 +54,6 @@ public class HealAbility extends Ability{
         targetPokemon.setHasBeenHealed(true);
         
         resultString += "was healed (+" + healAmount + " pts).";
-
         return resultString;
     }
 

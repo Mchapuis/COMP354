@@ -11,7 +11,6 @@ class DamageAbility extends Ability{
   
   public String realUse(Player player){
 	String resultString = "";
-	  
     CardManager sourcePlayer = null, otherPlayer = null;
     switch(player){
         case PLAYER:

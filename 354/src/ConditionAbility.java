@@ -219,4 +219,5 @@ public class ConditionAbility extends Ability{
 		}
     	return desc;
     }
+
 }
