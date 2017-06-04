@@ -1,7 +1,7 @@
 public class EnergyCard extends Card {
 	
-	private enum Type{
-		COLORLESS, OTHER
+	public enum Type{
+		COLORLESS, FIGHT, PSYCHIC, LIGHTNING, WATER
 	}
 	
 	private int ID;
@@ -13,12 +13,21 @@ public class EnergyCard extends Card {
 		this.ID = 0;
 		this.name = "Energy";
 		
-		if (type.equals("COLORLESS")){
+		if (type.equals("colorless")){
 			this.type = Type.COLORLESS;
 			this.description = "Colorless";
-		} else {
-			this.type = Type.OTHER;
-			this.description = "Other";
+		} else if (type.equals("fight")) {
+			this.type = Type.FIGHT;
+			this.description = "Fight";
+		} else if (type.equals("psychic")) {
+			this.type = Type.PSYCHIC;
+			this.description = "Psychic";
+		} else if (type.equals("lightning")) {
+			this.type = Type.LIGHTNING;
+			this.description = "Lightning";
+		} else if (type.equals("water")) {
+			this.type = Type.WATER;
+			this.description = "Water";
 		}
 	}
 	
@@ -38,8 +47,8 @@ public class EnergyCard extends Card {
 		return this.description;
 	}
 	
-	public String getType(){
-		return this.type.toString();
+	public Type getType(){
+		return this.type;
 	}
 	
 	public void setID(int ID){

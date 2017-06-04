@@ -1,8 +1,12 @@
+import java.util.HashMap;
+
+//TODO: add to subclasses ability to handle complicated [amount]
 abstract class Ability {
+
     public static CardManager playerCardManager;
     public static CardManager AICardManager;
 
-	public enum Target{
+	public static enum Target{
 		YOUR_ACTIVE, OPPONENT_ACTIVE, //targets the active pokemon
 		YOUR_POKEMON, OPPONENT_POKEMON, //targets choice of pokemon active or bench
 		YOUR_BENCH, OPPONENT_BENCH, //targets choice of pokemon on bench
@@ -16,11 +20,30 @@ abstract class Ability {
 	public String name;
 	Target targetType;
 	Ability subsequentAbility = null;
+	protected HashMap<EnergyCard, Integer> energyRequired = new HashMap<EnergyCard, Integer>();
 
-	public abstract void use(Player player);
+	public String use(Player player){
+	    String resultString = realUse(player);
+	    if(subsequentAbility != null){
+	        resultString += subsequentAbility.use(player);
+        }
+
+        return resultString;
+    }
+
+    public abstract String realUse(Player player);
+    public abstract String getDescription();
 
 	public void setName(String name){
 		this.name = name;
+	}
+	
+	public void addEnergyRequired(EnergyCard energy, int amount){
+		this.energyRequired.put(energy, amount);
+	}
+	
+	public HashMap<EnergyCard, Integer> getEnergyRequired(){
+		return this.energyRequired;
 	}
 
 	public void setSubsequentAbility(Ability subAbility){
@@ -68,98 +91,80 @@ abstract class Ability {
 
 		//branch based on ability type
 		String abilityType = description[0];
-		if(abilityType.equals("dam")){
-			returnAbility = new DamageAbility(description);
-		}
-		else if(abilityType.equals("deck")){
-			returnAbility = new UnimplementedAbility();
-		}
-		else if(abilityType.equals("draw")){
-			returnAbility = new UnimplementedAbility();
-		}
-		else if(abilityType.equals("cond")){
-			returnAbility = new UnimplementedAbility();
-		}
-		else if(abilityType.equals("applystat")){
-			returnAbility = new UnimplementedAbility();
-		}
-		else if(abilityType.equals("heal")){
-			returnAbility = new UnimplementedAbility();
-		}
-		else if(abilityType.equals("deenergize")){
-			returnAbility = new UnimplementedAbility();
-		}
-		else if(abilityType.equals("reenergize")){
-			returnAbility = new UnimplementedAbility();
-		}
-		else if(abilityType.equals("redamage")){
-			returnAbility = new UnimplementedAbility();
-		}
-		else if(abilityType.equals("search")){
-			returnAbility = new UnimplementedAbility();
-		}
-		else if(abilityType.equals("swap")){
-			returnAbility = new UnimplementedAbility();
-		}
+		try{
+
+		    switch (abilityType){
+                case "dam":
+                    returnAbility = new DamageAbility(description);
+                    break;
+                case "deck":
+                    returnAbility = new UnimplementedAbility(); //TODO:
+                    break;
+                case "draw":
+                    returnAbility = new DrawAbility(description);
+                    break;
+                case "cond":
+                    returnAbility = new ConditionAbility(description); //TODO:
+                    returnAbility = new ConditionAbility(description);
+                    break;
+                case "applystat":
+                    returnAbility = new ApplyStatAbility(description);
+                    break;
+                case "destat":
+                    returnAbility = new DestatAbility(description);
+                    break;
+                case "heal":
+                    returnAbility = new HealAbility(description);
+                    break;
+                case "deenergize":
+                    returnAbility = new DeenergizeAbility(description);
+                    break;
+                case "reenergize":
+                    returnAbility = new UnimplementedAbility(); //TODO:
+                    break;
+                case "redamage":
+                    returnAbility = new UnimplementedAbility(); //TODO:
+                    break;
+                case "search":
+                    returnAbility = new UnimplementedAbility(); //TODO:
+                    break;
+                case "swap":
+                    returnAbility = new UnimplementedAbility(); //TODO:
+                    break;
+                case "add":
+                    returnAbility = new UnimplementedAbility(); //TODO:
+                    break;
+                default:
+                    returnAbility = new UnimplementedAbility();
+            }
+        }catch (UnimplementedException e){
+		    returnAbility = new UnimplementedAbility();
+        }
 
 		return returnAbility;
 	}
 
-	public static Target parseTarget(String [] description){
-		if(description.length < 3){
-			if(description[1].equals("your-active")){
+	public static Target parseTarget(String token){
+		switch(token) {
+			case "your-active":
 				return Target.YOUR_ACTIVE;
-			}
-			else if(description[1].equals("opponent-active")){
+			case "opponent-active":
 				return Target.OPPONENT_ACTIVE;
-			}
-			else if(description[1].equals("you")){
+			case "you":
 				return Target.YOU;
-			}
-			else if(description[1].equals("them")){
+			case "them":
 				return Target.OPPONENT;
-			}
-		}
-		else{
-			if(description[1].equals("your-active")){
-				return Target.YOUR_ACTIVE;
-			}
-			else if(description[1].equals("opponent-active")){
-				return Target.OPPONENT_ACTIVE;
-			}
-			else if(description[1].equals("you")){
-				return Target.YOU;
-			}
-			else if(description[1].equals("them")){
-				return Target.OPPONENT;
-			}
-			else if(description[1].equals("opponent")){
-				return Target.OPPONENT;
-			}
-			else if(description[1].equals("your")){
-				return Target.YOU;
-			}
-			else if(description[1].equals("opponent-bench")){
+			case "opponent":
+				return Target.OPPONENT_POKEMON;
+			case "your":
+				return Target.YOUR_POKEMON;
+			case "opponent-bench":
 				return Target.OPPONENT_BENCH;
-			}
-			else if(description[1].equals("your-bench")){
+			case "your-bench":
 				return Target.YOUR_BENCH;
-			}
-			else if(description[1].equals("choice")){
-				if(description[2].equals("opponent")){
-					return Target.OPPONENT;
-				}
-				if(description[2].equals("your")){
-					return Target.YOU;
-				}
-				if(description[2].equals("opponent-bench")){
-					return Target.OPPONENT_BENCH;
-				}
-				if(description[2].equals("your-bench")){
-					return Target.YOUR_BENCH;
-				}
-			}
 		}
 		return Target.OPPONENT_ACTIVE;
 	}
+	
+	
 }

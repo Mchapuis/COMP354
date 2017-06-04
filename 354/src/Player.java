@@ -4,7 +4,7 @@ public abstract class Player {
 
 	protected CardManager cardManager;
 	
-	public abstract String attack(int attackIndex, Player opponent);
+	public abstract String attack(int attackIndex);
 	
 	public void moveCardFromHandToBottomOfDeck(Card card){
 		this.cardManager.moveCardFromHandToBottomOfDeck(card);
@@ -16,6 +16,10 @@ public abstract class Player {
 	
 	public ArrayList<Card> getHand(){
 		return this.cardManager.getHand();
+	}
+	
+	public ArrayList<PokemonCard> getBench(){
+		return this.cardManager.getBench();
 	}
 	
 	public void setActivePokemon(PokemonCard pokemon){
