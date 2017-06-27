@@ -49,4 +49,8 @@ public abstract class Player {
 	public ArrayList<Card> getPrizeCards(){
 		return this.cardManager.getPrizeCards();
 	}
+	
+	public void retreatPokemon(PokemonCard cardToSwapWith){
+		this.cardManager.retreatPokemon(cardToSwapWith);
+	}
 }

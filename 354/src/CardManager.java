@@ -141,7 +141,7 @@ public class CardManager {
 	}
 	
 	public boolean movePokemonToBench(PokemonCard pokemon){
-		if (bench.size() <= 5){
+		if (bench.size() < 5){
 			bench.add(pokemon);
 			hand.remove(pokemon);
 			return true;
@@ -190,5 +190,13 @@ public class CardManager {
 	
 	public ArrayList<Card> getPrizeCards(){
 		return this.prizeCards;
+	}
+	
+	public void retreatPokemon(PokemonCard cardToSwapWith){
+		int index = bench.indexOf(cardToSwapWith);
+		PokemonCard temp = activePokemon;
+		setActivePokemon(cardToSwapWith);
+		bench.remove(index);
+		bench.add(index, temp);
 	}
 }

@@ -171,7 +171,7 @@ public class PokemonCard extends Card {
 		this.currentHP -= points;
 	}
 	
-	public boolean hasEnoughEnergy(int attackIndex){
+	public boolean hasEnoughEnergyForAttack(int attackIndex){
 		numColorlessEnergy = this.energy.size();
 		Ability ability = this.abilities.get(attackIndex);
 		
@@ -184,8 +184,6 @@ public class PokemonCard extends Card {
 			if (type == EnergyCard.Type.COLORLESS)
 				continue;
 			int amount = entry.getValue();
-			
-			/*System.out.println("Type needed: " + type + " (" + amount + ")");*/
 		
 			int count = 0;
 			for (EnergyCard energy : this.energy){
@@ -198,8 +196,6 @@ public class PokemonCard extends Card {
 					}
 				}
 			}
-			
-			/*System.out.println("Available of type " + type + ": " + count);*/
 			
 			if (count < amount){
 				enough = false;
@@ -218,6 +214,10 @@ public class PokemonCard extends Card {
 		}
 		
 		return enough;
+	}
+	
+	public boolean hasEnoughEnergyForRetreat(){		
+		return energy.size() <= energyToRetreat;
 	}
 
 	public void applyStatus(Status status){

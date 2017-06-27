@@ -1,7 +1,5 @@
 import java.util.*;
 
-/*import Message.Side;*/
-
 public class GameEngine {
 	
 	private static AIPlayer autoPlayer = new AIPlayer();
@@ -15,6 +13,7 @@ public class GameEngine {
     private static boolean hasClickedAttach = false;
     private static boolean hasAttachedEnergy = false;
     private static boolean mustMoveCardToBottomOfDeck = false;
+    private static boolean mustChoosePokemonToSwap = false;
 
 	public static void main(String[] args) {        
 		MainWindow.lock = lock;
@@ -67,6 +66,7 @@ public class GameEngine {
         boolean showAddToBench = false;
         boolean showAttacks = false;
         boolean showLetAIPlay = false;
+        boolean showRetreat = false;
         
         /* if this move is supposed to choose a card from the hand to move to the deck */
         if (mustMoveCardToBottomOfDeck){
@@ -74,6 +74,12 @@ public class GameEngine {
         		return player.getHand().get(msg.getIndex());
         	return null;
 		}
+        
+        if (mustChoosePokemonToSwap){
+        	if (msg.getSide() == Message.Side.PLAYER && msg.getType() == Message.ButtonType.BENCH)
+        		return player.getBench().get(msg.getIndex());
+        	return null;
+        }
         
         /* if player side clicked */
         if (msg.getSide() == Message.Side.PLAYER){
@@ -85,6 +91,7 @@ public class GameEngine {
         		
         		/* set showAttacks to true so that attack buttons will be shown */
         		showAttacks = true;
+        		showRetreat = true;
         		
         	/* if bench clicked */
         	} else if (msg.getType() == Message.ButtonType.BENCH){
@@ -172,7 +179,7 @@ public class GameEngine {
         		cardToDisplay = autoPlayer.getActivePokemon();
         		
         		/* if the pokemon has enough energy for the attack that was clicked */
-        		if (player.getActivePokemon().hasEnoughEnergy(msg.getIndex())){
+        		if (player.getActivePokemon().hasEnoughEnergyForAttack(msg.getIndex())){
         			/* set some necessary values */
         			showAttacks = false;
             		
@@ -193,7 +200,7 @@ public class GameEngine {
         		w.updateAISide();
         		
         	/* if "let AI play" button clicked */
-        	} else {
+        	} else if (msg.getType() == Message.ButtonType.LETAIPLAY) {
         		/* get the result of AI playing a turn */
         		String resultString = autoPlayer.playTurn();
         		
@@ -239,6 +246,36 @@ public class GameEngine {
         		/* draw a card */
         		player.drawCard();
         		w.updatePlayerHand();
+        		
+        	/* else if retreat button clicked */
+        	} else {
+        		String resultString;
+        		
+        		if (player.getActivePokemon().hasEnoughEnergyForRetreat()){
+	        		resultString = "Now click a pokemon from the bench to swap places with the active pokemon.";
+	        		w.updateInstructions(resultString);
+	        		
+	        		mustChoosePokemonToSwap = true;
+	        		
+	        		waitForInput();
+	        		PokemonCard pokeToSwap = (PokemonCard) handleButtonPress();
+	        		while (pokeToSwap == null) {
+	        			waitForInput();
+	        			pokeToSwap = (PokemonCard) handleButtonPress();
+	        		}
+	        		
+	        		player.retreatPokemon(pokeToSwap);
+	        		
+	        		resultString = "Active pokemon and benched pokemon were swapped.";
+	        		
+	        		w.updatePlayerActivePokemon();
+	        		w.updatePlayerBench();
+        		} else {
+        			resultString = "The active pokemon does not have enough energy to retreat.";
+        		}
+        		
+        		cardToDisplay = player.getActivePokemon();
+        		w.updateInstructions(resultString);
         	}
         
         /* if AI side clicked just display the card */
@@ -261,7 +298,7 @@ public class GameEngine {
         }
         
         /* display the card that was clicked on */
-        w.displayCard(cardToDisplay, showMakeActive, showAddToBench, showAttachToPokemon, showAttacks, showLetAIPlay);
+        w.displayCard(cardToDisplay, showMakeActive, showAddToBench, showAttachToPokemon, showAttacks, showLetAIPlay, showRetreat);
         
         return cardToDisplay;
 	}

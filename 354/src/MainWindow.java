@@ -32,6 +32,7 @@ public class MainWindow {
     private JButton attack2 = null;
     private JButton attack3 = null;
     private JButton letAIPlay = null;
+    private JButton retreatButton = null;
     
     private JPanel AIHandContainer = null;
     private JPanel AIBenchContainer = null;
@@ -183,18 +184,21 @@ public class MainWindow {
         constraints.gridy = 0;
         constraints.gridwidth = 3;
         sidebar.add(sidebarIndex, constraints);
+        
         sidebarTitle = new JLabel();
         sidebarTitle.setPreferredSize(new Dimension(295, 15));
         constraints.gridx = 0;
         constraints.gridy = 1;
         constraints.gridwidth = 3;
 		sidebar.add(sidebarTitle, constraints);
+		
 		sidebarText = new JLabel();
 		sidebarText.setPreferredSize(new Dimension(295, 600));
 		constraints.gridx = 0;
         constraints.gridy = 2;
         constraints.gridwidth = 3;
 		sidebar.add(sidebarText, constraints);
+		
 		attack1 = new JButton("Attack 1");
 		attack1.setEnabled(false);
 		attack1.setVisible(false);
@@ -203,6 +207,7 @@ public class MainWindow {
 		constraints.gridy = 3;
 		constraints.gridwidth = 1;
 		sidebar.add(attack1, constraints);
+		
 		attack2 = new JButton("Attack 2");
 		attack2.setEnabled(false);
 		attack2.setVisible(false);
@@ -211,6 +216,7 @@ public class MainWindow {
 		constraints.gridy = 3;
 		constraints.gridwidth = 1;
 		sidebar.add(attack2, constraints);
+		
 		attack3 = new JButton("Attack 3");
 		attack3.setEnabled(false);
 		attack3.setVisible(false);
@@ -219,6 +225,7 @@ public class MainWindow {
 		constraints.gridy = 3;
 		constraints.gridwidth = 1;
 		sidebar.add(attack3, constraints);
+		
 		makeActiveButton = new JButton("Make Active Pokemon");
 		makeActiveButton.setVisible(false);
 		makeActiveButton.addActionListener(new ActionListener()
@@ -240,6 +247,7 @@ public class MainWindow {
         constraints.gridy = 4;
         constraints.gridwidth = 3;
 		sidebar.add(makeActiveButton, constraints);
+		
 		addToBenchButton = new JButton("Add pokemon to bench");
 		addToBenchButton.setVisible(false);
 		addToBenchButton.addActionListener(new ActionListener()
@@ -261,6 +269,7 @@ public class MainWindow {
         constraints.gridy = 5;
         constraints.gridwidth = 3;
 		sidebar.add(addToBenchButton, constraints);
+		
 		attachButton = new JButton("Attach to a pokemon");
 		attachButton.setVisible(false);
 		attachButton.addActionListener(new ActionListener()
@@ -282,6 +291,7 @@ public class MainWindow {
         constraints.gridy = 5;
         constraints.gridwidth = 3;
 		sidebar.add(attachButton, constraints);
+		
 		letAIPlay = new JButton("Let AI play");
 		letAIPlay.setVisible(false);
 		letAIPlay.addActionListener(new ActionListener(){
@@ -301,6 +311,27 @@ public class MainWindow {
         constraints.gridy = 6;
         constraints.gridwidth = 3;
         sidebar.add(letAIPlay, constraints);
+        
+        retreatButton = new JButton("Retreat pokemon");
+		retreatButton.setVisible(false);
+		retreatButton.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){
+				String side = "player";
+	    		String type = "retreat";
+	    		int index = 0;
+	    		
+	            synchronized(lock){
+	            	Message message = new Message(side, type, index);
+	                queue.add(message);
+	                lock.notifyAll();
+	            }
+			}
+		});
+		constraints.gridx = 0;
+        constraints.gridy = 7;
+        constraints.gridwidth = 3;
+        sidebar.add(retreatButton, constraints);
+        
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 2;
         constraints.gridy = 0;
@@ -361,7 +392,7 @@ public class MainWindow {
     	instructions.setText(text);
     }
     
-    public void displayCard(Card card, boolean showMakeActive, boolean showAddToBench, boolean showAttachToPokemon, boolean showAttacks, boolean showLetAIPlay){
+    public void displayCard(Card card, boolean showMakeActive, boolean showAddToBench, boolean showAttachToPokemon, boolean showAttacks, boolean showLetAIPlay, boolean showRetreat){
     	if (card != null) {
 	    	sidebarTitle.setText(card.getName());
 	    	sidebarText.setText(card.getDescription());
@@ -413,6 +444,13 @@ public class MainWindow {
     		sidebarTitle.setText("Undefined");
 	    	sidebarText.setText("No description");
     	}
+    	
+    	if (showRetreat){
+    		retreatButton.setVisible(true);
+    	} else {
+    		retreatButton.setVisible(false);
+    	}
+    	
     	displayedCard = card;
     	
     	sidebar.invalidate();
