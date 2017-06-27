@@ -37,4 +37,16 @@ public abstract class Player {
 	public boolean movePokemonToBench(PokemonCard pokemon){
 		return this.cardManager.movePokemonToBench(pokemon);
 	}
+	
+	public ArrayList<Card> getDeck(){
+		return this.cardManager.getDeck();
+	}
+	
+	public ArrayList<Card> getDiscard(){
+		return this.cardManager.getDiscard();
+	}
+	
+	public ArrayList<Card> getPrizeCards(){
+		return this.cardManager.getPrizeCards();
+	}
 }

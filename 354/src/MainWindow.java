@@ -136,11 +136,11 @@ public class MainWindow {
 
         AILeftSidebar = new JPanel();
         AILeftSidebar.setPreferredSize(new Dimension(200, 375));
-        JPanel AIDiscard = createJPanelFromStrings("Discard", "");
+        JPanel AIDiscard = createJPanelFromPile(autoPlayer.getDiscard(), "Discard");
         AILeftSidebar.add(AIDiscard);
-        JPanel AIDeck = createJPanelFromStrings("Deck", "");
+        JPanel AIDeck = createJPanelFromPile(autoPlayer.getDeck(), "Deck");
         AILeftSidebar.add(AIDeck);
-        JPanel AIPrizeCards = createJPanelFromStrings("Prize cards", "");
+        JPanel AIPrizeCards = createJPanelFromPile(autoPlayer.getPrizeCards(), "Prize Cards");
         AILeftSidebar.add(AIPrizeCards);
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 0;
@@ -156,11 +156,11 @@ public class MainWindow {
         
         playerLeftSidebar = new JPanel();
         playerLeftSidebar.setPreferredSize(new Dimension(200, 375));
-        JPanel playerPrizeCards = createJPanelFromStrings("Prize cards", "");
+        JPanel playerPrizeCards = createJPanelFromPile(player.getPrizeCards(), "Prize Cards");
         playerLeftSidebar.add(playerPrizeCards);
-        JPanel playerDeck = createJPanelFromStrings("Deck", "");
+        JPanel playerDeck = createJPanelFromPile(player.getDeck(), "Deck");
         playerLeftSidebar.add(playerDeck);
-        JPanel playerDiscard = createJPanelFromStrings("Discard", "");
+        JPanel playerDiscard = createJPanelFromPile(player.getDiscard(), "Discard");
         playerLeftSidebar.add(playerDiscard);
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 0;
@@ -553,6 +553,20 @@ public class MainWindow {
     	JButton button = new JButton(buttonName);
     	button.addActionListener(new GenericButtonActionListener());
     	JLabel description = new JLabel(descriptionString);
+    	card.add(button);
+    	card.add(description);
+    	return card;
+    }
+    
+    public JPanel createJPanelFromPile(ArrayList<Card> pile, String buttonName){
+    	JPanel card = new JPanel();
+    	card.setPreferredSize(new Dimension(100, 120));
+    	card.setBorder(BorderFactory.createLineBorder(Color.black));
+    	card.setLayout(new GridLayout(0,1));
+    	
+    	JButton button = new JButton(buttonName);
+    	button.addActionListener(new GenericButtonActionListener());
+    	JLabel description = new JLabel(pile.size() + " cards");
     	card.add(button);
     	card.add(description);
     	return card;

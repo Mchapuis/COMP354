@@ -179,4 +179,16 @@ public class CardManager {
 		}
 		return null;
 	}
+	
+	public ArrayList<Card> getDiscard(){
+		return this.discardPile;
+	}
+	
+	public ArrayList<Card> getDeck(){
+		return this.deck.getCards();
+	}
+	
+	public ArrayList<Card> getPrizeCards(){
+		return this.prizeCards;
+	}
 }
