@@ -34,4 +34,7 @@ public abstract class Player {
 		this.cardManager.addCardToHandFromDeck(0);
 	}
 	
+	public boolean movePokemonToBench(PokemonCard pokemon){
+		return this.cardManager.movePokemonToBench(pokemon);
+	}
 }

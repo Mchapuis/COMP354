@@ -140,9 +140,13 @@ public class CardManager {
 		hand.remove(pokemon);
 	}
 	
-	public void movePokemonToBench(PokemonCard pokemon){
-		bench.add(pokemon);
-		hand.remove(pokemon);
+	public boolean movePokemonToBench(PokemonCard pokemon){
+		if (bench.size() <= 5){
+			bench.add(pokemon);
+			hand.remove(pokemon);
+			return true;
+		}
+		return false;
 	}
 	
 	public void addPrizeCardToHand(Card card){
@@ -166,5 +170,13 @@ public class CardManager {
 	
 	public PokemonCard getFirstCardOfBench(){
 		return this.bench.get(0);
+	}
+	
+	public PokemonCard getNextPokemon(int index){
+		for (; index < hand.size(); index++){
+			Card card = hand.get(index);
+			if (card instanceof PokemonCard) return (PokemonCard) card;
+		}
+		return null;
 	}
 }

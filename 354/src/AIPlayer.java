@@ -13,6 +13,16 @@ public class AIPlayer extends Player {
 		cardManager.setActivePokemon(selectedPokemon);
 	}
 	
+	public void moveAllPokemonToBench(){
+		int index = 0;
+		boolean success = true;
+		while (success == true){
+			PokemonCard nextPoke = cardManager.getNextPokemon(index);
+			if (nextPoke != null) success = movePokemonToBench(nextPoke);
+			else success = false;
+		}
+	}
+	
 	public void moveCardFromHandToBottomOfDeck(){
 		Card firstCard = cardManager.getFirstCardOfHand();
 		cardManager.moveCardFromHandToBottomOfDeck(firstCard);
@@ -24,6 +34,8 @@ public class AIPlayer extends Player {
 		if (firstEnergy != null){
 			cardManager.attachEnergy(firstEnergy, getActivePokemon());
 		}
+		
+		moveAllPokemonToBench();
 		
 		String resultString = "";
 		int numberOfAttacks = getActivePokemon().getAbilities().size();

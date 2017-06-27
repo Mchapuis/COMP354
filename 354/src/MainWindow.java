@@ -26,6 +26,7 @@ public class MainWindow {
     private JLabel sidebarTitle = null;
     private JLabel sidebarText = null;
     private JButton makeActiveButton = null;
+    private JButton addToBenchButton = null;
     private JButton attachButton = null;
     private JButton attack1 = null;
     private JButton attack2 = null;
@@ -239,6 +240,27 @@ public class MainWindow {
         constraints.gridy = 4;
         constraints.gridwidth = 3;
 		sidebar.add(makeActiveButton, constraints);
+		addToBenchButton = new JButton("Add pokemon to bench");
+		addToBenchButton.setVisible(false);
+		addToBenchButton.addActionListener(new ActionListener()
+		{
+		    public void actionPerformed(ActionEvent e)
+		    {
+		    	String side = "player";
+	    		String type = "addtobench";
+	    		int index = 0;
+	    		
+	            synchronized(lock){
+	            	Message message = new Message(side, type, index);
+	                queue.add(message);
+	                lock.notifyAll();
+	            }
+		    }
+		});
+		constraints.gridx = 0;
+        constraints.gridy = 5;
+        constraints.gridwidth = 3;
+		sidebar.add(addToBenchButton, constraints);
 		attachButton = new JButton("Attach to a pokemon");
 		attachButton.setVisible(false);
 		attachButton.addActionListener(new ActionListener()
@@ -339,7 +361,7 @@ public class MainWindow {
     	instructions.setText(text);
     }
     
-    public void displayCard(Card card, boolean showMakeActive, boolean showAttachToPokemon, boolean showAttacks, boolean showLetAIPlay){
+    public void displayCard(Card card, boolean showMakeActive, boolean showAddToBench, boolean showAttachToPokemon, boolean showAttacks, boolean showLetAIPlay){
     	if (card != null) {
 	    	sidebarTitle.setText(card.getName());
 	    	sidebarText.setText(card.getDescription());
@@ -348,6 +370,12 @@ public class MainWindow {
 	    		makeActiveButton.setVisible(true);
 	    	} else {
 	    		makeActiveButton.setVisible(false);
+	    	}
+	    	
+	    	if (showAddToBench){
+	    		addToBenchButton.setVisible(true);
+	    	} else {
+	    		addToBenchButton.setVisible(false);
 	    	}
 	    	
 	    	if (showAttachToPokemon){
@@ -424,6 +452,21 @@ public class MainWindow {
     	AIHandContainer.repaint();
     }
     
+    public void updateAIBench(){
+    	AIBenchContainer.removeAll();
+		int i = 0;
+		for (Card c : autoPlayer.getBench()){
+			AIBenchContainer.add(createJPanelFromCard(c));
+			i++;
+		}
+		for (; i < 5; i++){
+			AIBenchContainer.add(createJPanelFromCard(null));
+		}
+		AIBenchContainer.invalidate();
+		AIBenchContainer.validate();
+		AIBenchContainer.repaint();
+    }
+    
     public void setPlayerActivePokemon(){
     	playerActivePokemonContainer.removeAll();
     	playerActivePokemonContainer.add(createJPanelFromCard(player.getActivePokemon()));
@@ -443,6 +486,7 @@ public class MainWindow {
     public void updatePlayerSide(){
     	updatePlayerActivePokemon();
     	updatePlayerHand();
+    	updatePlayerBench();
     }
     
     public void updatePlayerActivePokemon(){
@@ -461,6 +505,21 @@ public class MainWindow {
     	playerHandContainer.invalidate();
     	playerHandContainer.validate();
     	playerHandContainer.repaint();
+    }
+    
+    public void updatePlayerBench(){
+    	playerBenchContainer.removeAll();
+    	int i = 0;
+    	for (Card c : player.getBench()){
+    		playerBenchContainer.add(createJPanelFromCard(c));
+    		i++;
+    	}
+    	for (; i < 5; i++){
+    		playerBenchContainer.add(createJPanelFromCard(null));
+    	}
+    	playerBenchContainer.invalidate();
+    	playerBenchContainer.validate();
+    	playerBenchContainer.repaint();
     }
 
     public JPanel createJPanelFromCard(Card c){

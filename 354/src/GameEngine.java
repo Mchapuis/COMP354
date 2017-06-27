@@ -31,7 +31,10 @@ public class GameEngine {
 		
 		//have AI player select an active pokemon
 		autoPlayer.selectActivePokemon();
+		autoPlayer.moveAllPokemonToBench();
 		w.updateAIActivePokemon();
+		w.updateAIHand();
+		w.updateAIBench();
 		
 		w.display();
 		
@@ -61,6 +64,7 @@ public class GameEngine {
         Card cardToDisplay;
         boolean showMakeActive = false;
         boolean showAttachToPokemon = false;
+        boolean showAddToBench = false;
         boolean showAttacks = false;
         boolean showLetAIPlay = false;
         
@@ -102,6 +106,8 @@ public class GameEngine {
         			
         		/* if energy has not yet been attached this turn and the card clicked on is an energy card, show the 
         		 * option to attach this energy card to a pokemon */
+        		} else if (hasSelectedActive && cardToDisplay.getClass().toString().equals("class PokemonCard")){
+        			showAddToBench = true;
         		} else if (!hasClickedAttach && !hasAttachedEnergy && cardToDisplay.getClass().toString().equals("class EnergyCard")){
         			showAttachToPokemon = true;
         			w.updateInstructions("Now click a pokemon you want to attach the energy card to.");
@@ -116,7 +122,7 @@ public class GameEngine {
         		w.setPlayerActivePokemon();
         		w.updatePlayerHand();
         		w.updateInstructions("(Optional) Click on an energy card to select it. Then click \"Attach to a pokemon\" in the sidebar on the right. "
-        				+ "If you don't want to attach energy, click on your active pokemon to see its attacks.");
+        				+ "If you don't want to attach energy, click on your active pokemon to see its attacks. You may also add po");
         		
         		/* set the card to display */
         		cardToDisplay = player.getActivePokemon();
@@ -126,6 +132,13 @@ public class GameEngine {
         		hasSelectedActive = true;
         		
         	/* if "attach to a pokemon clicked */
+        	} else if (msg.getType() == Message.ButtonType.ADDTOBENCH){
+        		cardToDisplay = player.getHand().get(msg.getIndex());
+        		
+        		player.movePokemonToBench((PokemonCard)w.getDisplayedCard());
+        		
+        		w.updatePlayerHand();
+        		w.updatePlayerBench();
         	} else if (msg.getType() == Message.ButtonType.ATTACHENERGY){
         		/* get the energy card that was clicked on */
         		EnergyCard energy = (EnergyCard)w.getDisplayedCard();
@@ -248,7 +261,7 @@ public class GameEngine {
         }
         
         /* display the card that was clicked on */
-        w.displayCard(cardToDisplay, showMakeActive, showAttachToPokemon, showAttacks, showLetAIPlay);
+        w.displayCard(cardToDisplay, showMakeActive, showAddToBench, showAttachToPokemon, showAttacks, showLetAIPlay);
         
         return cardToDisplay;
 	}
