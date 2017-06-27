@@ -19,6 +19,7 @@ public class AIPlayer extends Player {
 	}
 	
 	public String playTurn(){
+		drawCard();
 		EnergyCard firstEnergy = cardManager.getFirstEnergy();
 		if (firstEnergy != null){
 			cardManager.attachEnergy(firstEnergy, getActivePokemon());

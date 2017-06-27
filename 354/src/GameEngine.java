@@ -222,6 +222,10 @@ public class GameEngine {
         		hasClickedAttach = false;
         		hasAttachedEnergy = false;
         		cardToDisplay = null;
+        		
+        		/* draw a card */
+        		player.drawCard();
+        		w.updatePlayerHand();
         	}
         
         /* if AI side clicked just display the card */

@@ -30,4 +30,8 @@ public abstract class Player {
 		this.cardManager.attachEnergy(energy, pokemon);
 	}
 	
+	public void drawCard(){
+		this.cardManager.addCardToHandFromDeck(0);
+	}
+	
 }
