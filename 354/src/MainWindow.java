@@ -18,6 +18,7 @@ public class MainWindow {
     private JPanel playerBenchContainer = null;
     private JPanel playerActivePokemonContainer = null;
     private JPanel playerLeftSidebar = null;
+    private JPanel playerDeckContainer = null;
     private JPanel playerSide = null;
     
     private JLabel instructions = null;
@@ -38,14 +39,15 @@ public class MainWindow {
     private JPanel AIBenchContainer = null;
     private JPanel AIActivePokemonContainer = null;
     private JPanel AILeftSidebar = null;
+    private JPanel AIDeckContainer = null;
     private JPanel AISide = null;
     
     public class GenericButtonActionListener implements ActionListener{
     	
     	public void actionPerformed(ActionEvent e)
         {
-    		String side;
-    		String type;
+    		String side = "";
+    		String type = "";
     		int index = 0;
     		
     		JPanel buttonParent = (JPanel)((JButton)e.getSource()).getParent();
@@ -78,9 +80,15 @@ public class MainWindow {
     		} else if (container.equals(playerHandContainer)){
     			side = "player";
     			type = "hand";
-    		} else {
+    		} else if (container.equals(AIHandContainer)){
     			side = "AI";
     			type = "hand";
+    		} else if (container.equals(playerDeckContainer)) {
+    			side = "player";
+    			type = "deck";
+    		} else if (container.equals(AIDeckContainer)){
+    			side = "AI";
+    			type = "deck";
     		}
     		
             synchronized(lock){
@@ -140,7 +148,9 @@ public class MainWindow {
         JPanel AIDiscard = createJPanelFromPile(autoPlayer.getDiscard(), "Discard");
         AILeftSidebar.add(AIDiscard);
         JPanel AIDeck = createJPanelFromPile(autoPlayer.getDeck(), "Deck");
-        AILeftSidebar.add(AIDeck);
+        AIDeckContainer = new JPanel();
+        AIDeckContainer.add(AIDeck);
+        AILeftSidebar.add(AIDeckContainer);
         JPanel AIPrizeCards = createJPanelFromPile(autoPlayer.getPrizeCards(), "Prize Cards");
         AILeftSidebar.add(AIPrizeCards);
         constraints.fill = GridBagConstraints.HORIZONTAL;
@@ -160,7 +170,9 @@ public class MainWindow {
         JPanel playerPrizeCards = createJPanelFromPile(player.getPrizeCards(), "Prize Cards");
         playerLeftSidebar.add(playerPrizeCards);
         JPanel playerDeck = createJPanelFromPile(player.getDeck(), "Deck");
-        playerLeftSidebar.add(playerDeck);
+        playerDeckContainer = new JPanel();
+        playerDeckContainer.add(playerDeck);
+        playerLeftSidebar.add(playerDeckContainer);
         JPanel playerDiscard = createJPanelFromPile(player.getDiscard(), "Discard");
         playerLeftSidebar.add(playerDiscard);
         constraints.fill = GridBagConstraints.HORIZONTAL;
@@ -472,12 +484,14 @@ public class MainWindow {
     
     public void updateAISide(){
     	updateAIActivePokemon();
+    	updateAIHand();
+    	updateAIBench();
     }
     
     public void updateAIActivePokemon(){
     	AIActivePokemonContainer.removeAll();
-    	AIActivePokemonContainer.add(createJPanelFromCard(autoPlayer.getActivePokemon()));
-    	updateAIHand();
+    	//AIActivePokemonContainer.add(createJPanelFromCard(autoPlayer.getActivePokemon()));
+    	//updateAIHand();
     }
     
     public void updateAIHand(){

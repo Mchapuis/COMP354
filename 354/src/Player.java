@@ -53,4 +53,20 @@ public abstract class Player {
 	public void retreatPokemon(PokemonCard cardToSwapWith){
 		this.cardManager.retreatPokemon(cardToSwapWith);
 	}
+	
+	public void collectPrizeCard(){
+		this.cardManager.collectPrizeCard();
+	}
+	
+	public PokemonCard getFirstPokemon(){
+		return this.cardManager.getFirstPokemon();
+	}
+	
+	public void selectHand(){
+		this.cardManager.selectHand();
+	}
+	
+	public PokemonCard getFirstCardOfBench(){
+		return this.cardManager.getFirstCardOfBench();
+	}
 }

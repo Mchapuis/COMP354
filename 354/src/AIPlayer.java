@@ -54,7 +54,7 @@ public class AIPlayer extends Player {
 	public String attack(int attackIndex){
 		String resultString = "";
 		Ability ability = getActivePokemon().getAbilities().get(attackIndex);
-		if (getActivePokemon().hasEnoughEnergy(attackIndex)){
+		if (getActivePokemon().hasEnoughEnergyForAttack(attackIndex)){
 			resultString = ability.use(Ability.Player.AI);
 		}
 		return resultString;

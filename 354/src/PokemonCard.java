@@ -23,6 +23,7 @@ public class PokemonCard extends Card {
 	private ArrayList<Ability> abilities;
 	private ArrayList<EnergyCard> energy;
 	private int numColorlessEnergy;
+	private boolean knockedOut;
 
 	private boolean hasBeenHealed = false;
 	
@@ -39,6 +40,7 @@ public class PokemonCard extends Card {
 		this.abilities = new ArrayList<Ability>();
 		this.energy = new ArrayList<EnergyCard>();
 		this.numColorlessEnergy = 0;
+		this.knockedOut = false;
 	}
 	
 	public PokemonCard(String name, String description, String cat, String type, int maxHP, int energyToRetreat){
@@ -169,6 +171,10 @@ public class PokemonCard extends Card {
 	
 	public void removeHP(int points){
 		this.currentHP -= points;
+		if (this.currentHP <= 0) {
+			knockedOut = true;
+			this.currentHP = 0;
+		}
 	}
 	
 	public boolean hasEnoughEnergyForAttack(int attackIndex){
@@ -239,6 +245,10 @@ public class PokemonCard extends Card {
 	}
 	public void setHasBeenHealed(boolean healed){
 		this.hasBeenHealed = healed;
+	}
+	
+	public boolean getKnockedOut(){
+		return this.knockedOut;
 	}
 	
 }

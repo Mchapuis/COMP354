@@ -51,7 +51,7 @@ public class CardManager {
 			hand.add(card);
 		}
 		
-		while (getFirstPokemon() == null){
+		/*while (getFirstPokemon() == null){
 			Iterator<Card> it = hand.iterator();
 			
 			while (it.hasNext()){
@@ -65,7 +65,7 @@ public class CardManager {
 				Card card = deck.pop();
 				hand.add(card);
 			}
-		}
+		}*/
 	}
 	
 	public void selectPrizeCards(){
@@ -198,5 +198,13 @@ public class CardManager {
 		setActivePokemon(cardToSwapWith);
 		bench.remove(index);
 		bench.add(index, temp);
+	}
+	
+	public void collectPrizeCard(){
+		if (prizeCards.size() > 0){
+			Card prizeCard = prizeCards.get(0);
+			hand.add(prizeCard);
+			prizeCards.remove(0);
+		}
 	}
 }

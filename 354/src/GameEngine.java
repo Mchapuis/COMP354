@@ -2,6 +2,7 @@ import java.util.*;
 
 public class GameEngine {
 	
+	//instantiate players - this builds their decks, selects a hand and selects 6 prize cards
 	private static AIPlayer autoPlayer = new AIPlayer();
 	private static HumanPlayer player = new HumanPlayer();
 	
@@ -14,28 +15,62 @@ public class GameEngine {
     private static boolean hasAttachedEnergy = false;
     private static boolean mustMoveCardToBottomOfDeck = false;
     private static boolean mustChoosePokemonToSwap = false;
+    private static boolean mustClickOnDeck = false;
+    private static boolean playerMulligan = false;
 
 	public static void main(String[] args) {        
 		MainWindow.lock = lock;
         MainWindow.queue = queue;
         
-        Ability.playerCardManager = player.cardManager;
-        Ability.AICardManager = autoPlayer.cardManager;
-		
-		//instantiate players - this builds their decks, selects a hand and selects 6 prize cards
-		
-		w = new MainWindow(autoPlayer, player);
-		
-		w.updateInstructions("Choose a pokemon to be your active pokemon.");
-		
-		//have AI player select an active pokemon
-		autoPlayer.selectActivePokemon();
+        w = new MainWindow(autoPlayer, player);
+        
+        while (autoPlayer.getFirstPokemon() == null && player.getFirstPokemon() == null) {
+        	autoPlayer.selectHand();
+        	player.selectHand();
+        } 
+        
+        while (autoPlayer.getFirstPokemon() == null){
+        	w.updateInstructions("AI player called for a mulligan. Click on your deck to draw an extra card.");
+        
+        	playerMulligan = false;
+        	mustClickOnDeck = true;
+        	waitForInput();
+        	Card card = handleButtonPress();
+        	while (card == null){
+        		waitForInput();
+        		card = handleButtonPress();
+        	}
+        	
+        	autoPlayer.selectHand();
+        }
+        
+        while (player.getFirstPokemon() == null) {
+        	w.updateInstructions("Your hand has no pokemon cards. Click on your deck to call a mulligan.");
+        	
+        	playerMulligan = true;
+        	mustClickOnDeck = true;
+        	waitForInput();
+        	Card card = handleButtonPress();
+        	while (card == null){
+        		waitForInput();
+        		card = handleButtonPress();
+        	}
+        	
+        	player.selectHand();
+        }
+        
+        autoPlayer.selectActivePokemon();
 		autoPlayer.moveAllPokemonToBench();
 		w.updateAIActivePokemon();
 		w.updateAIHand();
 		w.updateAIBench();
 		
 		w.display();
+		
+        Ability.playerCardManager = player.cardManager;
+        Ability.AICardManager = autoPlayer.cardManager;
+		
+		w.updateInstructions("Choose a pokemon to be your active pokemon.");
 		
 		while(true){
             if(queue.isEmpty()){
@@ -70,15 +105,30 @@ public class GameEngine {
         
         /* if this move is supposed to choose a card from the hand to move to the deck */
         if (mustMoveCardToBottomOfDeck){
-        	if (msg.getSide() == Message.Side.PLAYER && msg.getType() == Message.ButtonType.HAND)
+        	if (msg.getSide() == Message.Side.PLAYER && msg.getType() == Message.ButtonType.HAND){
+        		mustMoveCardToBottomOfDeck = false;
         		return player.getHand().get(msg.getIndex());
+        	}
         	return null;
 		}
         
         if (mustChoosePokemonToSwap){
-        	if (msg.getSide() == Message.Side.PLAYER && msg.getType() == Message.ButtonType.BENCH)
+        	if (msg.getSide() == Message.Side.PLAYER && msg.getType() == Message.ButtonType.BENCH){
+        		mustChoosePokemonToSwap = false;
         		return player.getBench().get(msg.getIndex());
+        	}
         	return null;
+        }
+        
+        if (mustClickOnDeck){
+        	if (msg.getSide() == Message.Side.PLAYER && msg.getType() == Message.ButtonType.DECK){
+        		if (playerMulligan) {
+        			autoPlayer.drawCard();
+        		} else {
+        			player.drawCard();
+        		}
+        		mustClickOnDeck = false;
+        	}
         }
         
         /* if player side clicked */
@@ -119,6 +169,10 @@ public class GameEngine {
         			showAttachToPokemon = true;
         			w.updateInstructions("Now click a pokemon you want to attach the energy card to.");
         		}
+        		
+        	/* if deck clicked */
+        	} else if (msg.getType() == Message.ButtonType.DECK){
+        		cardToDisplay = makeCardFromPile(player.getDeck());
         		
         	/* if "make active pokemon" button clicked */
         	} else if (msg.getType() == Message.ButtonType.MAKEACTIVE){
@@ -186,6 +240,14 @@ public class GameEngine {
             		/* carry out the attack */
         			resultString = player.attack(msg.getIndex());
         			
+        			if (autoPlayer.getActivePokemon().getKnockedOut()){
+        				player.collectPrizeCard();
+        				resultString += " The opponent's active pokemon was knocked out! A prize card has been added to your hand.";
+        				if (player.getPrizeCards().size() == 0) {
+        					resultString += "<br/>YOU WON!!!!!!!";
+        				}
+        			}
+        			
         			/* update the view */
         			w.updateInstructions("Your turn is done. " + resultString);
         		} else {
@@ -203,6 +265,15 @@ public class GameEngine {
         	} else if (msg.getType() == Message.ButtonType.LETAIPLAY) {
         		/* get the result of AI playing a turn */
         		String resultString = autoPlayer.playTurn();
+        		
+        		if (player.getActivePokemon().getKnockedOut()) {
+        			autoPlayer.collectPrizeCard();
+        			resultString += "Your active pokemon was knocked out! Your opponent collected a prize card.";
+        			
+        			if (autoPlayer.getPrizeCards().size() == 0){
+        				resultString += "<br/>You lost the game.";
+        			}
+        		}
         		
         		/* update the view */
         		w.updateAISide();
@@ -345,16 +416,21 @@ public class GameEngine {
 			}
 		} else {
 			if (target == Ability.Target.OPPONENT_BENCH){
-				cardToReturn = player.cardManager.getFirstCardOfBench();
+				cardToReturn = player.getFirstCardOfBench();
 			} else if (target == Ability.Target.YOUR_BENCH){
-				cardToReturn = autoPlayer.cardManager.getFirstCardOfBench();
+				cardToReturn = autoPlayer.getFirstCardOfBench();
 			} else if (target == Ability.Target.OPPONENT_POKEMON){
-				cardToReturn = player.cardManager.getActivePokemon();
+				cardToReturn = player.getActivePokemon();
 			} else {
-				cardToReturn = autoPlayer.cardManager.getFirstCardOfBench();
+				cardToReturn = autoPlayer.getFirstCardOfBench();
 			}
 		}
 		return cardToReturn;
+	}
+	
+	public static Card makeCardFromPile(ArrayList<Card> pile){
+		Card card = new GenericCard(pile.size());
+		return card;
 	}
 	
 }
