@@ -490,8 +490,8 @@ public class MainWindow {
     
     public void updateAIActivePokemon(){
     	AIActivePokemonContainer.removeAll();
-    	//AIActivePokemonContainer.add(createJPanelFromCard(autoPlayer.getActivePokemon()));
-    	//updateAIHand();
+    	AIActivePokemonContainer.add(createJPanelFromCard(autoPlayer.getActivePokemon()));
+    	updateAIHand();
     }
     
     public void updateAIHand(){

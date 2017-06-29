@@ -263,6 +263,8 @@ public class GameEngine {
         		
         	/* if "let AI play" button clicked */
         	} else if (msg.getType() == Message.ButtonType.LETAIPLAY) {
+        		cardToDisplay = player.getActivePokemon();
+        		
         		/* get the result of AI playing a turn */
         		String resultString = autoPlayer.playTurn();
         		
@@ -273,6 +275,9 @@ public class GameEngine {
         			if (autoPlayer.getPrizeCards().size() == 0){
         				resultString += "<br/>You lost the game.";
         			}
+        			
+        			player.discardActivePokemon();
+        			hasSelectedActive = false;
         		}
         		
         		/* update the view */

@@ -69,4 +69,8 @@ public abstract class Player {
 	public PokemonCard getFirstCardOfBench(){
 		return this.cardManager.getFirstCardOfBench();
 	}
+	
+	public void discardActivePokemon(){
+		this.cardManager.discardActivePokemon();
+	}
 }
