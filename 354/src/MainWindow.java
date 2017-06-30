@@ -5,7 +5,7 @@ import java.util.*;
 
 public class MainWindow {
 	public static Object lock;
-    public static PriorityQueue<Message> queue;
+    public static Queue<Message> queue;
 	
     private static final int BENCH_SIZE = 5;
     private JFrame mainFrame = null;
@@ -292,7 +292,7 @@ public class MainWindow {
         constraints.gridwidth = 3;
 		sidebar.add(attachButton, constraints);
 		
-		letAIPlay = new JButton("Let AI play");
+		letAIPlay = new JButton("End Turn");
 		letAIPlay.setVisible(false);
 		letAIPlay.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
@@ -457,6 +457,41 @@ public class MainWindow {
     	sidebar.validate();
     	sidebar.repaint();
     }
+
+    public void displayCard(Message m){
+        Card cardToBeDisplayed = null;
+        CardManager sourceCardManager = null;
+        boolean isPlayers = false;
+
+        if(m.getSide() == Message.Side.PLAYER){
+           sourceCardManager = player.cardManager;
+           isPlayers = true;
+        }
+        else{
+            sourceCardManager = autoPlayer.cardManager;
+        }
+
+        switch(m.getType()){
+            case ACTIVE:
+                cardToBeDisplayed = sourceCardManager.getActivePokemon();
+                displayCard(cardToBeDisplayed, false, false, false, isPlayers, true, isPlayers);
+                break;
+            case BENCH:
+                if(m.getIndex() < sourceCardManager.getBench().size()){
+                    cardToBeDisplayed = sourceCardManager.getBench().get(m.getIndex());
+                    displayCard(cardToBeDisplayed, isPlayers, false, false, false, true, false);
+                }
+                break;
+            case HAND:
+                if(m.getIndex() < sourceCardManager.getHand().size()){
+                    cardToBeDisplayed = sourceCardManager.getHand().get(m.getIndex());
+                    boolean isCat1Pokemon = cardToBeDisplayed instanceof PokemonCard && ((PokemonCard) cardToBeDisplayed).getCat() == PokemonCard.Category.BASIC;
+                    boolean canAttachEnergy = cardToBeDisplayed instanceof EnergyCard && player.hasPlacedEnergy == false;
+                    displayCard(cardToBeDisplayed, isCat1Pokemon, isCat1Pokemon, canAttachEnergy, false, true, false);
+                }
+                break;
+        }
+    }
     
     public String getInstructions(){
     	return instructions.getText();
@@ -469,15 +504,26 @@ public class MainWindow {
     public void display(){
         mainFrame.setVisible(true);
     }
-    
+
+
+    public void updateAll(){
+    	updateAISide();
+    	updatePlayerSide();
+	}
+
     public void updateAISide(){
     	updateAIActivePokemon();
+    	updateAIHand();
+    	updateAIBench();
     }
     
     public void updateAIActivePokemon(){
     	AIActivePokemonContainer.removeAll();
     	AIActivePokemonContainer.add(createJPanelFromCard(autoPlayer.getActivePokemon()));
-    	updateAIHand();
+
+    	AIActivePokemonContainer.invalidate();
+    	AIActivePokemonContainer.validate();
+    	AIActivePokemonContainer.repaint();
     }
     
     public void updateAIHand(){

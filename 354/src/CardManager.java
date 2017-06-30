@@ -2,6 +2,8 @@ import java.util.*;
 
 public class CardManager {
 
+	public static final int STARTING_HAND_SIZE = 7;
+
 	private Deck deck;
 	private ArrayList<Card> hand;
 	private ArrayList<PokemonCard> bench;
@@ -77,17 +79,29 @@ public class CardManager {
 		}
 	}
 	
-	//returns first pokemon in the hand
+	//returns first basic pokemon in the hand
 	public PokemonCard getFirstPokemon(){
 		for (Card card : hand){
-			if (card instanceof PokemonCard) return (PokemonCard) card;
+			if (card instanceof PokemonCard){
+				PokemonCard pc = (PokemonCard) card;
+				if(pc.getCat() == PokemonCard.Category.BASIC){
+					return pc;
+				}
+			}
+
 		}
 		return null;
 	}
 	
 	public void setActivePokemon(PokemonCard pokemon){
 		activePokemon = pokemon;
-		hand.remove(pokemon);
+
+		if(hand.contains(pokemon)){
+			hand.remove(pokemon);
+		}
+		else if(bench.contains(pokemon)){
+			bench.remove(pokemon);
+		}
 	}
 	
 	public void removeActivePokemon(){
@@ -179,6 +193,13 @@ public class CardManager {
 		}
 		return null;
 	}
+
+	public void shuffleHandIntoDeck(){
+		for(Card c : hand){
+			deck.push(c);
+		}
+		deck.shuffle();
+	}
 	
 	public ArrayList<Card> getDiscard(){
 		return this.discardPile;
@@ -193,10 +214,21 @@ public class CardManager {
 	}
 	
 	public void retreatPokemon(PokemonCard cardToSwapWith){
-		int index = bench.indexOf(cardToSwapWith);
-		PokemonCard temp = activePokemon;
-		setActivePokemon(cardToSwapWith);
-		bench.remove(index);
-		bench.add(index, temp);
+		int amountToRemove = activePokemon.getEnergyToRetreat();
+
+		if(amountToRemove <= activePokemon.energy.size()){
+			for(int i = 0; i < amountToRemove; i++){
+				EnergyCard e = activePokemon.energy.remove(0);
+				discardPile.add(e);
+			}
+
+			int index = bench.indexOf(cardToSwapWith);
+			PokemonCard temp = activePokemon;
+			setActivePokemon(cardToSwapWith);
+			bench.add(index, temp);
+		}
+		else{
+			System.out.println("bork");
+		}
 	}
 }

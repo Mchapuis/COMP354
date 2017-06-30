@@ -9,8 +9,15 @@ public class AIPlayer extends Player {
 	}
 	
 	public void selectActivePokemon(){
-		PokemonCard selectedPokemon = cardManager.getFirstPokemon();
-		cardManager.setActivePokemon(selectedPokemon);
+		for(Card c : getHand()){
+			if(c instanceof PokemonCard){
+				PokemonCard pc = (PokemonCard) c;
+				if(pc.getCat() == PokemonCard.Category.BASIC){
+					setActivePokemon(pc);
+					break;
+				}
+			}
+		}
 	}
 	
 	public void moveAllPokemonToBench(){
@@ -27,36 +34,44 @@ public class AIPlayer extends Player {
 		Card firstCard = cardManager.getFirstCardOfHand();
 		cardManager.moveCardFromHandToBottomOfDeck(firstCard);
 	}
-	
-	public String playTurn(){
-		drawCard();
-		EnergyCard firstEnergy = cardManager.getFirstEnergy();
-		if (firstEnergy != null){
-			cardManager.attachEnergy(firstEnergy, getActivePokemon());
-		}
-		
-		moveAllPokemonToBench();
-		
-		String resultString = "";
-		int numberOfAttacks = getActivePokemon().getAbilities().size();
-		for (int i = numberOfAttacks - 1; i >= 0; i--){
-			resultString = attack(i);
-			if (!resultString.equals("")){
-				break;
-			}
-		}
-		
-		return resultString;
-	}
 
-	
-	
 	public String attack(int attackIndex){
 		String resultString = "";
 		Ability ability = getActivePokemon().getAbilities().get(attackIndex);
-		if (getActivePokemon().hasEnoughEnergy(attackIndex)){
+		if (getActivePokemon().hasEnoughEnergyForAttack(attackIndex)){
 			resultString = ability.use(Ability.Player.AI);
 		}
 		return resultString;
+	}
+
+	public void takeActions(){
+		//attach first energy in hand to active pokemon
+		EnergyCard firstEnergy = cardManager.getFirstEnergy();
+		if (firstEnergy != null && hasPlacedEnergy == false){
+			cardManager.attachEnergy(firstEnergy, getActivePokemon());
+			hasPlacedEnergy = true;
+		}
+
+		//move all pokemon available to bench
+		moveAllPokemonToBench();
+
+		//use first attack with available energy
+		int numberOfAttacks = getActivePokemon().getAbilities().size();
+		for (int i = numberOfAttacks - 1; i >= 0; i--){
+			String resultString = attack(i);
+			if (!resultString.equals("")){
+				turnOver = true;
+				break;
+			}
+		}
+
+		turnOver = true;
+	}
+
+	public void setup(){
+		this.selectActivePokemon();
+		this.moveAllPokemonToBench();
+
+		GameEngine.w.updateAISide();
 	}
 }

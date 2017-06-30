@@ -2,6 +2,37 @@ import java.util.ArrayList;
 
 public abstract class Player {
 
+	//turn variables
+	boolean hasPlacedEnergy = false;
+	boolean hasPlayedSupportCard = false;
+	boolean hasPlayedStadiumCard = false;
+	boolean hasRetreatedActivePokemon = false;
+	boolean turnOver = false;
+
+	private void resetTurnVariables(){
+		hasPlacedEnergy = false;
+		hasPlayedSupportCard = false;
+		hasPlayedStadiumCard = false;
+		hasRetreatedActivePokemon = false;
+		turnOver = false;
+	}
+
+	public void playTurn(){
+		resetTurnVariables();
+
+		this.drawCard();
+        GameEngine.w.updatePlayerSide();
+
+		while(!turnOver){
+			takeActions();
+			GameEngine.w.updateAll();
+		}
+
+
+	}
+
+	public abstract void takeActions();
+
 	protected CardManager cardManager;
 	
 	public abstract String attack(int attackIndex);
@@ -51,6 +82,16 @@ public abstract class Player {
 	}
 	
 	public void retreatPokemon(PokemonCard cardToSwapWith){
-		this.cardManager.retreatPokemon(cardToSwapWith);
+		if(! hasRetreatedActivePokemon){
+			this.cardManager.retreatPokemon(cardToSwapWith);
+			hasRetreatedActivePokemon = true;
+		}
+		else{
+			//send failure message
+		}
 	}
+
+	public abstract void setup();
+
+
 }

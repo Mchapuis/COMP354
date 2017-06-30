@@ -104,7 +104,6 @@ abstract class Ability {
                     returnAbility = new DrawAbility(description);
                     break;
                 case "cond":
-                    returnAbility = new ConditionAbility(description); //TODO:
                     returnAbility = new ConditionAbility(description);
                     break;
                 case "applystat":
@@ -165,6 +164,4 @@ abstract class Ability {
 		}
 		return Target.OPPONENT_ACTIVE;
 	}
-	
-	
 }

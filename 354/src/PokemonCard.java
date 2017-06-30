@@ -2,11 +2,11 @@ import java.util.*;
 
 public class PokemonCard extends Card {
 
-	private enum Category {
+	public enum Category {
 		BASIC, STAGEONE
 	}
 	
-	private enum Type {
+	public enum Type {
 		LIGHTNING, NORMAL, PSYCHIC, WATER
 	}
 	
@@ -21,7 +21,7 @@ public class PokemonCard extends Card {
 	private Status status;
 	private int currentHP;
 	private ArrayList<Ability> abilities;
-	private ArrayList<EnergyCard> energy;
+	public ArrayList<EnergyCard> energy;
 	private int numColorlessEnergy;
 
 	private boolean hasBeenHealed = false;
@@ -138,10 +138,6 @@ public class PokemonCard extends Card {
 		return this.description;
 	}
 	
-	public void attack(){
-		
-	}
-	
 	public void attachEnergy(EnergyCard e){
 		energy.add(e);
 		numColorlessEnergy++;
@@ -166,6 +162,10 @@ public class PokemonCard extends Card {
     public int getCurrentHP(){
 	    return currentHP;
     }
+
+    public Category getCat(){
+    	return cat;
+	}
 	
 	public void removeHP(int points){
 		this.currentHP -= points;
@@ -223,12 +223,10 @@ public class PokemonCard extends Card {
 	public void applyStatus(Status status){
 		this.status = status;
 	}
-	//TODO: remove this method when it is no longer being used by methods being refactored out
-	public void applyStatus(String status){
-		if (status.equals("PARALYZED")){
-			this.status = Status.PARALYZED;
-		}
-	}
+
+	public Status getStatus(){
+	    return status;
+    }
 	
 	public void setID(int ID){
 		this.ID = ID;
@@ -237,8 +235,13 @@ public class PokemonCard extends Card {
 	public boolean getHasBeenHealed(){
 		return hasBeenHealed;
 	}
+
 	public void setHasBeenHealed(boolean healed){
 		this.hasBeenHealed = healed;
 	}
-	
+
+	public int getEnergyToRetreat(){
+	    return energyToRetreat;
+    }
+
 }
