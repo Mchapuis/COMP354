@@ -96,9 +96,10 @@ public class ConditionAbility extends Ability{
         int indexOfElse = -1;
         for(int i = 0; i < description.length; i++){
             if(description[i].equals("else")){
-                indexOfElse = i;
+                indexOfElse = i+1;
                 try{
-                    elseAbility = makeAbility(Arrays.copyOfRange(description, i, description.length));
+                    String[] newDescription = Arrays.copyOfRange(description, indexOfElse, description.length);
+                    elseAbility = makeAbility(newDescription);
                 }catch(Exception e){
                     elseAbility = new UnimplementedAbility();
                 }
@@ -225,7 +226,7 @@ public class ConditionAbility extends Ability{
         }
 
         if(elseAbility != null){
-    	    returnString += "<br/>Otherwise, " + conditionalAbility.getRecursiveDescription();
+    	    returnString += "<br/>Otherwise, " + elseAbility.getRecursiveDescription();
         }
 
         return returnString;
