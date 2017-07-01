@@ -104,22 +104,8 @@ public class ApplyStatAbility extends Ability{
 
     }
     
-    public String getDescription(){
-    	String desc = "Name: " + this.name;
-    	desc += "<br/>";
-    	desc += "Status to apply: ";
-    	desc += this.givenStatus;
-    	desc += "<br/>";
-    	desc += "Energy required: ";
-		desc += "<br/>";
-		for (Entry<EnergyCard, Integer> entry : energyRequired.entrySet()){
-			desc += "&nbsp;&nbsp;&nbsp;";
-			desc += entry.getKey().getType();
-			desc += ": ";
-			desc += entry.getValue();
-			desc += "<br/>";
-		}
-    	return desc;
+    public String getSimpleDescription(){
+        return "Apply status: " + givenStatus.toString() + " to " + targetType.toString();
     }
 
 }

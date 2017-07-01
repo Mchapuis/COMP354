@@ -206,19 +206,29 @@ public class ConditionAbility extends Ability{
         }
     }
     
-    public String getDescription(){
-    	String desc = "";
-    	desc += "Name: " + name + "<br/>";
-		desc += "Energy required: ";
-		desc += "<br/>";
-		for (Map.Entry<EnergyCard, Integer> entry : energyRequired.entrySet()){
-			desc += "&nbsp;&nbsp;&nbsp;";
-			desc += entry.getKey().getType();
-			desc += ": ";
-			desc += entry.getValue();
-			desc += "<br/>";
-		}
-    	return desc;
+    public String getSimpleDescription(){
+    	String returnString = "";
+
+    	switch (condType){
+            case ABILITY:
+                returnString += "If subsequent ability is used, then " + conditionalAbility.getRecursiveDescription();
+                break;
+            case CHOICE:
+                returnString += "Player's choice to " + conditionalAbility.getRecursiveDescription();
+                break;
+            case FLIP:
+                returnString += "50% chance to " + conditionalAbility.getRecursiveDescription();
+                break;
+            case HEALED:
+                returnString += "If target has been healed, then " + conditionalAbility.getRecursiveDescription();
+                break;
+        }
+
+        if(elseAbility != null){
+    	    returnString += "<br/>Otherwise, " + conditionalAbility.getRecursiveDescription();
+        }
+
+        return returnString;
     }
 
 }

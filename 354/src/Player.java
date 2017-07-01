@@ -27,6 +27,10 @@ public abstract class Player {
 			takeActions();
 			GameEngine.checkForKnockouts();
 			GameEngine.w.updateAll();
+
+			if(GameEngine.winnerFound()){
+				turnOver = true;
+			}
 		}
 
 
@@ -63,7 +67,9 @@ public abstract class Player {
 	}
 	
 	public void drawCard(){
-		this.cardManager.addCardToHandFromDeck(0);
+		if(cardManager.getDeck().size() > 0){
+			this.cardManager.addCardToHandFromDeck(0);
+		}
 	}
 	
 	public boolean movePokemonToBench(PokemonCard pokemon){

@@ -1,4 +1,5 @@
 import java.util.HashMap;
+import java.util.Map.Entry;
 
 //TODO: add to subclasses ability to handle complicated [amount]
 abstract class Ability {
@@ -32,7 +33,28 @@ abstract class Ability {
     }
 
     public abstract String realUse(Player player);
-    public abstract String getDescription();
+
+	public String getDescription(){
+        return getBaseDescription() + "<br/>" + getRecursiveDescription();
+	}
+
+	public String getBaseDescription(){
+        String desc = "Name: " + this.name;
+        desc += "<br/>";
+        desc += "Energy required: ";
+        for (Entry<EnergyCard, Integer> entry : energyRequired.entrySet()){
+            desc += "<br/>";
+            desc += "&nbsp;&nbsp;&nbsp;";
+            desc += entry.getKey().getType();
+            desc += ": ";
+            desc += entry.getValue();
+        }
+        return desc;
+    }
+	protected String getRecursiveDescription(){
+	    return (subsequentAbility == null)? "<br/>"+getSimpleDescription():"<br/>"+getSimpleDescription()+subsequentAbility.getRecursiveDescription();
+    }
+    protected abstract String getSimpleDescription();
 
 	public void setName(String name){
 		this.name = name;

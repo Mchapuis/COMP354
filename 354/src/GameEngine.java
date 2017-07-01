@@ -39,15 +39,33 @@ public class GameEngine {
 		//play game until there is a winner
 		boolean gameEnded = false;
 		while(!gameEnded){
+
+		    //check win (lose) condition of having no cards to draw
+		    if(currentPlayer.getDeck().size() == 0){
+		        if(currentPlayer == player){
+		            declareWinner(Ability.Player.PLAYER);
+                }
+                else{
+		            declareWinner(Ability.Player.AI);
+                }
+                break;
+            }
+
 			currentPlayer.playTurn();
 
-			//updateStatusEffects(); //e.g.; burns do damage between turns; sleeping pokémon have chance to wake up
+			if(winnerFound()){ break; }
 
-			//checkWinConditions();
+			//TODO updateStatusEffects(); //e.g.; burns do damage between turns; sleeping pokémon have chance to wake up
+
+            if(winnerFound()){ break; }
 
 			switchTurn();
 		}
-	}
+
+
+		//TODO showWinScreen();
+        System.out.println("end");
+    }
 
 	private static void switchTurn(){
 		if(currentPlayer == player){
@@ -276,4 +294,8 @@ public class GameEngine {
 				break;
 		}
 	}
+
+	public static boolean winnerFound(){
+	    return winner != null;
+    }
 }

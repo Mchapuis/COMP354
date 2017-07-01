@@ -163,7 +163,7 @@ public class CardManager {
 		return false;
 	}
 	
-	public void addPrizeCardToHand(Card card){
+	private void addPrizeCardToHand(Card card){
 		hand.add(card);
 		prizeCards.remove(card);
 	}
