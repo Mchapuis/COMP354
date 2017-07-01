@@ -25,6 +25,7 @@ public abstract class Player {
 
 		while(!turnOver){
 			takeActions();
+			GameEngine.checkForKnockouts();
 			GameEngine.w.updateAll();
 		}
 
@@ -92,6 +93,8 @@ public abstract class Player {
 	}
 
 	public abstract void setup();
+
+	public abstract boolean chooseNewActivePokemon();
 
 
 }

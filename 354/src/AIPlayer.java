@@ -38,8 +38,19 @@ public class AIPlayer extends Player {
 	public String attack(int attackIndex){
 		String resultString = "";
 		Ability ability = getActivePokemon().getAbilities().get(attackIndex);
-		if (getActivePokemon().hasEnoughEnergyForAttack(attackIndex)){
+
+		if(!getActivePokemon().hasEnoughEnergyForAttack(attackIndex)){
+			GameEngine.w.updateInstructions(getActivePokemon().getName() + " does not have enough energy to attack.");
+		}
+		else if(getActivePokemon().getStatus() == Status.ASLEEP){
+			GameEngine.w.updateInstructions(getActivePokemon().getName() + " is asleep and cannot attack.");
+		}
+		else if(getActivePokemon().getStatus() == Status.PARALYZED && RandomNumberGenerator.flipACoin()){
+			GameEngine.w.updateInstructions(getActivePokemon().getName() + " is paralyzed and cannot attack.");
+		}
+		else{
 			resultString = ability.use(Ability.Player.AI);
+			turnOver = true;
 		}
 		return resultString;
 	}
@@ -73,5 +84,16 @@ public class AIPlayer extends Player {
 		this.moveAllPokemonToBench();
 
 		GameEngine.w.updateAISide();
+	}
+
+	public boolean chooseNewActivePokemon(){
+		if(getBench().size() > 0){
+		    PokemonCard newActive = getBench().remove(0);
+		    setActivePokemon(newActive);
+		    return true;
+        }
+        else{
+		    return false;
+        }
 	}
 }

@@ -115,23 +115,53 @@ public class HumanPlayer extends Player {
         GameEngine.w.updateInstructions("Added " + c.getName() + " to bench");
     }
     public void retreatActive(){
-        PokemonCard replacement = GameEngine.choosePokemonCard(this, Ability.Target.YOUR_BENCH);
-        if(this.getActivePokemon().hasEnoughEnergyForRetreat()
-                && this.getActivePokemon().getStatus() != Status.ASLEEP
-                && this.getActivePokemon().getStatus() != Status.PARALYZED){
+        if(! this.getActivePokemon().hasEnoughEnergyForRetreat()){
+            GameEngine.w.updateInstructions(getActivePokemon().getName() + " does not have enough energy to retreat.");
+        }
+        else if(this.getActivePokemon().getStatus() ==  Status.ASLEEP){
+            GameEngine.w.updateInstructions(getActivePokemon().getName() + " is asleep and can't retreat.");
+        }
+        else if(this.getActivePokemon().getStatus() == Status.PARALYZED){
+            GameEngine.w.updateInstructions(getActivePokemon().getName() + " is paralyzed and can't retreat.");
+        }
+        else{
+
+            PokemonCard replacement = GameEngine.choosePokemonCard(this, Ability.Target.YOUR_BENCH);
+            GameEngine.w.updateInstructions(getActivePokemon().getName() + " has been replaced with " + replacement.getName());
             this.getActivePokemon().applyStatus(Status.NORMAL);
             this.retreatPokemon(replacement);
+            hasRetreatedActivePokemon = true;
         }
     }
     public String attack(int attackIndex){
         String resultString = "";
         Ability ability = getActivePokemon().getAbilities().get(attackIndex);
-        if(getActivePokemon().hasEnoughEnergyForAttack(attackIndex)
-                && !turnOver){
+
+        if(!getActivePokemon().hasEnoughEnergyForAttack(attackIndex)){
+            GameEngine.w.updateInstructions(getActivePokemon().getName() + " does not have enough energy to attack.");
+        }
+        else if(getActivePokemon().getStatus() == Status.ASLEEP){
+            GameEngine.w.updateInstructions(getActivePokemon().getName() + " is asleep and cannot attack.");
+        }
+        else if(getActivePokemon().getStatus() == Status.PARALYZED && RandomNumberGenerator.flipACoin()){
+            GameEngine.w.updateInstructions(getActivePokemon().getName() + " is paralyzed and cannot attack.");
+        }
+        else{
             resultString = ability.use(Ability.Player.PLAYER);
             turnOver = true;
         }
         return resultString;
+    }
+
+    public boolean chooseNewActivePokemon(){
+        if(cardManager.getBench().size() == 0){
+            return false;
+        }
+        else{
+            PokemonCard newActive = GameEngine.choosePokemonCard(this, Ability.Target.YOUR_BENCH);
+            setActivePokemon(newActive);
+            return true;
+        }
     }
 
 }

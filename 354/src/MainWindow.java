@@ -479,7 +479,7 @@ public class MainWindow {
             case BENCH:
                 if(m.getIndex() < sourceCardManager.getBench().size()){
                     cardToBeDisplayed = sourceCardManager.getBench().get(m.getIndex());
-                    displayCard(cardToBeDisplayed, isPlayers, false, false, false, true, false);
+                    displayCard(cardToBeDisplayed, false, false, false, false, true, false);
                 }
                 break;
             case HAND:

@@ -5,7 +5,9 @@ public class GameEngine {
 	
 	public static AIPlayer autoPlayer = new AIPlayer();
 	public static HumanPlayer player = new HumanPlayer();
+
 	private static Player currentPlayer = player;
+	private static Player winner = null;
 	
 	public static MainWindow w;
 	private static Object lock = new Object();
@@ -39,7 +41,7 @@ public class GameEngine {
 		while(!gameEnded){
 			currentPlayer.playTurn();
 
-			//updateStatusEffects();
+			//updateStatusEffects(); //e.g.; burns do damage between turns; sleeping pokémon have chance to wake up
 
 			//checkWinConditions();
 
@@ -110,33 +112,63 @@ public class GameEngine {
         }
     }
 	
-	public static PokemonCard getChoiceOfCard(Player p, Ability.Target target){
-		Message msg = queue.remove();
-		PokemonCard cardToReturn;
-		
-		if (target == Ability.Target.OPPONENT_BENCH && msg.getSide() == Message.Side.AI && msg.getType() == Message.ButtonType.BENCH){
-			cardToReturn = autoPlayer.getBench().get(msg.getIndex());
-		} else if (target == Ability.Target.YOUR_BENCH && msg.getSide() == Message.Side.PLAYER && msg.getType() == Message.ButtonType.BENCH){
-			cardToReturn = player.getBench().get(msg.getIndex());
-		} else if (target == Ability.Target.OPPONENT_POKEMON && msg.getSide() == Message.Side.AI){
-			if (msg.getType() == Message.ButtonType.ACTIVE){
+	public static PokemonCard getChoiceOfCard(Ability.Target target){
+		Message msg = null;
+		PokemonCard cardToReturn = null;
+
+		switch(target){
+			case OPPONENT:
+				//
+				break;
+			case OPPONENT_ACTIVE:
 				cardToReturn = autoPlayer.getActivePokemon();
-			} else if (msg.getType() == Message.ButtonType.BENCH) {
-				cardToReturn = autoPlayer.getBench().get(msg.getIndex());
-			} else {
-				cardToReturn = null;
-			}
-		} else if (target == Ability.Target.YOUR_POKEMON && msg.getSide() == Message.Side.PLAYER){
-			if (msg.getType() == Message.ButtonType.ACTIVE){
+				break;
+			case OPPONENT_BENCH:
+				GameEngine.w.updateInstructions("Select a Pokémon on your opponent's bench.");
+				waitForInput();
+				msg = queue.remove();
+				if(msg.getSide() == Message.Side.AI && msg.getType() == Message.ButtonType.BENCH){
+					cardToReturn = autoPlayer.getBench().get(msg.getIndex());
+				}
+				break;
+			case OPPONENT_POKEMON:
+				GameEngine.w.updateInstructions("Select a Pokémon from your opponent's bench or active slot.");
+				waitForInput();
+				msg = queue.remove();
+				if(msg.getSide() == Message.Side.AI && msg.getType() == Message.ButtonType.BENCH){
+					cardToReturn = autoPlayer.getBench().get(msg.getIndex());
+				}
+				else if(msg.getSide() == Message.Side.AI && msg.getType() == Message.ButtonType.ACTIVE){
+					cardToReturn = autoPlayer.getActivePokemon();
+				}
+				break;
+			case YOU:
+				//
+				break;
+			case YOUR_ACTIVE:
 				cardToReturn = player.getActivePokemon();
-			} else if (msg.getType() == Message.ButtonType.BENCH) {
-				cardToReturn = player.getBench().get(msg.getIndex());
-			} else {
-				cardToReturn = null;
-			}
-		} else {
-			cardToReturn = null;
+				break;
+			case YOUR_BENCH:
+				GameEngine.w.updateInstructions("Select a Pokémon on your bench.");
+				waitForInput();
+				msg = queue.remove();
+				if(msg.getSide() == Message.Side.PLAYER && msg.getType() == Message.ButtonType.BENCH){
+					cardToReturn = player.getBench().get(msg.getIndex());
+				}
+				break;
+			case YOUR_POKEMON:
+				GameEngine.w.updateInstructions("Select a Pokémon from your bench or active slot.");
+				waitForInput();
+				msg = queue.remove();
+				if(msg.getSide() == Message.Side.PLAYER && msg.getType() == Message.ButtonType.BENCH){
+					cardToReturn = player.getBench().get(msg.getIndex());
+				}
+				else if(msg.getSide() == Message.Side.PLAYER && msg.getType() == Message.ButtonType.ACTIVE){
+					cardToReturn = player.getActivePokemon();
+				}
+				break;
 		}
+
 		
 		return cardToReturn;
 	}
@@ -145,11 +177,9 @@ public class GameEngine {
 		PokemonCard cardToReturn;
 		
 		if (p == player){
-			waitForInput();
-			cardToReturn = getChoiceOfCard(p, target);
+			cardToReturn = getChoiceOfCard(target);
 			while (cardToReturn == null) {
-				waitForInput();
-				cardToReturn = getChoiceOfCard(p, target);
+				cardToReturn = getChoiceOfCard(target);
 			}
 		} else {
 			if (target == Ability.Target.OPPONENT_BENCH){
@@ -164,5 +194,86 @@ public class GameEngine {
 		}
 		return cardToReturn;
 	}
-	
+
+	public static void checkForKnockouts(){
+		//check AI bench
+		for(PokemonCard p : autoPlayer.cardManager.getBench()){
+			if(p.getCurrentHP() <= 0){
+				autoPlayer.cardManager.getBench().remove(p);
+				autoPlayer.cardManager.addPokemonCardToDiscard(p);
+
+				if(player.getPrizeCards().size() == 1){
+					declareWinner(Ability.Player.PLAYER);
+					return;
+				}
+				else{
+					player.cardManager.drawPrizeCard();
+				}
+			}
+		}
+
+		//check player bench
+		for(PokemonCard p : player.cardManager.getBench()){
+			if(p.getCurrentHP() <= 0){
+				player.cardManager.getBench().remove(p);
+				player.cardManager.addPokemonCardToDiscard(p);
+
+				if(autoPlayer.getPrizeCards().size() == 1){
+					declareWinner(Ability.Player.AI);
+					return;
+				}
+				else{
+					autoPlayer.cardManager.drawPrizeCard();
+				}
+			}
+		}
+
+		//check AI active
+		if(autoPlayer.cardManager.getActivePokemon().getCurrentHP() <= 0){
+			autoPlayer.cardManager.addPokemonCardToDiscard(autoPlayer.getActivePokemon());
+			autoPlayer.cardManager.removeActivePokemon();
+
+			if(autoPlayer.getPrizeCards().size() == 1){
+				declareWinner(Ability.Player.PLAYER);
+				return;
+			}
+			else{
+				player.cardManager.drawPrizeCard();
+			}
+
+			if(! autoPlayer.chooseNewActivePokemon()){
+				declareWinner(Ability.Player.PLAYER);
+				return;
+			}
+		}
+
+		//check player active
+		if(player.cardManager.getActivePokemon().getCurrentHP() <= 0){
+			player.cardManager.addPokemonCardToDiscard(player.getActivePokemon());
+			player.cardManager.removeActivePokemon();
+
+			if(autoPlayer.getPrizeCards().size() == 1){
+				declareWinner(Ability.Player.AI);
+			}
+			else{
+				autoPlayer.cardManager.drawPrizeCard();
+			}
+
+			if(! player.chooseNewActivePokemon()){
+				declareWinner(Ability.Player.AI);
+				return;
+			}
+		}
+	}
+
+	public static void declareWinner(Ability.Player p){
+		switch(p){
+			case AI:
+				winner = autoPlayer;
+				break;
+			case PLAYER:
+				winner = player;
+				break;
+		}
+	}
 }

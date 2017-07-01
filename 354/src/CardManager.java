@@ -137,22 +137,22 @@ public class CardManager {
 		deck.removeCardAtIndex(index);
 	}
 	
-	public void addCardToHandFromDiscard(int index){
-		Card card = discardPile.get(index);
-		hand.add(card);
-		discardPile.remove(index);
-	}
-	
-	public void discardFromHand(int index){
-		Card card = hand.get(index);
-		discardPile.add(card);
-		hand.remove(index);
-	}
-	
-	public void discardFromBench(PokemonCard pokemon){
-		discardPile.add(pokemon);
-		hand.remove(pokemon);
-	}
+//	public void addCardToHandFromDiscard(int index){
+//		Card card = discardPile.get(index);
+//		hand.add(card);
+//		discardPile.remove(index);
+//	}
+//
+//	public void discardFromHand(int index){
+//		Card card = hand.get(index);
+//		discardPile.add(card);
+//		hand.remove(index);
+//	}
+//
+//	public void discardFromBench(PokemonCard pokemon){
+//		discardPile.add(pokemon);
+//		hand.remove(pokemon);
+//	}
 	
 	public boolean movePokemonToBench(PokemonCard pokemon){
 		if (bench.size() < 5){
@@ -168,8 +168,22 @@ public class CardManager {
 		prizeCards.remove(card);
 	}
 
+	public void drawPrizeCard(){
+		addPrizeCardToHand(prizeCards.get(0));
+	}
+
 	public void addToDiscard(Card card){
 		//NOTE: DOES NOT REMOVE CARD FROM ANYTHING
+		discardPile.add(card);
+	}
+
+	public void addPokemonCardToDiscard(PokemonCard card){
+		//Does not remove card from anything
+		while(card.energy.size() > 0){
+			EnergyCard discard = card.energy.remove(0);
+			addToDiscard(discard);
+		}
+
 		discardPile.add(card);
 	}
 	

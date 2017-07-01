@@ -85,6 +85,7 @@ public class PokemonCard extends Card {
 	public String getDescription(){
 		String desc = "<html><body>";
 		desc += this.description;
+		desc += "<br/>Retreat Cost: " + energyToRetreat;
 		desc += "<br/>";
 		desc += "=================";
 		desc += "<br/>";
@@ -217,7 +218,7 @@ public class PokemonCard extends Card {
 	}
 	
 	public boolean hasEnoughEnergyForRetreat(){		
-		return energy.size() <= energyToRetreat;
+		return energy.size() >= energyToRetreat;
 	}
 
 	public void applyStatus(Status status){
