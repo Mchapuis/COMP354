@@ -7,13 +7,15 @@ public class PokemonCard extends Card {
 	}
 	
 	public enum Type {
-		LIGHTNING, NORMAL, PSYCHIC, WATER
+		LIGHTNING, NORMAL, PSYCHIC, WATER, FIGHTING
 	}
 	
 	private int ID;
 	private String name;
 	private String description;
 	private Category cat;
+	private String elementalType;
+	private String evolvesFrom;
 	private Type type;
 	private int maxHP;
 	private int energyToRetreat;
@@ -57,6 +59,8 @@ public class PokemonCard extends Card {
 			this.type = Type.PSYCHIC;
 		} else if (type.equals("water")) {
 			this.type = Type.WATER;
+		} else if (type.equals("fighting")) {
+			this.type = Type.FIGHTING;
 		} else {
 			this.type = Type.NORMAL;
 		}
@@ -80,6 +84,10 @@ public class PokemonCard extends Card {
 	
 	public String getName(){
 		return this.name;
+	}
+
+	public void setName(String name){
+		this.name = name;
 	}
 	
 	public String getDescription(){
@@ -167,7 +175,32 @@ public class PokemonCard extends Card {
     public Category getCat(){
     	return cat;
 	}
-	
+
+	public void setCat(Category category){
+    	this.cat = category;
+	}
+
+	public void setType(Type t){
+		this.type = t;
+	}
+
+	public void setMaxHP(int max){
+		this.maxHP = max;
+		this.currentHP = this.maxHP;
+	}
+
+	public void setEnergyToRetreat(int cost){
+		this.energyToRetreat = cost;
+	}
+
+	public String getEvolvesFrom(){
+		return evolvesFrom;
+	}
+
+	public void setEvolvesFrom(String evolvesFrom){
+		this.evolvesFrom = evolvesFrom;
+	}
+
 	public void removeHP(int points){
 		this.currentHP -= points;
 	}

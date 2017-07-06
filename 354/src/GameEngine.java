@@ -1,6 +1,13 @@
 import java.util.*;
 import java.util.concurrent.LinkedTransferQueue;
 
+//TODOs
+//TODO fix AI to not add stage-one pokemon to bench or active
+//TODO add descriptions for trainer cards
+//TODO add button to use trainer cards
+//TODO make gui for left bar update
+
+
 public class GameEngine {
 	
 	public static AIPlayer autoPlayer = new AIPlayer();

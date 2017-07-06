@@ -38,7 +38,7 @@ abstract class Ability {
         return getBaseDescription() + "<br/>" + getRecursiveDescription();
 	}
 
-	public String getBaseDescription(){
+	private String getBaseDescription(){
         String desc = "Name: " + this.name;
         desc += "<br/>";
         desc += "Energy required: ";

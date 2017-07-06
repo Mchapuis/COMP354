@@ -24,7 +24,9 @@ public class DrawAbility extends Ability{
 
         //draw cards
         for(int i = 0; i < amountToDraw; i++){
-            sourcePlayer.addCardToHandFromDeck(0);
+            if(sourcePlayer.getDeck().size() > 0){
+                sourcePlayer.addCardToHandFromDeck(0);
+            }
         }
 
         resultString += "drew " + amountToDraw + " cards.";

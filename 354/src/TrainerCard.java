@@ -10,7 +10,13 @@ public class TrainerCard extends Card {
 	private String name;
 	private String description;
 	private Type type;
-	private List<Action> actions;
+	private Ability ability;
+
+	TrainerCard(String name, Ability ability){
+		this.ability = ability;
+		this.name = name;
+	}
+
 	
 	public String getName() {
 		return this.name;
