@@ -1,11 +1,6 @@
 import java.util.*;
 import java.util.concurrent.LinkedTransferQueue;
 
-//TODOs
-//TODO fix AI to not add stage-one pokemon to bench or active
-//TODO add descriptions for trainer cards
-//TODO add button to use trainer cards
-//TODO make gui for left bar update
 
 
 public class GameEngine {
@@ -19,12 +14,6 @@ public class GameEngine {
 	public static MainWindow w;
 	private static Object lock = new Object();
     public static Queue<Message> queue = new LinkedTransferQueue<>();
-    
-    private static boolean hasSelectedActive = false;
-    private static boolean hasClickedAttach = false;
-    private static boolean hasAttachedEnergy = false;
-    private static boolean mustMoveCardToBottomOfDeck = false;
-    private static boolean mustChoosePokemonToSwap = false;
 
 	public static void main(String[] args) {
 		//create and display the main game window
@@ -44,8 +33,7 @@ public class GameEngine {
 		rollForFirstTurn(); //determines which player gets to start
 
 		//play game until there is a winner
-		boolean gameEnded = false;
-		while(!gameEnded){
+		while(true){
 
 		    //check win (lose) condition of having no cards to draw
 		    if(currentPlayer.getDeck().size() == 0){
@@ -63,7 +51,7 @@ public class GameEngine {
 			if(winnerFound()){ break; }
 
 			//TODO updateStatusEffects(); //e.g.; burns do damage between turns; sleeping pokémon have chance to wake up
-
+            checkForKnockouts();
             if(winnerFound()){ break; }
 
 			switchTurn();
