@@ -4,16 +4,10 @@ import java.util.Map.Entry;
 
 public class DeenergizeAbility extends Ability{
     int amountToRemove;
-
-    public DeenergizeAbility(){
-    	this.energyRequired = new HashMap<EnergyCard, Integer>();
-    }
     
-    public String realUse(Player player){
+    public boolean realUse(Player player){
         //TODO: find out if deenergized energy goes to discard or hand
         //until we find out. it is discarded
-    	
-    	String resultString = "";
 
         CardManager sourcePlayer = null, otherPlayer = null;
         switch(player){
@@ -26,18 +20,14 @@ public class DeenergizeAbility extends Ability{
                 otherPlayer = playerCardManager;
                 break;
         }
-
-        resultString += amountToRemove + " energy was removed from ";
         
         PokemonCard targetPokemon = null;
         switch(targetType){
             case OPPONENT_ACTIVE:
                 targetPokemon = otherPlayer.getActivePokemon();
-                resultString += "opponent's active pokemon. ";
                 break;
             case YOUR_ACTIVE:
                 targetPokemon = sourcePlayer.getActivePokemon();
-                resultString += "your active pokemon. ";
                 break;
             case OPPONENT_BENCH:
                 //TODO: need to implement method to get selection
@@ -62,7 +52,7 @@ public class DeenergizeAbility extends Ability{
             }
         }
 
-        return resultString;
+        return true;
     }
 
     DeenergizeAbility(String[] description) throws UnimplementedException{

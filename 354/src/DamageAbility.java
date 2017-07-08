@@ -5,12 +5,7 @@ import java.util.Map.Entry;
 class DamageAbility extends Ability{
   private int damage;
 
-  public DamageAbility(){
-  	this.energyRequired = new HashMap<EnergyCard, Integer>();
-  }
-  
-  public String realUse(Player player){
-	String resultString = "";
+  public boolean realUse(Player player){
     CardManager sourcePlayer = null, otherPlayer = null;
     switch(player){
         case PLAYER:
@@ -26,17 +21,9 @@ class DamageAbility extends Ability{
     switch(targetType){
         case OPPONENT_ACTIVE:
             otherPlayer.getActivePokemon().removeHP(damage);
-            if (sourcePlayer.equals(playerCardManager))
-            	resultString += "Opponent's pokemon lost " + damage + " HP. ";
-            else 
-            	resultString += "Your pokemon lost " + damage + " HP. ";
             break;
         case YOUR_ACTIVE:
             sourcePlayer.getActivePokemon().removeHP(damage);
-            if (sourcePlayer.equals(playerCardManager))
-            	resultString += "Your pokemon lost " + damage + " HP. ";
-            else 
-            	resultString += "Opponent's pokemon lost " + damage + " HP. ";
             break;
         case OPPONENT_BENCH:
             //TODO: need to implement method to get selection
@@ -52,7 +39,7 @@ class DamageAbility extends Ability{
             break;
     }
 
-    return resultString;
+    return true;
   }
 
   DamageAbility(String [] description) throws UnimplementedException{

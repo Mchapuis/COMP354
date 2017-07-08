@@ -9,8 +9,7 @@ public class ApplyStatAbility extends Ability{
     	this.energyRequired = new HashMap<EnergyCard, Integer>();
     }
 
-    public String realUse(Player player){
-    	String resultString = "";
+    public boolean realUse(Player player){
         CardManager sourcePlayer = null, otherPlayer = null;
         switch(player){
             case PLAYER:
@@ -26,17 +25,9 @@ public class ApplyStatAbility extends Ability{
         switch(targetType){
             case OPPONENT_ACTIVE:
                 otherPlayer.getActivePokemon().applyStatus(givenStatus);
-                if (sourcePlayer.equals(playerCardManager))
-                	resultString += "Status " + givenStatus + " applied to opponent's active pokemon. ";
-                else 
-                	resultString += "Status " + givenStatus + " applied to your active pokemon. ";
                 break;
             case YOUR_ACTIVE:
                 sourcePlayer.getActivePokemon().applyStatus(givenStatus);
-                if (sourcePlayer.equals(playerCardManager))
-                	resultString += "Status " + givenStatus + " applied to your active pokemon. ";
-                else 
-                	resultString += "Status " + givenStatus + " applied to opponent's active pokemon. ";
                 break;
             case OPPONENT_BENCH:
                 //TODO: need to implement method to get selection
@@ -52,7 +43,7 @@ public class ApplyStatAbility extends Ability{
                 break;
         }
 
-        return resultString;
+        return true;
     }
 
     ApplyStatAbility(String [] description) throws UnimplementedException{

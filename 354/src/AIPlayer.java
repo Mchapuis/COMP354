@@ -35,8 +35,7 @@ public class AIPlayer extends Player {
 		cardManager.moveCardFromHandToBottomOfDeck(firstCard);
 	}
 
-	public String attack(int attackIndex){
-		String resultString = "";
+	public void attack(int attackIndex){
 		Ability ability = getActivePokemon().getAbilities().get(attackIndex);
 
 		if(!getActivePokemon().hasEnoughEnergyForAttack(attackIndex)){
@@ -49,10 +48,9 @@ public class AIPlayer extends Player {
 			GameEngine.w.updateInstructions(getActivePokemon().getName() + " is paralyzed and cannot attack.");
 		}
 		else{
-			resultString = ability.use(Ability.Player.AI);
+			ability.use(Ability.Player.AI);
 			turnOver = true;
 		}
-		return resultString;
 	}
 
 	public void takeActions(){
@@ -69,8 +67,8 @@ public class AIPlayer extends Player {
 		//use first attack with available energy
 		int numberOfAttacks = getActivePokemon().getAbilities().size();
 		for (int i = numberOfAttacks - 1; i >= 0; i--){
-			String resultString = attack(i);
-			if (!resultString.equals("")){
+			attack(i);
+			if (true){ //TODO change to check for enough energy
 				turnOver = true;
 				break;
 			}

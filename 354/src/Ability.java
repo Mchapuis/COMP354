@@ -1,13 +1,14 @@
 import java.util.HashMap;
 import java.util.Map.Entry;
 
-//TODO: add to subclasses ability to handle complicated [amount]
 abstract class Ability {
 
+	//card managers let ability classes directly modify the games cards
     public static CardManager playerCardManager;
     public static CardManager AICardManager;
 
-	public static enum Target{
+    //enumerated types //should be moved to to separate files
+	public enum Target{
 		YOUR_ACTIVE, OPPONENT_ACTIVE, //targets the active pokemon
 		YOUR_POKEMON, OPPONENT_POKEMON, //targets choice of pokemon active or bench
 		YOUR_BENCH, OPPONENT_BENCH, //targets choice of pokemon on bench
@@ -18,26 +19,28 @@ abstract class Ability {
         AI
     }
 
+    //ability data
 	public String name;
 	Target targetType;
 	Ability subsequentAbility = null;
 	protected HashMap<EnergyCard, Integer> energyRequired = new HashMap<EnergyCard, Integer>();
 
-	public String use(Player player){
-	    String resultString = realUse(player);
-	    if(subsequentAbility != null){
-	        resultString += subsequentAbility.use(player);
+	//---Methods
+
+	//use ability and helper method
+	public boolean use(Player player){
+	    realUse(player);
+		if(subsequentAbility != null){
+	       return subsequentAbility.use(player);
         }
-
-        return resultString;
+        return false;
     }
+    public abstract boolean realUse(Player player);
 
-    public abstract String realUse(Player player);
-
+	//get description and helper methods
 	public String getDescription(){
         return getBaseDescription() + "<br/>" + getRecursiveDescription();
 	}
-
 	private String getBaseDescription(){
         String desc = "Name: " + this.name;
         desc += "<br/>";
@@ -56,22 +59,23 @@ abstract class Ability {
     }
     protected abstract String getSimpleDescription();
 
-	public void setName(String name){
-		this.name = name;
-	}
-	
+	//
 	public void addEnergyRequired(EnergyCard energy, int amount){
 		this.energyRequired.put(energy, amount);
 	}
-	
+
+	//getter and setters
+	public void setName(String name){
+		this.name = name;
+	}
 	public HashMap<EnergyCard, Integer> getEnergyRequired(){
 		return this.energyRequired;
 	}
-
 	public void setSubsequentAbility(Ability subAbility){
 		this.subsequentAbility = subAbility;
 	}
 
+	//parsing methods //should be moved into parser class
 	public static Ability parseAbilitiesLine(String line){
 		//do nothing in case of removed ability line
 		if(line.equals("#")){
@@ -107,7 +111,6 @@ abstract class Ability {
 			return new UnimplementedAbility();
 		}
 	}
-
 	public static Ability makeAbility(String[] description) throws Exception{
 		Ability returnAbility = null;
 
@@ -164,7 +167,6 @@ abstract class Ability {
 
 		return returnAbility;
 	}
-
 	public static Target parseTarget(String token){
 		switch(token) {
 			case "your-active":

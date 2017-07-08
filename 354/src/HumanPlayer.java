@@ -133,8 +133,7 @@ public class HumanPlayer extends Player {
             hasRetreatedActivePokemon = true;
         }
     }
-    public String attack(int attackIndex){
-        String resultString = "";
+    public void attack(int attackIndex){
         Ability ability = getActivePokemon().getAbilities().get(attackIndex);
 
         if(!getActivePokemon().hasEnoughEnergyForAttack(attackIndex)){
@@ -147,10 +146,9 @@ public class HumanPlayer extends Player {
             GameEngine.w.updateInstructions(getActivePokemon().getName() + " is paralyzed and cannot attack.");
         }
         else{
-            resultString = ability.use(Ability.Player.PLAYER);
+            ability.use(Ability.Player.PLAYER);
             turnOver = true;
         }
-        return resultString;
     }
 
     public boolean chooseNewActivePokemon(){

@@ -40,7 +40,7 @@ public abstract class Player {
 
 	protected CardManager cardManager;
 	
-	public abstract String attack(int attackIndex);
+	public abstract void attack(int attackIndex);
 	
 	public void moveCardFromHandToBottomOfDeck(Card card){
 		this.cardManager.moveCardFromHandToBottomOfDeck(card);

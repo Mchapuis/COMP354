@@ -390,7 +390,8 @@ public class MainWindow {
     
     public void updateInstructions(String text){
     	instructions.setText(text);
-    }
+		System.out.println(text);
+	}
     
     public void displayCard(Card card, boolean showMakeActive, boolean showAddToBench, boolean showAttachToPokemon, boolean showAttacks, boolean showLetAIPlay, boolean showRetreat){
     	if (card != null) {

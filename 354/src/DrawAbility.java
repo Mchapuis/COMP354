@@ -4,21 +4,14 @@ import java.util.Map.Entry;
 public class DrawAbility extends Ability{
     int amountToDraw;
 
-    public DrawAbility(){
-    	this.energyRequired = new HashMap<EnergyCard, Integer>();
-    }
-    
-    public String realUse(Player player){
-    	String resultString = "";
+    public boolean realUse(Player player){
         CardManager sourcePlayer = null;
         switch(player){
             case PLAYER:
                 sourcePlayer = playerCardManager;
-                resultString += "You ";
                 break;
             case AI:
                 sourcePlayer = AICardManager;
-                resultString += "Opponent ";
                 break;
         }
 
@@ -28,10 +21,8 @@ public class DrawAbility extends Ability{
                 sourcePlayer.addCardToHandFromDeck(0);
             }
         }
-
-        resultString += "drew " + amountToDraw + " cards.";
         
-        return resultString;
+        return true;
     }
 
     DrawAbility(String[] description) throws UnimplementedException{

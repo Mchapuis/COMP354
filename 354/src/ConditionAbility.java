@@ -21,18 +21,12 @@ public class ConditionAbility extends Ability{
     	this.energyRequired = new HashMap<EnergyCard, Integer>();
     }
 
-    public String realUse(Player player){
-    	String resultString = "";
-    	
+    public boolean realUse(Player player){
         boolean conditionPassed = false;
 
         switch(condType){
             case FLIP:
                 conditionPassed = RandomNumberGenerator.flipACoin();
-                if (conditionPassed)
-                	resultString += "Coin flip returned heads. ";
-                else 
-                	resultString += "Coin flip returned tails. No action was taken. ";
                 break;
             case CHOICE:
                 //TODO: get anastasia to make a GUI prompt for this
@@ -63,8 +57,6 @@ public class ConditionAbility extends Ability{
                 }
 
                 conditionPassed = targetPokemon.getHasBeenHealed();
-                if (conditionPassed)
-                	resultString += "Pokemon was healed.";
                 break;
             case ABILITY:
                 /*conditionPassed = testAbility.use(player);*/
@@ -77,8 +69,11 @@ public class ConditionAbility extends Ability{
         }else if(!conditionPassed && elseAbility != null){
             elseAbility.use(player);
         }
+        else{
+            return false;
+        }
 
-        return resultString;
+        return true;
     }
 
     ConditionAbility(String[] description) throws UnimplementedException{
