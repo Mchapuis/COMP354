@@ -170,7 +170,6 @@ public class CardManager {
 
 	public void drawPrizeCard(){
 		addPrizeCardToHand(prizeCards.get(0));
-		prizeCards.remove(0);
 	}
 
 	public void addToDiscard(Card card){

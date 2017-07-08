@@ -246,7 +246,7 @@ public class GameEngine {
 			autoPlayer.cardManager.addPokemonCardToDiscard(autoPlayer.getActivePokemon());
 			autoPlayer.cardManager.removeActivePokemon();
 
-			if(autoPlayer.getPrizeCards().size() == 1){
+			if(player.getPrizeCards().size() == 1){
 				declareWinner(Ability.Player.PLAYER);
 				return;
 			}

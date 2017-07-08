@@ -59,7 +59,7 @@ public class ConditionAbility extends Ability{
                 conditionPassed = targetPokemon.getHasBeenHealed();
                 break;
             case ABILITY:
-                /*conditionPassed = testAbility.use(player);*/
+                conditionPassed = testAbility.use(player);
                 break;
         }
 
