@@ -50,7 +50,7 @@ public class GameEngine {
 
 			if(winnerFound()){ break; }
 
-			//TODO updateStatusEffects(); //e.g.; burns do damage between turns; sleeping pokémon have chance to wake up
+			updateStatusEffectsAll();
             checkForKnockouts();
             if(winnerFound()){ break; }
 
@@ -293,4 +293,57 @@ public class GameEngine {
 	public static boolean winnerFound(){
 	    return winner != null;
     }
+
+    private static void updateStatusEffectsAll(){
+		//update statuses on player bench
+		for(PokemonCard p : player.getBench()){
+			updateStatusEffectsSingle(player, p);
+		}
+
+		//update statuses on player active
+		updateStatusEffectsSingle(player, player.getActivePokemon());
+
+		//update statuses on ai bench
+		for(PokemonCard p : autoPlayer.getBench()){
+			updateStatusEffectsSingle(autoPlayer, p);
+		}
+
+		//update statuses on ai active
+		updateStatusEffectsSingle(autoPlayer, autoPlayer.getActivePokemon());
+	}
+
+	private static void updateStatusEffectsSingle(Player belongsTo, PokemonCard pokemonCard){
+    	Status s = pokemonCard.getStatus();
+
+    	switch(s){
+			case ASLEEP:
+				//50% chance to wake up
+				if(RandomNumberGenerator.flipACoin()){
+					pokemonCard.applyStatus(Status.NORMAL);
+				}
+				break;
+			case NORMAL:
+				//do nothing
+				break;
+			case PARALYZED:
+				//100% chance to become unparalyzed after owner's turn
+				if(currentPlayer == belongsTo){
+					pokemonCard.applyStatus(Status.NORMAL);
+				}
+				break;
+			case POISONED:
+				//deals damage at end of owner's turn
+				if(currentPlayer == belongsTo){
+					pokemonCard.removeHP(10);
+				}
+				break;
+			case STUCK:
+				//100% chance to become unstuck after owner's turn
+				if(currentPlayer == belongsTo){
+					pokemonCard.applyStatus(Status.NORMAL);
+				}
+				break;
+		}
+	}
+
 }
