@@ -99,4 +99,16 @@ public class ApplyStatAbility extends Ability{
         return "Apply status: " + givenStatus.toString() + " to " + targetType.toString();
     }
 
+    public Ability shallowCopy(){
+        ApplyStatAbility returnCard = new ApplyStatAbility();
+
+        returnCard.name = this.name;
+        returnCard.targetType = this.targetType;
+        returnCard.subsequentAbility  = this.subsequentAbility;
+
+        returnCard.givenStatus = this.givenStatus;
+
+        return returnCard;
+    }
+
 }

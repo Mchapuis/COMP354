@@ -188,4 +188,7 @@ abstract class Ability {
 		}
 		return Target.OPPONENT_ACTIVE;
 	}
+
+	//copy ability
+	public abstract Ability shallowCopy();
 }

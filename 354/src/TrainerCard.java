@@ -12,6 +12,11 @@ public class TrainerCard extends Card {
 	private Type type;
 	private Ability ability;
 
+	TrainerCard(){
+		this.name = "Unnamed";
+		ability = null;
+	}
+
 	TrainerCard(String name, Ability ability){
 		this.ability = ability;
 		this.name = name;
@@ -36,6 +41,18 @@ public class TrainerCard extends Card {
 
 	public int getID() {
 		return this.ID;
+	}
+
+	public Card shallowCopy(){
+		TrainerCard r = new TrainerCard();
+
+		r.ID = this.ID;
+		r.name = this.name;
+		r.description = this.description;
+		r.type = this.type;
+		r.ability = this.ability;
+
+		return r;
 	}
 	
 }

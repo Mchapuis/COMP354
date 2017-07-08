@@ -27,6 +27,27 @@ public class PokemonCard extends Card {
 	private int numColorlessEnergy;
 
 	private boolean hasBeenHealed = false;
+
+	public Card shallowCopy(){
+		PokemonCard returnCard = new PokemonCard();
+
+		returnCard.ID = this.ID;
+		returnCard.name = this.name;
+		returnCard.description = this.description;
+		returnCard.cat = this.cat;
+		returnCard.elementalType = this.elementalType;
+		returnCard.evolvesFrom = this.evolvesFrom;
+		returnCard.type = this.type;
+		returnCard.maxHP = this.maxHP;
+		returnCard.energyToRetreat = this.energyToRetreat;
+		returnCard.status = this.status;
+		returnCard.currentHP = this.currentHP;
+		returnCard.abilities = this.abilities;
+		returnCard.numColorlessEnergy = this.numColorlessEnergy;
+		returnCard.hasBeenHealed = this.hasBeenHealed;
+
+		return returnCard;
+	}
 	
 	public PokemonCard(){
 		this.ID = 0;

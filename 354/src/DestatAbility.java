@@ -3,6 +3,10 @@ import java.util.Map.Entry;
 
 public class DestatAbility extends Ability {
 
+    public DestatAbility(){
+        this.energyRequired = new HashMap<EnergyCard, Integer>();
+    }
+
     public boolean realUse(Player player){
         CardManager sourcePlayer = null, otherPlayer = null;
         switch(player){
@@ -70,5 +74,15 @@ public class DestatAbility extends Ability {
     
     public String getSimpleDescription(){
         return "Removes any status from " + targetType.toString();
+    }
+
+    public Ability shallowCopy(){
+        DestatAbility returnCard = new DestatAbility();
+
+        returnCard.name = this.name;
+        returnCard.targetType = this.targetType;
+        returnCard.subsequentAbility  = this.subsequentAbility;
+
+        return returnCard;
     }
 }

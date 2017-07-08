@@ -227,4 +227,18 @@ public class ConditionAbility extends Ability{
         return returnString;
     }
 
+    public Ability shallowCopy(){
+        ConditionAbility returnCard = new ConditionAbility();
+
+        returnCard.name = this.name;
+        returnCard.targetType = this.targetType;
+        returnCard.subsequentAbility  = this.subsequentAbility;
+
+        returnCard.condType = this.condType;
+        returnCard.conditionalAbility = this.conditionalAbility;
+        returnCard.elseAbility = this.elseAbility;
+        returnCard.testAbility = this.testAbility;
+
+        return returnCard;
+    }
 }

@@ -4,6 +4,10 @@ import java.util.Map.Entry;
 public class DrawAbility extends Ability{
     int amountToDraw;
 
+    public DrawAbility(){
+        this.energyRequired = new HashMap<EnergyCard, Integer>();
+    }
+
     public boolean realUse(Player player){
         CardManager sourcePlayer = null;
         switch(player){
@@ -46,5 +50,17 @@ public class DrawAbility extends Ability{
     
     public String getSimpleDescription(){
     	return "Draw " + amountToDraw + " cards";
+    }
+
+    public Ability shallowCopy(){
+        DrawAbility returnCard = new DrawAbility();
+
+        returnCard.name = this.name;
+        returnCard.targetType = this.targetType;
+        returnCard.subsequentAbility  = this.subsequentAbility;
+
+        returnCard.amountToDraw = this.amountToDraw;
+
+        return returnCard;
     }
 }

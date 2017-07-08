@@ -37,7 +37,7 @@ public class CardManager {
 		ArrayList<Integer> cardNumbers = Parser.readInDeck("deck1.txt");
 		
 		for (Integer num : cardNumbers){
-			Card card = Parser.cards.get(num - 1);
+			Card card = Parser.cards.get(num - 1).shallowCopy();
 			if (card != null)
 				deck.push(card);
 		}

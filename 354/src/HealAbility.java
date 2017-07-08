@@ -4,6 +4,10 @@ import java.util.Map.Entry;
 public class HealAbility extends Ability{
     public int healAmount = 0;
 
+    public HealAbility(){
+        this.energyRequired = new HashMap<EnergyCard, Integer>();
+    }
+
     public boolean realUse(Player player){
         CardManager sourcePlayer = null, otherPlayer = null;
         switch(player){
@@ -85,5 +89,17 @@ public class HealAbility extends Ability{
     
     public String getSimpleDescription(){
     	return "Heal up to " + healAmount + " HP on " + targetType.toString();
+    }
+
+    public Ability shallowCopy(){
+        HealAbility returnCard = new HealAbility();
+
+        returnCard.name = this.name;
+        returnCard.targetType = this.targetType;
+        returnCard.subsequentAbility  = this.subsequentAbility;
+
+        returnCard.healAmount = this.healAmount;
+
+        return returnCard;
     }
 }

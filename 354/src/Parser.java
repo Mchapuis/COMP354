@@ -197,12 +197,15 @@ public class Parser {
                             index++;
                             fightingCost = Integer.parseInt(tokens[index]);
                             break;
+						default:
+                        	index++; //catch bugs
+							break;
                     }
                     index++; //advance index to next cat or ability number
                 }
 
                 //add ability
-                Ability abilityToAdd = abilities.get(Integer.parseInt(tokens[index]) - 1);
+                Ability abilityToAdd = abilities.get(Integer.parseInt(tokens[index]) - 1).shallowCopy();
                 pokemonCard.addAbility(abilityToAdd);
 
                 index++;
@@ -212,7 +215,7 @@ public class Parser {
 		}
 		//parse trainer card
 		else if(tokens[index].equals("trainer")){
-			Ability trainerAbility = abilities.get(Integer.parseInt(tokens[tokens.length - 1]) - 1);
+			Ability trainerAbility = abilities.get(Integer.parseInt(tokens[tokens.length - 1]) - 1).shallowCopy();
 			return new TrainerCard(cardName, trainerAbility);
 		}
 		//parse energy card

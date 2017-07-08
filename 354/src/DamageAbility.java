@@ -5,6 +5,10 @@ import java.util.Map.Entry;
 class DamageAbility extends Ability{
   private int damage;
 
+  public DamageAbility(){
+        this.energyRequired = new HashMap<EnergyCard, Integer>();
+    }
+
   public boolean realUse(Player player){
     CardManager sourcePlayer = null, otherPlayer = null;
     switch(player){
@@ -79,5 +83,17 @@ class DamageAbility extends Ability{
   
   public String getSimpleDescription(){
   	return "Deal " + damage + " damage to " + targetType.toString();
+  }
+
+  public Ability shallowCopy(){
+        DamageAbility returnCard = new DamageAbility();
+
+        returnCard.name = this.name;
+        returnCard.targetType = this.targetType;
+        returnCard.subsequentAbility  = this.subsequentAbility;
+
+        returnCard.damage = this.damage;
+
+        return returnCard;
   }
 }

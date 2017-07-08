@@ -9,6 +9,10 @@ public class EnergyCard extends Card {
 	private String description;
 	private Type type;
 
+	public EnergyCard(){
+
+	}
+
 	public EnergyCard(String type){
 		this.ID = 0;
 		this.name = "Energy";
@@ -53,6 +57,17 @@ public class EnergyCard extends Card {
 	
 	public void setID(int ID){
 		this.ID = ID;
+	}
+
+	public Card shallowCopy(){
+		EnergyCard r = new EnergyCard();
+
+		r.ID = this.ID;
+		r.name = this.name;
+		r.description = this.description;
+		r.type = this.type;
+
+		return r;
 	}
 	
 }

@@ -13,4 +13,14 @@ class UnimplementedAbility extends Ability{
   public String getSimpleDescription(){
 	  return "This part of the ability is not implemented :(";
   }
+
+  public Ability shallowCopy(){
+    UnimplementedAbility returnCard = new UnimplementedAbility();
+
+    returnCard.name = this.name;
+    returnCard.targetType = this.targetType;
+    returnCard.subsequentAbility  = this.subsequentAbility;
+
+    return returnCard;
+  }
 }
