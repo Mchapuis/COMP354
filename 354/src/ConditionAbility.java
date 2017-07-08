@@ -21,18 +21,12 @@ public class ConditionAbility extends Ability{
     	this.energyRequired = new HashMap<EnergyCard, Integer>();
     }
 
-    public String realUse(Player player){
-    	String resultString = "";
-    	
+    public boolean realUse(Player player){
         boolean conditionPassed = false;
 
         switch(condType){
             case FLIP:
                 conditionPassed = RandomNumberGenerator.flipACoin();
-                if (conditionPassed)
-                	resultString += "Coin flip returned heads. ";
-                else 
-                	resultString += "Coin flip returned tails. No action was taken. ";
                 break;
             case CHOICE:
                 //TODO: get anastasia to make a GUI prompt for this
@@ -63,11 +57,9 @@ public class ConditionAbility extends Ability{
                 }
 
                 conditionPassed = targetPokemon.getHasBeenHealed();
-                if (conditionPassed)
-                	resultString += "Pokemon was healed.";
                 break;
             case ABILITY:
-                /*conditionPassed = testAbility.use(player);*/
+                conditionPassed = testAbility.use(player);
                 break;
         }
 
@@ -77,8 +69,11 @@ public class ConditionAbility extends Ability{
         }else if(!conditionPassed && elseAbility != null){
             elseAbility.use(player);
         }
+        else{
+            return false;
+        }
 
-        return resultString;
+        return true;
     }
 
     ConditionAbility(String[] description) throws UnimplementedException{
@@ -96,9 +91,10 @@ public class ConditionAbility extends Ability{
         int indexOfElse = -1;
         for(int i = 0; i < description.length; i++){
             if(description[i].equals("else")){
-                indexOfElse = i;
+                indexOfElse = i+1;
                 try{
-                    elseAbility = makeAbility(Arrays.copyOfRange(description, i, description.length));
+                    String[] newDescription = Arrays.copyOfRange(description, indexOfElse, description.length);
+                    elseAbility = makeAbility(newDescription);
                 }catch(Exception e){
                     elseAbility = new UnimplementedAbility();
                 }
@@ -206,19 +202,29 @@ public class ConditionAbility extends Ability{
         }
     }
     
-    public String getDescription(){
-    	String desc = "";
-    	desc += "Name: " + name + "<br/>";
-		desc += "Energy required: ";
-		desc += "<br/>";
-		for (Map.Entry<EnergyCard, Integer> entry : energyRequired.entrySet()){
-			desc += "&nbsp;&nbsp;&nbsp;";
-			desc += entry.getKey().getType();
-			desc += ": ";
-			desc += entry.getValue();
-			desc += "<br/>";
-		}
-    	return desc;
+    public String getSimpleDescription(){
+    	String returnString = "";
+
+    	switch (condType){
+            case ABILITY:
+                returnString += "If subsequent ability is used, then " + conditionalAbility.getRecursiveDescription();
+                break;
+            case CHOICE:
+                returnString += "Player's choice to " + conditionalAbility.getRecursiveDescription();
+                break;
+            case FLIP:
+                returnString += "50% chance to " + conditionalAbility.getRecursiveDescription();
+                break;
+            case HEALED:
+                returnString += "If target has been healed, then " + conditionalAbility.getRecursiveDescription();
+                break;
+        }
+
+        if(elseAbility != null){
+    	    returnString += "<br/>Otherwise, " + elseAbility.getRecursiveDescription();
+        }
+
+        return returnString;
     }
 
 }

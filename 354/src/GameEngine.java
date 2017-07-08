@@ -1,49 +1,120 @@
 import java.util.*;
+import java.util.concurrent.LinkedTransferQueue;
 
-/*import Message.Side;*/
+
 
 public class GameEngine {
 	
-	private static AIPlayer autoPlayer = new AIPlayer();
-	private static HumanPlayer player = new HumanPlayer();
-	
-	private static MainWindow w;
-	private static Object lock = new Object();
-    private static PriorityQueue<Message> queue = new PriorityQueue<>();
-    
-    private static boolean hasSelectedActive = false;
-    private static boolean hasClickedAttach = false;
-    private static boolean hasAttachedEnergy = false;
-    private static boolean mustMoveCardToBottomOfDeck = false;
+	public static AIPlayer autoPlayer = new AIPlayer();
+	public static HumanPlayer player = new HumanPlayer();
 
-	public static void main(String[] args) {        
-		MainWindow.lock = lock;
-        MainWindow.queue = queue;
-        
-        Ability.playerCardManager = player.cardManager;
-        Ability.AICardManager = autoPlayer.cardManager;
-		
-		//instantiate players - this builds their decks, selects a hand and selects 6 prize cards
-		
-		w = new MainWindow(autoPlayer, player);
-		
-		w.updateInstructions("Choose a pokemon to be your active pokemon.");
-		
-		//have AI player select an active pokemon
-		autoPlayer.selectActivePokemon();
-		w.updateAIActivePokemon();
-		
-		w.display();
-		
-		while(true){
-            if(queue.isEmpty()){
-                waitForInput();
-            }
-            
-            handleButtonPress();
-        }
-	}
+	private static Player currentPlayer = player;
+	private static Player winner = null;
 	
+	public static MainWindow w;
+	private static Object lock = new Object();
+    public static Queue<Message> queue = new LinkedTransferQueue<>();
+
+	public static void main(String[] args) {
+		//create and display the main game window
+		MainWindow.lock = lock;
+		MainWindow.queue = queue;
+		w = new MainWindow(autoPlayer, player);
+		w.display();
+
+		//give Ability class access to card managers
+		Ability.playerCardManager = player.cardManager;
+		Ability.AICardManager = autoPlayer.cardManager;
+
+		handleMulligans(); //ensures each player has at least one pokemon
+
+		setupPhase(); //players choose their initial active and benched pokemon
+
+		rollForFirstTurn(); //determines which player gets to start
+
+		//play game until there is a winner
+		while(true){
+
+		    //check win (lose) condition of having no cards to draw
+		    if(currentPlayer.getDeck().size() == 0){
+		        if(currentPlayer == player){
+		            declareWinner(Ability.Player.PLAYER);
+                }
+                else{
+		            declareWinner(Ability.Player.AI);
+                }
+                break;
+            }
+
+			currentPlayer.playTurn();
+
+			if(winnerFound()){ break; }
+
+			//TODO updateStatusEffects(); //e.g.; burns do damage between turns; sleeping pokémon have chance to wake up
+            checkForKnockouts();
+            if(winnerFound()){ break; }
+
+			switchTurn();
+		}
+
+
+		//TODO showWinScreen();
+        System.out.println("end");
+    }
+
+	private static void switchTurn(){
+		if(currentPlayer == player){
+			currentPlayer = autoPlayer;
+		}
+		else{
+			currentPlayer = player;
+		}
+	}
+
+	private static void setupPhase(){
+		player.setup();
+		autoPlayer.setup();
+	}
+
+	private static void handleMulligans(){
+		//player mulligans
+		while(player.cardManager.getFirstPokemon() == null){
+			//shuffle hand into deck
+			player.cardManager.shuffleHandIntoDeck();
+
+			//draw new hand
+			for(int i = 0; i < CardManager.STARTING_HAND_SIZE; i++){
+				player.drawCard();
+			}
+
+			//opponent draws 1 card
+			autoPlayer.drawCard();
+		}
+
+		//ai mulligans
+		while(autoPlayer.cardManager.getFirstPokemon() == null){
+			//shuffle hand into deck
+			autoPlayer.cardManager.shuffleHandIntoDeck();
+
+			//draw new hand
+			for(int i = 0; i < CardManager.STARTING_HAND_SIZE; i++){
+				autoPlayer.drawCard();
+			}
+
+			//opponent draws 1 card
+			player.drawCard();
+		}
+	}
+
+	private static void rollForFirstTurn(){
+		if(RandomNumberGenerator.flipACoin()){
+			currentPlayer = player;
+		}
+		else{
+			currentPlayer = autoPlayer;
+		}
+	}
+
 	public static void waitForInput(){
         try{
             synchronized(lock){
@@ -54,228 +125,63 @@ public class GameEngine {
         }
     }
 	
-	public static Card handleButtonPress(){
-		Message msg = queue.remove();
-		queue.clear();
-		
-        Card cardToDisplay;
-        boolean showMakeActive = false;
-        boolean showAttachToPokemon = false;
-        boolean showAttacks = false;
-        boolean showLetAIPlay = false;
-        
-        /* if this move is supposed to choose a card from the hand to move to the deck */
-        if (mustMoveCardToBottomOfDeck){
-        	if (msg.getSide() == Message.Side.PLAYER && msg.getType() == Message.ButtonType.HAND)
-        		return player.getHand().get(msg.getIndex());
-        	return null;
-		}
-        
-        /* if player side clicked */
-        if (msg.getSide() == Message.Side.PLAYER){
-        	
-        	/* if active pokemon clicked */
-        	if (msg.getType() == Message.ButtonType.ACTIVE){
-        		/* set the card that will be displayed */
-        		cardToDisplay = player.getActivePokemon();
-        		
-        		/* set showAttacks to true so that attack buttons will be shown */
-        		showAttacks = true;
-        		
-        	/* if bench clicked */
-        	} else if (msg.getType() == Message.ButtonType.BENCH){
-        		/* set the card that will be displayed */
-        		if (player.getBench().isEmpty())
-        			cardToDisplay = null;
-        		else 
-        			cardToDisplay = player.getBench().get(msg.getIndex());
-        		
-        	/* if hand clicked */
-        	} else if (msg.getType() == Message.ButtonType.HAND){
-        		/* set the card that will be displayed */
-        		cardToDisplay = player.getHand().get(msg.getIndex());
-        		
-        		/* if no active pokemon has been selected yet and the card that was clicked on is a pokemon card
-        		 * from the hand, show the option to make this card the active pokemon */
-        		if (!hasSelectedActive && cardToDisplay.getClass().toString().equals("class PokemonCard")){
-        			showMakeActive = true;
-        			
-        		/* if energy has not yet been attached this turn and the card clicked on is an energy card, show the 
-        		 * option to attach this energy card to a pokemon */
-        		} else if (!hasClickedAttach && !hasAttachedEnergy && cardToDisplay.getClass().toString().equals("class EnergyCard")){
-        			showAttachToPokemon = true;
-        			w.updateInstructions("Now click a pokemon you want to attach the energy card to.");
-        		}
-        		
-        	/* if "make active pokemon" button clicked */
-        	} else if (msg.getType() == Message.ButtonType.MAKEACTIVE){
-        		/* actually set the player's active pokemon */
-        		player.setActivePokemon((PokemonCard)w.getDisplayedCard());
-        		
-        		/* update the view */
-        		w.setPlayerActivePokemon();
-        		w.updatePlayerHand();
-        		w.updateInstructions("(Optional) Click on an energy card to select it. Then click \"Attach to a pokemon\" in the sidebar on the right. "
-        				+ "If you don't want to attach energy, click on your active pokemon to see its attacks.");
-        		
-        		/* set the card to display */
-        		cardToDisplay = player.getActivePokemon();
-        		
-        		/* set some necessary values */
-        		showMakeActive = false;
-        		hasSelectedActive = true;
-        		
-        	/* if "attach to a pokemon clicked */
-        	} else if (msg.getType() == Message.ButtonType.ATTACHENERGY){
-        		/* get the energy card that was clicked on */
-        		EnergyCard energy = (EnergyCard)w.getDisplayedCard();
-        		
-        		/* wait for more user input: they still have to click a pokemon to attach the energy to */
-        		waitForInput();
-        		
-        		/* get the pokemon that was clicked */
-        		PokemonCard pokemon = (PokemonCard)handleButtonPress();
-        		
-        		/* carry out the attach operation */
-        		player.attachEnergy(energy, pokemon); 
-        		
-        		/* update view */
-        		w.updatePlayerSide();
-        		w.updateInstructions("Choose an attack to use.");
-        		
-        		/* set the card to display */
-        		cardToDisplay = player.getActivePokemon();
-        		
-        		/* set some necessary values */
-        		showAttachToPokemon = false;
-        		hasAttachedEnergy = true;
-        		showAttacks = true;
-        		
-        	/* if attack button clicked */
-        	} else if (msg.getType() == Message.ButtonType.ATTACK){
-        		String resultString;
-        		
-        		/* get the active pokemon */
-        		cardToDisplay = autoPlayer.getActivePokemon();
-        		
-        		/* if the pokemon has enough energy for the attack that was clicked */
-        		if (player.getActivePokemon().hasEnoughEnergy(msg.getIndex())){
-        			/* set some necessary values */
-        			showAttacks = false;
-            		
-            		/* carry out the attack */
-        			resultString = player.attack(msg.getIndex());
-        			
-        			/* update the view */
-        			w.updateInstructions("Your turn is done. " + resultString);
-        		} else {
-        			/* continue to show the attack buttons */
-        			showAttacks = true;
-        			
-        			/* update the view to notify the user that their pokemon doesn't have enough energy */
-        			w.updateInstructions("Your active pokemon doesn't have enough energy for this attack.");
-        		}
-        		
-        		/* update the view */
-        		w.updateAISide();
-        		
-        	/* if "let AI play" button clicked */
-        	} else {
-        		/* get the result of AI playing a turn */
-        		String resultString = autoPlayer.playTurn();
-        		
-        		/* update the view */
-        		w.updateAISide();
-        		w.updatePlayerSide();
-        		if (resultString.equals(""))
-        			resultString = "No attack was carried out. ";
-        		w.updateInstructions("AI's turn is done. " + resultString);
-        		
-        		/* hide the "let AI play" button */
-        		showLetAIPlay = false;
-        		
-        		/* if AI's pokemon's attack forces the player to transfer a card to the bottom of their deck */
-        		if (resultString.equals("You must put a card at the bottom of your deck. Click on a card from your hand to do so.")){
-        			/* wait for further input: user must click on a card from their hand */
-					waitForInput();
-					
-					/* set a necessary value & get the next card from the hand that's clicked */
-					mustMoveCardToBottomOfDeck = true;
-					Card cardToMoveToDeck = handleButtonPress();
-					while (cardToMoveToDeck == null) {
-	        			waitForInput();
-	        			cardToMoveToDeck = handleButtonPress();
-	        		}
-					
-					/* carry out the moving of the card */
-					player.moveCardFromHandToBottomOfDeck(cardToMoveToDeck);
-					
-					/* update the view */
-					w.updatePlayerSide();
-					w.updateInstructions("(Optional) Click on an energy card to select it. Then click \"Attach to a pokemon\" in the sidebar on the right. If you don't want to attach energy, click on your active pokemon to see its attacks.");
-				} else {
-					/* update the view */
-					w.updateInstructions("<html><body>" + w.getInstructions() + " (Optional) Click on an energy card to select it. Then click \"Attach to a pokemon\" in the sidebar on the right.<br/>If you don't want to attach energy, click on your active pokemon to see its attacks.</body></html>");
-				}
-        		
-        		/* reset values */
-        		hasClickedAttach = false;
-        		hasAttachedEnergy = false;
-        		cardToDisplay = null;
-        	}
-        
-        /* if AI side clicked just display the card */
-        } else {
-        	if (msg.getType() == Message.ButtonType.ACTIVE){
-        		cardToDisplay = autoPlayer.getActivePokemon();
-        	} else if (msg.getType() == Message.ButtonType.BENCH){
-        		if (autoPlayer.getBench().isEmpty())
-        			cardToDisplay = null;
-        		else 
-        			cardToDisplay = autoPlayer.getBench().get(msg.getIndex());
-        	} else {
-        		cardToDisplay = autoPlayer.getHand().get(msg.getIndex());
-        	}
-        }
-        
-        /* if the player's turn is over, show the "let AI play" button */
-        if (hasSelectedActive){
-        	showLetAIPlay = true;
-        }
-        
-        /* display the card that was clicked on */
-        w.displayCard(cardToDisplay, showMakeActive, showAttachToPokemon, showAttacks, showLetAIPlay);
-        
-        return cardToDisplay;
-	}
-	
-	public static PokemonCard getChoiceOfCard(Player p, Ability.Target target){
-		Message msg = queue.remove();
-		PokemonCard cardToReturn;
-		
-		if (target == Ability.Target.OPPONENT_BENCH && msg.getSide() == Message.Side.AI && msg.getType() == Message.ButtonType.BENCH){
-			cardToReturn = autoPlayer.getBench().get(msg.getIndex());
-		} else if (target == Ability.Target.YOUR_BENCH && msg.getSide() == Message.Side.PLAYER && msg.getType() == Message.ButtonType.BENCH){
-			cardToReturn = player.getBench().get(msg.getIndex());
-		} else if (target == Ability.Target.OPPONENT_POKEMON && msg.getSide() == Message.Side.AI){
-			if (msg.getType() == Message.ButtonType.ACTIVE){
+	public static PokemonCard getChoiceOfCard(Ability.Target target){
+		Message msg = null;
+		PokemonCard cardToReturn = null;
+
+		switch(target){
+			case OPPONENT:
+				//
+				break;
+			case OPPONENT_ACTIVE:
 				cardToReturn = autoPlayer.getActivePokemon();
-			} else if (msg.getType() == Message.ButtonType.BENCH) {
-				cardToReturn = autoPlayer.getBench().get(msg.getIndex());
-			} else {
-				cardToReturn = null;
-			}
-		} else if (target == Ability.Target.YOUR_POKEMON && msg.getSide() == Message.Side.PLAYER){
-			if (msg.getType() == Message.ButtonType.ACTIVE){
+				break;
+			case OPPONENT_BENCH:
+				GameEngine.w.updateInstructions("Select a Pokémon on your opponent's bench.");
+				waitForInput();
+				msg = queue.remove();
+				if(msg.getSide() == Message.Side.AI && msg.getType() == Message.ButtonType.BENCH){
+					cardToReturn = autoPlayer.getBench().get(msg.getIndex());
+				}
+				break;
+			case OPPONENT_POKEMON:
+				GameEngine.w.updateInstructions("Select a Pokémon from your opponent's bench or active slot.");
+				waitForInput();
+				msg = queue.remove();
+				if(msg.getSide() == Message.Side.AI && msg.getType() == Message.ButtonType.BENCH){
+					cardToReturn = autoPlayer.getBench().get(msg.getIndex());
+				}
+				else if(msg.getSide() == Message.Side.AI && msg.getType() == Message.ButtonType.ACTIVE){
+					cardToReturn = autoPlayer.getActivePokemon();
+				}
+				break;
+			case YOU:
+				//
+				break;
+			case YOUR_ACTIVE:
 				cardToReturn = player.getActivePokemon();
-			} else if (msg.getType() == Message.ButtonType.BENCH) {
-				cardToReturn = player.getBench().get(msg.getIndex());
-			} else {
-				cardToReturn = null;
-			}
-		} else {
-			cardToReturn = null;
+				break;
+			case YOUR_BENCH:
+				GameEngine.w.updateInstructions("Select a Pokémon on your bench.");
+				waitForInput();
+				msg = queue.remove();
+				if(msg.getSide() == Message.Side.PLAYER && msg.getType() == Message.ButtonType.BENCH){
+					cardToReturn = player.getBench().get(msg.getIndex());
+				}
+				break;
+			case YOUR_POKEMON:
+				GameEngine.w.updateInstructions("Select a Pokémon from your bench or active slot.");
+				waitForInput();
+				msg = queue.remove();
+				if(msg.getSide() == Message.Side.PLAYER && msg.getType() == Message.ButtonType.BENCH){
+					cardToReturn = player.getBench().get(msg.getIndex());
+				}
+				else if(msg.getSide() == Message.Side.PLAYER && msg.getType() == Message.ButtonType.ACTIVE){
+					cardToReturn = player.getActivePokemon();
+				}
+				break;
 		}
+
 		
 		return cardToReturn;
 	}
@@ -283,11 +189,10 @@ public class GameEngine {
 	public static PokemonCard choosePokemonCard(Player p, Ability.Target target){
 		PokemonCard cardToReturn;
 		
-		if (p.equals(player)){
-			waitForInput();
-			cardToReturn = getChoiceOfCard(p, target);
+		if (p == player){
+			cardToReturn = getChoiceOfCard(target);
 			while (cardToReturn == null) {
-				cardToReturn = getChoiceOfCard(p, target);
+				cardToReturn = getChoiceOfCard(target);
 			}
 		} else {
 			if (target == Ability.Target.OPPONENT_BENCH){
@@ -302,5 +207,90 @@ public class GameEngine {
 		}
 		return cardToReturn;
 	}
-	
+
+	public static void checkForKnockouts(){
+		//check AI bench
+		for(PokemonCard p : autoPlayer.cardManager.getBench()){
+			if(p.getCurrentHP() <= 0){
+				autoPlayer.cardManager.getBench().remove(p);
+				autoPlayer.cardManager.addPokemonCardToDiscard(p);
+
+				if(player.getPrizeCards().size() == 1){
+					declareWinner(Ability.Player.PLAYER);
+					return;
+				}
+				else{
+					player.cardManager.drawPrizeCard();
+				}
+			}
+		}
+
+		//check player bench
+		for(PokemonCard p : player.cardManager.getBench()){
+			if(p.getCurrentHP() <= 0){
+				player.cardManager.getBench().remove(p);
+				player.cardManager.addPokemonCardToDiscard(p);
+
+				if(autoPlayer.getPrizeCards().size() == 1){
+					declareWinner(Ability.Player.AI);
+					return;
+				}
+				else{
+					autoPlayer.cardManager.drawPrizeCard();
+				}
+			}
+		}
+
+		//check AI active
+		if(autoPlayer.cardManager.getActivePokemon().getCurrentHP() <= 0){
+			autoPlayer.cardManager.addPokemonCardToDiscard(autoPlayer.getActivePokemon());
+			autoPlayer.cardManager.removeActivePokemon();
+
+			if(player.getPrizeCards().size() == 1){
+				declareWinner(Ability.Player.PLAYER);
+				return;
+			}
+			else{
+				player.cardManager.drawPrizeCard();
+			}
+
+			if(! autoPlayer.chooseNewActivePokemon()){
+				declareWinner(Ability.Player.PLAYER);
+				return;
+			}
+		}
+
+		//check player active
+		if(player.cardManager.getActivePokemon().getCurrentHP() <= 0){
+			player.cardManager.addPokemonCardToDiscard(player.getActivePokemon());
+			player.cardManager.removeActivePokemon();
+
+			if(autoPlayer.getPrizeCards().size() == 1){
+				declareWinner(Ability.Player.AI);
+			}
+			else{
+				autoPlayer.cardManager.drawPrizeCard();
+			}
+
+			if(! player.chooseNewActivePokemon()){
+				declareWinner(Ability.Player.AI);
+				return;
+			}
+		}
+	}
+
+	public static void declareWinner(Ability.Player p){
+		switch(p){
+			case AI:
+				winner = autoPlayer;
+				break;
+			case PLAYER:
+				winner = player;
+				break;
+		}
+	}
+
+	public static boolean winnerFound(){
+	    return winner != null;
+    }
 }

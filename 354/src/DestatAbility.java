@@ -3,12 +3,7 @@ import java.util.Map.Entry;
 
 public class DestatAbility extends Ability {
 
-	public DestatAbility(){
-    	this.energyRequired = new HashMap<EnergyCard, Integer>();
-    }
-	
-    public String realUse(Player player){
-    	String resultString = "";
+    public boolean realUse(Player player){
         CardManager sourcePlayer = null, otherPlayer = null;
         switch(player){
             case PLAYER:
@@ -20,17 +15,13 @@ public class DestatAbility extends Ability {
                 otherPlayer = playerCardManager;
                 break;
         }
-        
-        resultString += "Status NORMAL was applied to ";
 
         switch(targetType){
             case OPPONENT_ACTIVE:
                 otherPlayer.getActivePokemon().applyStatus(Status.NORMAL);
-                resultString += "opponent's active pokemon. ";
                 break;
             case YOUR_ACTIVE:
                 sourcePlayer.getActivePokemon().applyStatus(Status.NORMAL);
-                resultString += "your active pokemon. ";
                 break;
             case OPPONENT_BENCH:
                 //TODO: need to implement method to get selection
@@ -46,7 +37,7 @@ public class DestatAbility extends Ability {
                 break;
         }
 
-        return resultString;
+        return true;
     }
 
     DestatAbility(String[] description) throws UnimplementedException{
@@ -77,20 +68,7 @@ public class DestatAbility extends Ability {
 
     }
     
-    public String getDescription(){
-    	String desc = "Name: " + this.name;
-    	desc += "<br/>";
-    	desc += "Status to apply: Normal";
-    	desc += "<br/>";
-    	desc += "Energy required: ";
-		desc += "<br/>";
-		for (Entry<EnergyCard, Integer> entry : energyRequired.entrySet()){
-			desc += "&nbsp;&nbsp;&nbsp;";
-			desc += entry.getKey().getType();
-			desc += ": ";
-			desc += entry.getValue();
-			desc += "<br/>";
-		}
-    	return desc;
+    public String getSimpleDescription(){
+        return "Removes any status from " + targetType.toString();
     }
 }

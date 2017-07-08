@@ -4,32 +4,25 @@ import java.util.Map.Entry;
 public class DrawAbility extends Ability{
     int amountToDraw;
 
-    public DrawAbility(){
-    	this.energyRequired = new HashMap<EnergyCard, Integer>();
-    }
-    
-    public String realUse(Player player){
-    	String resultString = "";
+    public boolean realUse(Player player){
         CardManager sourcePlayer = null;
         switch(player){
             case PLAYER:
                 sourcePlayer = playerCardManager;
-                resultString += "You ";
                 break;
             case AI:
                 sourcePlayer = AICardManager;
-                resultString += "Opponent ";
                 break;
         }
 
         //draw cards
         for(int i = 0; i < amountToDraw; i++){
-            sourcePlayer.addCardToHandFromDeck(0);
+            if(sourcePlayer.getDeck().size() > 0){
+                sourcePlayer.addCardToHandFromDeck(0);
+            }
         }
-
-        resultString += "drew " + amountToDraw + " cards.";
         
-        return resultString;
+        return true;
     }
 
     DrawAbility(String[] description) throws UnimplementedException{
@@ -51,21 +44,7 @@ public class DrawAbility extends Ability{
         }
     }
     
-    public String getDescription(){
-    	String desc = "Name: " + this.name;
-    	desc += "<br/>";
-    	desc += "Cards to draw: ";
-    	desc += this.amountToDraw;
-    	desc += "<br/>";
-    	desc += "Energy required: ";
-		desc += "<br/>";
-		for (Entry<EnergyCard, Integer> entry : energyRequired.entrySet()){
-			desc += "&nbsp;&nbsp;&nbsp;";
-			desc += entry.getKey().getType();
-			desc += ": ";
-			desc += entry.getValue();
-			desc += "<br/>";
-		}
-    	return desc;
+    public String getSimpleDescription(){
+    	return "Draw " + amountToDraw + " cards";
     }
 }

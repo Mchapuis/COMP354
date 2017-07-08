@@ -5,7 +5,7 @@ import java.util.*;
 
 public class MainWindow {
 	public static Object lock;
-    public static PriorityQueue<Message> queue;
+    public static Queue<Message> queue;
 	
     private static final int BENCH_SIZE = 5;
     private JFrame mainFrame = null;
@@ -26,11 +26,13 @@ public class MainWindow {
     private JLabel sidebarTitle = null;
     private JLabel sidebarText = null;
     private JButton makeActiveButton = null;
+    private JButton addToBenchButton = null;
     private JButton attachButton = null;
     private JButton attack1 = null;
     private JButton attack2 = null;
     private JButton attack3 = null;
     private JButton letAIPlay = null;
+    private JButton retreatButton = null;
     
     private JPanel AIHandContainer = null;
     private JPanel AIBenchContainer = null;
@@ -135,11 +137,11 @@ public class MainWindow {
 
         AILeftSidebar = new JPanel();
         AILeftSidebar.setPreferredSize(new Dimension(200, 375));
-        JPanel AIDiscard = createJPanelFromStrings("Discard", "");
+        JPanel AIDiscard = createJPanelFromPile(autoPlayer.getDiscard(), "Discard");
         AILeftSidebar.add(AIDiscard);
-        JPanel AIDeck = createJPanelFromStrings("Deck", "");
+        JPanel AIDeck = createJPanelFromPile(autoPlayer.getDeck(), "Deck");
         AILeftSidebar.add(AIDeck);
-        JPanel AIPrizeCards = createJPanelFromStrings("Prize cards", "");
+        JPanel AIPrizeCards = createJPanelFromPile(autoPlayer.getPrizeCards(), "Prize Cards");
         AILeftSidebar.add(AIPrizeCards);
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 0;
@@ -155,11 +157,11 @@ public class MainWindow {
         
         playerLeftSidebar = new JPanel();
         playerLeftSidebar.setPreferredSize(new Dimension(200, 375));
-        JPanel playerPrizeCards = createJPanelFromStrings("Prize cards", "");
+        JPanel playerPrizeCards = createJPanelFromPile(player.getPrizeCards(), "Prize Cards");
         playerLeftSidebar.add(playerPrizeCards);
-        JPanel playerDeck = createJPanelFromStrings("Deck", "");
+        JPanel playerDeck = createJPanelFromPile(player.getDeck(), "Deck");
         playerLeftSidebar.add(playerDeck);
-        JPanel playerDiscard = createJPanelFromStrings("Discard", "");
+        JPanel playerDiscard = createJPanelFromPile(player.getDiscard(), "Discard");
         playerLeftSidebar.add(playerDiscard);
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 0;
@@ -182,18 +184,21 @@ public class MainWindow {
         constraints.gridy = 0;
         constraints.gridwidth = 3;
         sidebar.add(sidebarIndex, constraints);
+        
         sidebarTitle = new JLabel();
         sidebarTitle.setPreferredSize(new Dimension(295, 15));
         constraints.gridx = 0;
         constraints.gridy = 1;
         constraints.gridwidth = 3;
 		sidebar.add(sidebarTitle, constraints);
+		
 		sidebarText = new JLabel();
 		sidebarText.setPreferredSize(new Dimension(295, 600));
 		constraints.gridx = 0;
         constraints.gridy = 2;
         constraints.gridwidth = 3;
 		sidebar.add(sidebarText, constraints);
+		
 		attack1 = new JButton("Attack 1");
 		attack1.setEnabled(false);
 		attack1.setVisible(false);
@@ -202,6 +207,7 @@ public class MainWindow {
 		constraints.gridy = 3;
 		constraints.gridwidth = 1;
 		sidebar.add(attack1, constraints);
+		
 		attack2 = new JButton("Attack 2");
 		attack2.setEnabled(false);
 		attack2.setVisible(false);
@@ -210,6 +216,7 @@ public class MainWindow {
 		constraints.gridy = 3;
 		constraints.gridwidth = 1;
 		sidebar.add(attack2, constraints);
+		
 		attack3 = new JButton("Attack 3");
 		attack3.setEnabled(false);
 		attack3.setVisible(false);
@@ -218,6 +225,7 @@ public class MainWindow {
 		constraints.gridy = 3;
 		constraints.gridwidth = 1;
 		sidebar.add(attack3, constraints);
+		
 		makeActiveButton = new JButton("Make Active Pokemon");
 		makeActiveButton.setVisible(false);
 		makeActiveButton.addActionListener(new ActionListener()
@@ -239,6 +247,29 @@ public class MainWindow {
         constraints.gridy = 4;
         constraints.gridwidth = 3;
 		sidebar.add(makeActiveButton, constraints);
+		
+		addToBenchButton = new JButton("Add pokemon to bench");
+		addToBenchButton.setVisible(false);
+		addToBenchButton.addActionListener(new ActionListener()
+		{
+		    public void actionPerformed(ActionEvent e)
+		    {
+		    	String side = "player";
+	    		String type = "addtobench";
+	    		int index = 0;
+	    		
+	            synchronized(lock){
+	            	Message message = new Message(side, type, index);
+	                queue.add(message);
+	                lock.notifyAll();
+	            }
+		    }
+		});
+		constraints.gridx = 0;
+        constraints.gridy = 5;
+        constraints.gridwidth = 3;
+		sidebar.add(addToBenchButton, constraints);
+		
 		attachButton = new JButton("Attach to a pokemon");
 		attachButton.setVisible(false);
 		attachButton.addActionListener(new ActionListener()
@@ -260,7 +291,8 @@ public class MainWindow {
         constraints.gridy = 5;
         constraints.gridwidth = 3;
 		sidebar.add(attachButton, constraints);
-		letAIPlay = new JButton("Let AI play");
+		
+		letAIPlay = new JButton("End Turn");
 		letAIPlay.setVisible(false);
 		letAIPlay.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
@@ -279,6 +311,27 @@ public class MainWindow {
         constraints.gridy = 6;
         constraints.gridwidth = 3;
         sidebar.add(letAIPlay, constraints);
+        
+        retreatButton = new JButton("Retreat pokemon");
+		retreatButton.setVisible(false);
+		retreatButton.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){
+				String side = "player";
+	    		String type = "retreat";
+	    		int index = 0;
+	    		
+	            synchronized(lock){
+	            	Message message = new Message(side, type, index);
+	                queue.add(message);
+	                lock.notifyAll();
+	            }
+			}
+		});
+		constraints.gridx = 0;
+        constraints.gridy = 7;
+        constraints.gridwidth = 3;
+        sidebar.add(retreatButton, constraints);
+        
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 2;
         constraints.gridy = 0;
@@ -337,9 +390,10 @@ public class MainWindow {
     
     public void updateInstructions(String text){
     	instructions.setText(text);
-    }
+		System.out.println(text);
+	}
     
-    public void displayCard(Card card, boolean showMakeActive, boolean showAttachToPokemon, boolean showAttacks, boolean showLetAIPlay){
+    public void displayCard(Card card, boolean showMakeActive, boolean showAddToBench, boolean showAttachToPokemon, boolean showAttacks, boolean showLetAIPlay, boolean showRetreat){
     	if (card != null) {
 	    	sidebarTitle.setText(card.getName());
 	    	sidebarText.setText(card.getDescription());
@@ -348,6 +402,12 @@ public class MainWindow {
 	    		makeActiveButton.setVisible(true);
 	    	} else {
 	    		makeActiveButton.setVisible(false);
+	    	}
+	    	
+	    	if (showAddToBench){
+	    		addToBenchButton.setVisible(true);
+	    	} else {
+	    		addToBenchButton.setVisible(false);
 	    	}
 	    	
 	    	if (showAttachToPokemon){
@@ -385,11 +445,53 @@ public class MainWindow {
     		sidebarTitle.setText("Undefined");
 	    	sidebarText.setText("No description");
     	}
+    	
+    	if (showRetreat){
+    		retreatButton.setVisible(true);
+    	} else {
+    		retreatButton.setVisible(false);
+    	}
+    	
     	displayedCard = card;
     	
     	sidebar.invalidate();
     	sidebar.validate();
     	sidebar.repaint();
+    }
+
+    public void displayCard(Message m){
+        Card cardToBeDisplayed = null;
+        CardManager sourceCardManager = null;
+        boolean isPlayers = false;
+
+        if(m.getSide() == Message.Side.PLAYER){
+           sourceCardManager = player.cardManager;
+           isPlayers = true;
+        }
+        else{
+            sourceCardManager = autoPlayer.cardManager;
+        }
+
+        switch(m.getType()){
+            case ACTIVE:
+                cardToBeDisplayed = sourceCardManager.getActivePokemon();
+                displayCard(cardToBeDisplayed, false, false, false, isPlayers, true, isPlayers);
+                break;
+            case BENCH:
+                if(m.getIndex() < sourceCardManager.getBench().size()){
+                    cardToBeDisplayed = sourceCardManager.getBench().get(m.getIndex());
+                    displayCard(cardToBeDisplayed, false, false, false, false, true, false);
+                }
+                break;
+            case HAND:
+                if(m.getIndex() < sourceCardManager.getHand().size()){
+                    cardToBeDisplayed = sourceCardManager.getHand().get(m.getIndex());
+                    boolean isCat1Pokemon = cardToBeDisplayed instanceof PokemonCard && ((PokemonCard) cardToBeDisplayed).getCat() == PokemonCard.Category.BASIC;
+                    boolean canAttachEnergy = cardToBeDisplayed instanceof EnergyCard && player.hasPlacedEnergy == false;
+                    displayCard(cardToBeDisplayed, isCat1Pokemon, isCat1Pokemon, canAttachEnergy, false, true, false);
+                }
+                break;
+        }
     }
     
     public String getInstructions(){
@@ -403,15 +505,26 @@ public class MainWindow {
     public void display(){
         mainFrame.setVisible(true);
     }
-    
+
+
+    public void updateAll(){
+    	updateAISide();
+    	updatePlayerSide();
+	}
+
     public void updateAISide(){
     	updateAIActivePokemon();
+    	updateAIHand();
+    	updateAIBench();
     }
     
     public void updateAIActivePokemon(){
     	AIActivePokemonContainer.removeAll();
     	AIActivePokemonContainer.add(createJPanelFromCard(autoPlayer.getActivePokemon()));
-    	updateAIHand();
+
+    	AIActivePokemonContainer.invalidate();
+    	AIActivePokemonContainer.validate();
+    	AIActivePokemonContainer.repaint();
     }
     
     public void updateAIHand(){
@@ -422,6 +535,21 @@ public class MainWindow {
     	AIHandContainer.invalidate();
     	AIHandContainer.validate();
     	AIHandContainer.repaint();
+    }
+    
+    public void updateAIBench(){
+    	AIBenchContainer.removeAll();
+		int i = 0;
+		for (Card c : autoPlayer.getBench()){
+			AIBenchContainer.add(createJPanelFromCard(c));
+			i++;
+		}
+		for (; i < 5; i++){
+			AIBenchContainer.add(createJPanelFromCard(null));
+		}
+		AIBenchContainer.invalidate();
+		AIBenchContainer.validate();
+		AIBenchContainer.repaint();
     }
     
     public void setPlayerActivePokemon(){
@@ -443,6 +571,7 @@ public class MainWindow {
     public void updatePlayerSide(){
     	updatePlayerActivePokemon();
     	updatePlayerHand();
+    	updatePlayerBench();
     }
     
     public void updatePlayerActivePokemon(){
@@ -461,6 +590,21 @@ public class MainWindow {
     	playerHandContainer.invalidate();
     	playerHandContainer.validate();
     	playerHandContainer.repaint();
+    }
+    
+    public void updatePlayerBench(){
+    	playerBenchContainer.removeAll();
+    	int i = 0;
+    	for (Card c : player.getBench()){
+    		playerBenchContainer.add(createJPanelFromCard(c));
+    		i++;
+    	}
+    	for (; i < 5; i++){
+    		playerBenchContainer.add(createJPanelFromCard(null));
+    	}
+    	playerBenchContainer.invalidate();
+    	playerBenchContainer.validate();
+    	playerBenchContainer.repaint();
     }
 
     public JPanel createJPanelFromCard(Card c){
@@ -494,6 +638,20 @@ public class MainWindow {
     	JButton button = new JButton(buttonName);
     	button.addActionListener(new GenericButtonActionListener());
     	JLabel description = new JLabel(descriptionString);
+    	card.add(button);
+    	card.add(description);
+    	return card;
+    }
+    
+    public JPanel createJPanelFromPile(ArrayList<Card> pile, String buttonName){
+    	JPanel card = new JPanel();
+    	card.setPreferredSize(new Dimension(100, 120));
+    	card.setBorder(BorderFactory.createLineBorder(Color.black));
+    	card.setLayout(new GridLayout(0,1));
+    	
+    	JButton button = new JButton(buttonName);
+    	button.addActionListener(new GenericButtonActionListener());
+    	JLabel description = new JLabel(pile.size() + " cards");
     	card.add(button);
     	card.add(description);
     	return card;

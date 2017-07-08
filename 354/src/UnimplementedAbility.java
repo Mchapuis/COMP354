@@ -1,9 +1,8 @@
 import java.util.HashMap;
 
 class UnimplementedAbility extends Ability{
-  public String realUse(Player player){
-    String resultString = "NOT IMPLEMENTED! OH NOOOOOOOOOOOOOO!";
-    return resultString;
+  public boolean realUse(Player player){
+    return false;
   }
 
   UnimplementedAbility(){
@@ -11,7 +10,7 @@ class UnimplementedAbility extends Ability{
     this.energyRequired = new HashMap<EnergyCard, Integer>();
   }
   
-  public String getDescription(){
-	  return null;
+  public String getSimpleDescription(){
+	  return "This part of the ability is not implemented :(";
   }
 }

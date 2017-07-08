@@ -5,7 +5,7 @@ public class Message {
 	}
 	
 	public static enum ButtonType{
-		HAND, BENCH, ACTIVE, MAKEACTIVE, ATTACHENERGY, ATTACK, LETAIPLAY 
+		HAND, BENCH, ACTIVE, MAKEACTIVE, ADDTOBENCH, ATTACHENERGY, ATTACK, LETAIPLAY, RETREAT
 	}
 	
 	private Side side;
@@ -27,12 +27,16 @@ public class Message {
 			this.type = ButtonType.HAND;
 		} else if (type.equals("makeactive")){
 			this.type = ButtonType.MAKEACTIVE;
+		} else if (type.equals("addtobench")){
+			this.type = ButtonType.ADDTOBENCH;
 		} else if (type.equals("attachenergy")){
 			this.type = ButtonType.ATTACHENERGY;
 		} else if (type.equals("attack")){
 			this.type = ButtonType.ATTACK;
 		} else if (type.equals("letAIplay")){
 			this.type = ButtonType.LETAIPLAY;
+		} else if (type.equals("retreat")){
+			this.type = ButtonType.RETREAT;
 		}
 		
 		this.index = index;
