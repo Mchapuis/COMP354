@@ -44,10 +44,11 @@ public class AIPlayer extends Player {
 		else if(getActivePokemon().getStatus() == Status.ASLEEP){
 			GameEngine.w.updateInstructions(getActivePokemon().getName() + " is asleep and cannot attack.");
 		}
-		else if(getActivePokemon().getStatus() == Status.PARALYZED && RandomNumberGenerator.flipACoin()){
+		else if(getActivePokemon().getStatus() == Status.PARALYZED){
 			GameEngine.w.updateInstructions(getActivePokemon().getName() + " is paralyzed and cannot attack.");
 		}
 		else{
+			GameEngine.w.updateInstructions(getActivePokemon().getName() + " used ability " + ability.name);
 			ability.use(Ability.Player.AI);
 			turnOver = true;
 		}

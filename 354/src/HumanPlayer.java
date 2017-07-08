@@ -125,7 +125,6 @@ public class HumanPlayer extends Player {
             GameEngine.w.updateInstructions(getActivePokemon().getName() + " is paralyzed and can't retreat.");
         }
         else{
-
             PokemonCard replacement = GameEngine.choosePokemonCard(this, Ability.Target.YOUR_BENCH);
             GameEngine.w.updateInstructions(getActivePokemon().getName() + " has been replaced with " + replacement.getName());
             this.getActivePokemon().applyStatus(Status.NORMAL);
@@ -142,10 +141,11 @@ public class HumanPlayer extends Player {
         else if(getActivePokemon().getStatus() == Status.ASLEEP){
             GameEngine.w.updateInstructions(getActivePokemon().getName() + " is asleep and cannot attack.");
         }
-        else if(getActivePokemon().getStatus() == Status.PARALYZED && RandomNumberGenerator.flipACoin()){
+        else if(getActivePokemon().getStatus() == Status.PARALYZED){
             GameEngine.w.updateInstructions(getActivePokemon().getName() + " is paralyzed and cannot attack.");
         }
         else{
+            GameEngine.w.updateInstructions(getActivePokemon().getName() + " used ability " + ability.name);
             ability.use(Ability.Player.PLAYER);
             turnOver = true;
         }
