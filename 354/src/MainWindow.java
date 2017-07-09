@@ -18,6 +18,9 @@ public class MainWindow {
     private JPanel playerBenchContainer = null;
     private JPanel playerActivePokemonContainer = null;
     private JPanel playerLeftSidebar = null;
+    private JPanel playerDiscard = null;
+    private JPanel playerDeck = null;
+    private JPanel playerPrizeCards = null;
     private JPanel playerSide = null;
     
     private JLabel instructions = null;
@@ -40,6 +43,9 @@ public class MainWindow {
     private JPanel AIBenchContainer = null;
     private JPanel AIActivePokemonContainer = null;
     private JPanel AILeftSidebar = null;
+    private JPanel AIDiscard = null;
+    private JPanel AIDeck = null;
+    private JPanel AIPrizeCards = null;
     private JPanel AISide = null;
     
     public class GenericButtonActionListener implements ActionListener{
@@ -80,9 +86,29 @@ public class MainWindow {
     		} else if (container.equals(playerHandContainer)){
     			side = "player";
     			type = "hand";
-    		} else {
+    		} else if (container.equals(AIHandContainer)){
     			side = "AI";
     			type = "hand";
+    		} else {
+    			if (buttonParent.equals(AIDeck)){
+    				side = "AI";
+    				type = "deck";
+    			} else if (buttonParent.equals(AIDiscard)){
+    				side = "AI";
+    				type = "discard";
+    			} else if (buttonParent.equals(AIPrizeCards)){
+    				side = "AI";
+    				type = "prizecards";
+    			} else if (buttonParent.equals(playerDeck)){
+    				side = "player";
+    				type = "deck";
+    			} else if (buttonParent.equals(playerDiscard)){
+    				side = "player";
+    				type = "discard";
+    			} else {
+    				side = "player";
+    				type = "prizecards";
+    			}
     		}
     		
             synchronized(lock){
@@ -139,11 +165,11 @@ public class MainWindow {
 
         AILeftSidebar = new JPanel();
         AILeftSidebar.setPreferredSize(new Dimension(200, 375));
-        JPanel AIDiscard = createJPanelFromPile(autoPlayer.getDiscard(), "Discard");
+        AIDiscard = createJPanelFromPile(autoPlayer.getDiscard(), "Discard");
         AILeftSidebar.add(AIDiscard);
-        JPanel AIDeck = createJPanelFromPile(autoPlayer.getDeck(), "Deck");
+        AIDeck = createJPanelFromPile(autoPlayer.getDeck(), "Deck");
         AILeftSidebar.add(AIDeck);
-        JPanel AIPrizeCards = createJPanelFromPile(autoPlayer.getPrizeCards(), "Prize Cards");
+        AIPrizeCards = createJPanelFromPile(autoPlayer.getPrizeCards(), "Prize Cards");
         AILeftSidebar.add(AIPrizeCards);
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 0;
@@ -159,11 +185,11 @@ public class MainWindow {
         
         playerLeftSidebar = new JPanel();
         playerLeftSidebar.setPreferredSize(new Dimension(200, 375));
-        JPanel playerPrizeCards = createJPanelFromPile(player.getPrizeCards(), "Prize Cards");
+        playerPrizeCards = createJPanelFromPile(player.getPrizeCards(), "Prize Cards");
         playerLeftSidebar.add(playerPrizeCards);
-        JPanel playerDeck = createJPanelFromPile(player.getDeck(), "Deck");
+        playerDeck = createJPanelFromPile(player.getDeck(), "Deck");
         playerLeftSidebar.add(playerDeck);
-        JPanel playerDiscard = createJPanelFromPile(player.getDiscard(), "Discard");
+        playerDiscard = createJPanelFromPile(player.getDiscard(), "Discard");
         playerLeftSidebar.add(playerDiscard);
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 0;
@@ -549,7 +575,31 @@ public class MainWindow {
                     displayCard(cardToBeDisplayed, isCat1Pokemon, isCat1Pokemon, canAttachEnergy, false, true, false, isTrainerCard, false);
                 }
                 break;
+            default:
+            	cardToBeDisplayed = createCardFromMessage(m);
+            	displayCard(cardToBeDisplayed, false, false, false, false, false, false, false, false);
+            	break;
         }
+    }
+    
+    public Card createCardFromMessage(Message m){
+    	CardManager sourceCardManager;
+    	if (m.getSide() == Message.Side.AI){
+    		sourceCardManager = autoPlayer.cardManager;
+    	} else {
+    		sourceCardManager = player.cardManager;
+    	}
+    	
+    	GenericCard card;
+    	if (m.getType() == Message.ButtonType.DECK){
+    		card = new GenericCard(sourceCardManager.getDeck().size());
+    	} else if (m.getType() == Message.ButtonType.DISCARD){
+    		card = new GenericCard(sourceCardManager.getDiscard().size());
+    	} else {
+    		card = new GenericCard(sourceCardManager.getPrizeCards().size());
+    	}
+    	
+    	 return card;
     }
     
     public String getInstructions(){
@@ -713,5 +763,14 @@ public class MainWindow {
     	card.add(button);
     	card.add(description);
     	return card;
+    }
+    
+    public void updateLeftSidebar(){
+    	AILeftSidebar.invalidate();
+    	AILeftSidebar.validate();
+    	AILeftSidebar.repaint();
+    	playerLeftSidebar.invalidate();
+    	playerLeftSidebar.validate();
+    	playerLeftSidebar.repaint();
     }
 }
