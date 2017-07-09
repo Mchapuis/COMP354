@@ -17,17 +17,17 @@ public class HumanPlayer extends Player {
                 int index = m.getIndex();
                 Card c = cardManager.getHand().get(index);
                 if(c instanceof PokemonCard && ((PokemonCard) c).getCat() == PokemonCard.Category.BASIC){
-                        GameEngine.w.displayCard(c, true, false, false, false, false, false);
+                        GameEngine.w.displayCard(c, true, false, false, false, false, false, false, false);
                 }
                 else{
-                    GameEngine.w.displayCard(c, false, false, false, false, false, false);
+                    GameEngine.w.displayCard(c, false, false, false, false, false, false, false, false);
                 }
             }
             else if(m.getType() == Message.ButtonType.MAKEACTIVE){
                 PokemonCard c = (PokemonCard) GameEngine.w.getDisplayedCard();
                 cardManager.setActivePokemon(c);
                 GameEngine.w.updatePlayerSide();
-                GameEngine.w.displayCard(c, false, false, false, false, false, false);
+                GameEngine.w.displayCard(c, false, false, false, false, false, false, false, false);
                 GameEngine.w.updateInstructions("Made " + c.getName() + " active Pokémon.");
                 hasSelectedActivePokemon = true;
             }
@@ -45,10 +45,10 @@ public class HumanPlayer extends Player {
                 int index = m.getIndex();
                 Card c = cardManager.getHand().get(index);
                 if(c instanceof PokemonCard && ((PokemonCard) c).getCat() == PokemonCard.Category.BASIC){
-                    GameEngine.w.displayCard(c, false, true, false, false, false, false);
+                    GameEngine.w.displayCard(c, false, true, false, false, false, false, false, false);
                 }
                 else{
-                    GameEngine.w.displayCard(c, false, false, false, false, false, false);
+                    GameEngine.w.displayCard(c, false, false, false, false, false, false, false, false);
                 }
             }
             else if(m.getType() == Message.ButtonType.ADDTOBENCH){
@@ -56,7 +56,7 @@ public class HumanPlayer extends Player {
                 cardManager.getBench().add(c);
                 cardManager.getHand().remove(c);
                 GameEngine.w.updatePlayerSide();
-                GameEngine.w.displayCard(c, false, false, false, false, false, false);
+                GameEngine.w.displayCard(c, false, false, false, false, false, false, false, false);
                 GameEngine.w.updateInstructions("Added " + c.getName() + " to bench");
 
                 if(cardManager.getBench().size() == 5){
@@ -93,9 +93,26 @@ public class HumanPlayer extends Player {
             case RETREAT:
                 retreatActive();
                 break;
+            case PLAYITEM:
+            	playItem();
+            	break;
+            case EVOLVE:
+            	evolve();
+            	break;
             default:
                 GameEngine.w.displayCard(m);
         }
+	}
+	
+	
+	//TODO: implement
+	public void playItem(){
+		System.out.println("PLAY ITEM");
+	}
+	
+	//TODO: implement
+	public void evolve(){
+		System.out.println("EVOLVE");
 	}
 
 	public void attachEnergy(){
@@ -111,7 +128,7 @@ public class HumanPlayer extends Player {
         cardManager.getBench().add(c);
         cardManager.getHand().remove(c);
         GameEngine.w.updatePlayerSide();
-        GameEngine.w.displayCard(c, false, false, false, false, false, false);
+        GameEngine.w.displayCard(c, false, false, false, false, false, false, false, false);
         GameEngine.w.updateInstructions("Added " + c.getName() + " to bench");
     }
 

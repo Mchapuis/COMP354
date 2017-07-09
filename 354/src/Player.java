@@ -32,8 +32,8 @@ public abstract class Player {
 				turnOver = true;
 			}
 		}
-
-
+		
+		GameEngine.w.updateLeftSidebar();
 	}
 
 	public abstract void takeActions();
@@ -42,6 +42,7 @@ public abstract class Player {
 	
 	public void moveCardFromHandToBottomOfDeck(Card card){
 		this.cardManager.moveCardFromHandToBottomOfDeck(card);
+		GameEngine.w.updateLeftSidebar();
 	}
 	
 	public PokemonCard getActivePokemon(){
@@ -68,6 +69,7 @@ public abstract class Player {
 		if(cardManager.getDeck().size() > 0){
 			this.cardManager.addCardToHandFromDeck(0);
 		}
+		GameEngine.w.updateLeftSidebar();
 	}
 	
 	public boolean movePokemonToBench(PokemonCard pokemon){
