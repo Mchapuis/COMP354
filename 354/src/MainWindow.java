@@ -33,6 +33,8 @@ public class MainWindow {
     private JButton attack3 = null;
     private JButton letAIPlay = null;
     private JButton retreatButton = null;
+    private JButton playItemButton = null;
+    private JButton evolveButton = null;
     
     private JPanel AIHandContainer = null;
     private JPanel AIBenchContainer = null;
@@ -332,6 +334,46 @@ public class MainWindow {
         constraints.gridwidth = 3;
         sidebar.add(retreatButton, constraints);
         
+        playItemButton = new JButton("Play item");
+		playItemButton.setVisible(false);
+		playItemButton.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){
+				String side = "player";
+	    		String type = "playitem";
+	    		int index = 0;
+	    		
+	            synchronized(lock){
+	            	Message message = new Message(side, type, index);
+	                queue.add(message);
+	                lock.notifyAll();
+	            }
+			}
+		});
+		constraints.gridx = 0;
+        constraints.gridy = 8;
+        constraints.gridwidth = 3;
+        sidebar.add(playItemButton, constraints);
+        
+        evolveButton = new JButton("Evolve");
+		evolveButton.setVisible(false);
+		evolveButton.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){
+				String side = "player";
+	    		String type = "evolve";
+	    		int index = 0;
+	    		
+	            synchronized(lock){
+	            	Message message = new Message(side, type, index);
+	                queue.add(message);
+	                lock.notifyAll();
+	            }
+			}
+		});
+		constraints.gridx = 0;
+        constraints.gridy = 8;
+        constraints.gridwidth = 3;
+        sidebar.add(evolveButton, constraints);
+        
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 2;
         constraints.gridy = 0;
@@ -393,7 +435,7 @@ public class MainWindow {
 		System.out.println(text);
 	}
     
-    public void displayCard(Card card, boolean showMakeActive, boolean showAddToBench, boolean showAttachToPokemon, boolean showAttacks, boolean showLetAIPlay, boolean showRetreat){
+    public void displayCard(Card card, boolean showMakeActive, boolean showAddToBench, boolean showAttachToPokemon, boolean showAttacks, boolean showLetAIPlay, boolean showRetreat, boolean showPlayItem, boolean showEvolve){
     	if (card != null) {
 	    	sidebarTitle.setText(card.getName());
 	    	sidebarText.setText(card.getDescription());
@@ -441,15 +483,27 @@ public class MainWindow {
 	    	} else {
 	    		letAIPlay.setVisible(false);
 	    	}
+	    	
+	    	if (showPlayItem){
+	    		playItemButton.setVisible(true);
+	    	} else {
+	    		playItemButton.setVisible(false);
+	    	}
+	    	
+	    	if (showRetreat){
+	    		retreatButton.setVisible(true);
+	    	} else {
+	    		retreatButton.setVisible(false);
+	    	}
+	    	
+	    	if (showEvolve){
+	    		evolveButton.setVisible(true);
+	    	} else {
+	    		evolveButton.setVisible(false);
+	    	}
     	} else {
     		sidebarTitle.setText("Undefined");
 	    	sidebarText.setText("No description");
-    	}
-    	
-    	if (showRetreat){
-    		retreatButton.setVisible(true);
-    	} else {
-    		retreatButton.setVisible(false);
     	}
     	
     	displayedCard = card;
@@ -472,23 +526,27 @@ public class MainWindow {
             sourceCardManager = autoPlayer.cardManager;
         }
 
+        boolean isCat1Pokemon;
         switch(m.getType()){
             case ACTIVE:
                 cardToBeDisplayed = sourceCardManager.getActivePokemon();
-                displayCard(cardToBeDisplayed, false, false, false, isPlayers, true, isPlayers);
+                isCat1Pokemon = cardToBeDisplayed instanceof PokemonCard && ((PokemonCard) cardToBeDisplayed).getCat() == PokemonCard.Category.BASIC;
+                displayCard(cardToBeDisplayed, false, false, false, isPlayers, true, isPlayers, false, isCat1Pokemon);
                 break;
             case BENCH:
                 if(m.getIndex() < sourceCardManager.getBench().size()){
                     cardToBeDisplayed = sourceCardManager.getBench().get(m.getIndex());
-                    displayCard(cardToBeDisplayed, false, false, false, false, true, false);
+                    isCat1Pokemon = cardToBeDisplayed instanceof PokemonCard && ((PokemonCard) cardToBeDisplayed).getCat() == PokemonCard.Category.BASIC;
+                    displayCard(cardToBeDisplayed, false, false, false, false, true, false, false, isCat1Pokemon);
                 }
                 break;
             case HAND:
                 if(m.getIndex() < sourceCardManager.getHand().size()){
                     cardToBeDisplayed = sourceCardManager.getHand().get(m.getIndex());
-                    boolean isCat1Pokemon = cardToBeDisplayed instanceof PokemonCard && ((PokemonCard) cardToBeDisplayed).getCat() == PokemonCard.Category.BASIC;
+                    isCat1Pokemon = cardToBeDisplayed instanceof PokemonCard && ((PokemonCard) cardToBeDisplayed).getCat() == PokemonCard.Category.BASIC;
                     boolean canAttachEnergy = cardToBeDisplayed instanceof EnergyCard && player.hasPlacedEnergy == false;
-                    displayCard(cardToBeDisplayed, isCat1Pokemon, isCat1Pokemon, canAttachEnergy, false, true, false);
+                    boolean isTrainerCard = cardToBeDisplayed instanceof TrainerCard;
+                    displayCard(cardToBeDisplayed, isCat1Pokemon, isCat1Pokemon, canAttachEnergy, false, true, false, isTrainerCard, false);
                 }
                 break;
         }
