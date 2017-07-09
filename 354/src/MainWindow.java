@@ -151,17 +151,18 @@ public class MainWindow {
         //Set window properties
         mainFrame = new JFrame("354 Pokemon Game");
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        mainFrame.setSize(new Dimension(1600, 850));
+        mainFrame.setSize(new Dimension(1800, 850));
+        mainFrame.setResizable(false);
         mainFrame.setLayout(new GridBagLayout()); 
         
         GridBagConstraints constraints = new GridBagConstraints();
 
         //active pokemon buttons
         playerActivePokemonContainer = new JPanel();
-        playerActivePokemonContainer.add(createJPanelFromStrings("Undefined", "No description"));
+        playerActivePokemonContainer.add(createJPanelFromStrings("", "No description"));
         
         AIActivePokemonContainer = new JPanel();
-        AIActivePokemonContainer.add(createJPanelFromStrings("Undefined", "No description"));
+        AIActivePokemonContainer.add(createJPanelFromStrings("", "No description"));
 
         AILeftSidebar = new JPanel();
         AILeftSidebar.setPreferredSize(new Dimension(200, 375));
@@ -425,7 +426,7 @@ public class MainWindow {
         playerBenchContainer = new JPanel();
         playerSide.add(playerBenchContainer);
         for(int i = 0; i < BENCH_SIZE; i++){
-            playerBenchContainer.add(createJPanelFromStrings("Undefined", "No description"));
+            playerBenchContainer.add(createJPanelFromStrings("", "No description"));
         }
 
         //hand
@@ -449,7 +450,7 @@ public class MainWindow {
         AIBenchContainer = new JPanel();
         AISide.add(AIBenchContainer);
         for(int i = 0; i < BENCH_SIZE; i++){
-            AIBenchContainer.add(createJPanelFromStrings("Undefined", "No description"));
+            AIBenchContainer.add(createJPanelFromStrings("", "No description"));
         }
 
         //active
@@ -457,7 +458,7 @@ public class MainWindow {
     }
     
     public void updateInstructions(String text){
-    	instructions.setText(text);
+    	instructions.setText("             " + text);
 		System.out.println(text);
 	}
     
@@ -618,6 +619,7 @@ public class MainWindow {
     public void updateAll(){
     	updateAISide();
     	updatePlayerSide();
+    	updateLeftSidebar();
 	}
 
     public void updateAISide(){
@@ -718,50 +720,39 @@ public class MainWindow {
     public JPanel createJPanelFromCard(Card c){
     	JPanel card = new JPanel();
     	card.setPreferredSize(new Dimension(100, 120));
-    	card.setBorder(BorderFactory.createLineBorder(Color.black));
     	card.setLayout(new GridLayout(0,1));
     	
     	JButton button;
-    	JLabel description;
     	
     	if (c != null){
 	    	button = new JButton(c.getName());
-	    	description = new JLabel(c.getDescription());
     	} else {
-    		button = new JButton("Undefined");
-    		description = new JLabel("No description");
+    		button = new JButton("");
     	}
     	button.addActionListener(new GenericButtonActionListener());
     	card.add(button);
-    	card.add(description);
     	return card;
     }
     
     public JPanel createJPanelFromStrings(String buttonName, String descriptionString){
     	JPanel card = new JPanel();
     	card.setPreferredSize(new Dimension(100, 120));
-    	card.setBorder(BorderFactory.createLineBorder(Color.black));
     	card.setLayout(new GridLayout(0,1));
     	
     	JButton button = new JButton(buttonName);
     	button.addActionListener(new GenericButtonActionListener());
-    	JLabel description = new JLabel(descriptionString);
     	card.add(button);
-    	card.add(description);
     	return card;
     }
     
     public JPanel createJPanelFromPile(ArrayList<Card> pile, String buttonName){
     	JPanel card = new JPanel();
     	card.setPreferredSize(new Dimension(100, 120));
-    	card.setBorder(BorderFactory.createLineBorder(Color.black));
     	card.setLayout(new GridLayout(0,1));
     	
     	JButton button = new JButton(buttonName);
     	button.addActionListener(new GenericButtonActionListener());
-    	JLabel description = new JLabel(pile.size() + " cards");
     	card.add(button);
-    	card.add(description);
     	return card;
     }
     

@@ -1,10 +1,27 @@
+import com.sun.tools.javac.jvm.Gen;
 
 public class GenericCard extends Card {
+
+	public Card shallowCopy() {
+		GenericCard r = new GenericCard("");
+
+		r.ID = this.ID;
+		r.name = this.name;
+		r.description = this.description;
+
+		return r;
+	}
 
 	private int ID;
 	private String name;
 	private String description;
-	
+
+	public GenericCard(String displayString){
+		this.ID = 0;
+		this.name = "";
+		this.description = displayString;
+	}
+
 	public GenericCard(int sizeOfPile){
 		this.ID = 0;
 		this.name = "";
