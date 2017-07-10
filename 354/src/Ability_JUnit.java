@@ -58,8 +58,27 @@ public class Ability_JUnit {
 class test extends Ability{
 
 	@Override
-	public void use(Player player) {
+	public boolean use(Player player) {
+		return false;
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public boolean realUse(Player player) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	protected String getSimpleDescription() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Ability shallowCopy() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
