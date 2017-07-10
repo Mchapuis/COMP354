@@ -216,6 +216,7 @@ public class MainWindow {
         
         sidebarTitle = new JLabel();
         sidebarTitle.setPreferredSize(new Dimension(295, 15));
+        sidebarTitle.setHorizontalAlignment(SwingConstants.CENTER);
         constraints.gridx = 0;
         constraints.gridy = 1;
         constraints.gridwidth = 3;
@@ -229,7 +230,7 @@ public class MainWindow {
 		sidebar.add(sidebarText, constraints);
 		
 		attack1 = new JButton("Attack 1");
-		attack1.setEnabled(false);
+		attack1.setEnabled(true);
 		attack1.setVisible(false);
 		attack1.addActionListener(new AttackButtonActionListener());
 		constraints.gridx = 0;
@@ -238,7 +239,7 @@ public class MainWindow {
 		sidebar.add(attack1, constraints);
 		
 		attack2 = new JButton("Attack 2");
-		attack2.setEnabled(false);
+		attack2.setEnabled(true);
 		attack2.setVisible(false);
 		attack2.addActionListener(new AttackButtonActionListener());
 		constraints.gridx = 1;
@@ -247,7 +248,7 @@ public class MainWindow {
 		sidebar.add(attack2, constraints);
 		
 		attack3 = new JButton("Attack 3");
-		attack3.setEnabled(false);
+		attack3.setEnabled(true);
 		attack3.setVisible(false);
 		attack3.addActionListener(new AttackButtonActionListener());
 		constraints.gridx = 2;
@@ -486,23 +487,19 @@ public class MainWindow {
 	    	}
 	    	
 	    	if (showAttacks){
-	    		attack1.setVisible(true);
-    			attack2.setVisible(true);
-    			attack3.setVisible(true);
-    			
-    			attack1.setEnabled(true);
-        		if (player.getActivePokemon().getAbilities().size() > 1)
-        			attack2.setEnabled(true);
-        		if (player.getActivePokemon().getAbilities().size() > 2)
-        			attack3.setEnabled(true);
-	    	} else {
 	    		attack1.setVisible(false);
     			attack2.setVisible(false);
     			attack3.setVisible(false);
     			
-    			attack1.setEnabled(false);
-    			attack2.setEnabled(false);
-    			attack3.setEnabled(false);
+    			attack1.setVisible(true);
+        		if (player.getActivePokemon().getAbilities().size() > 1)
+        			attack2.setVisible(true);
+        		if (player.getActivePokemon().getAbilities().size() > 2)
+        			attack3.setVisible(true);
+	    	} else {
+	    		attack1.setVisible(false);
+    			attack2.setVisible(false);
+    			attack3.setVisible(false);
 	    	}
 	    	
 	    	if (showLetAIPlay){
@@ -529,8 +526,8 @@ public class MainWindow {
 	    		evolveButton.setVisible(false);
 	    	}
     	} else {
-    		sidebarTitle.setText("Undefined");
-	    	sidebarText.setText("No description");
+    		sidebarTitle.setText("");
+	    	sidebarText.setText("");
     	}
     	
     	displayedCard = card;
@@ -558,22 +555,23 @@ public class MainWindow {
             case ACTIVE:
                 cardToBeDisplayed = sourceCardManager.getActivePokemon();
                 isCat1Pokemon = cardToBeDisplayed instanceof PokemonCard && ((PokemonCard) cardToBeDisplayed).getCat() == PokemonCard.Category.BASIC;
-                displayCard(cardToBeDisplayed, false, false, false, isPlayers, true, isPlayers, false, isCat1Pokemon);
+                displayCard(cardToBeDisplayed, false, false, false, isPlayers, true, isPlayers, false, false);
                 break;
             case BENCH:
                 if(m.getIndex() < sourceCardManager.getBench().size()){
                     cardToBeDisplayed = sourceCardManager.getBench().get(m.getIndex());
                     isCat1Pokemon = cardToBeDisplayed instanceof PokemonCard && ((PokemonCard) cardToBeDisplayed).getCat() == PokemonCard.Category.BASIC;
-                    displayCard(cardToBeDisplayed, false, false, false, false, true, false, false, isCat1Pokemon);
+                    displayCard(cardToBeDisplayed, false, false, false, false, true, false, false, false);
                 }
                 break;
             case HAND:
                 if(m.getIndex() < sourceCardManager.getHand().size()){
                     cardToBeDisplayed = sourceCardManager.getHand().get(m.getIndex());
                     isCat1Pokemon = cardToBeDisplayed instanceof PokemonCard && ((PokemonCard) cardToBeDisplayed).getCat() == PokemonCard.Category.BASIC;
+                    boolean isCat2Pokemon = cardToBeDisplayed instanceof PokemonCard && ((PokemonCard) cardToBeDisplayed).getCat() == PokemonCard.Category.STAGEONE;
                     boolean canAttachEnergy = cardToBeDisplayed instanceof EnergyCard && player.hasPlacedEnergy == false;
                     boolean isTrainerCard = cardToBeDisplayed instanceof TrainerCard;
-                    displayCard(cardToBeDisplayed, isCat1Pokemon, isCat1Pokemon, canAttachEnergy, false, true, false, isTrainerCard, false);
+                    displayCard(cardToBeDisplayed, false, isCat1Pokemon && isPlayers, canAttachEnergy, false, true, false, isTrainerCard && isPlayers, isCat2Pokemon && isPlayers);
                 }
                 break;
             default:

@@ -113,19 +113,10 @@ public class PokemonCard extends Card {
 	
 	public String getDescription(){
 		String desc = "<html><body>";
-		desc += this.description;
-		desc += "<br/>Retreat Cost: " + energyToRetreat;
-		desc += "<br/>";
-		desc += "=================";
-		desc += "<br/>";
-		desc += "HP: ";
-		desc += this.currentHP;
-		desc += "/";
-		desc += this.maxHP;
-		desc += "<br/>";
-		desc += "Status: ";
-		desc += this.status;
-		desc += "<br/>";
+		desc += "<br/>=================<br/>";
+		desc += "HP: " + this.currentHP +"/" + this.maxHP + "<br/>";
+		desc += "Retreat Cost: " + energyToRetreat + "<br/>";
+		desc += "Status: " + this.status + "<br/>";
 		desc += "Energy attached: ";
 		if (this.energy.size() == 0){
 			desc += "None";
@@ -140,23 +131,17 @@ public class PokemonCard extends Card {
 				}
 			}
 		}
-		desc += "<br/>";
-		desc += "=================";
-		desc += "<br/>";
-		desc += "Attacks: ";
+		desc += "<br/>=================<br/>";
+		desc += "<br/>Attacks: ";
 		if (this.abilities.size() == 0){
 			desc += "None";
 		} else {
-			desc += "<br/>";
-			desc += "-----------------";
-			desc += "<br/>";
+			desc += "<br/>-----------------<br/>";
 			int i = 0;
 			for (Ability a : this.abilities){
 				desc += a.getDescription();
 				if (i != this.abilities.size()){
-					desc += "<br/>";
-					desc += "-----------------";
-					desc += "<br/>";
+					desc += "<br/>-----------------<br/>";
 				}
 			}
 		}

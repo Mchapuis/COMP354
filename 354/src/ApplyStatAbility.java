@@ -30,16 +30,20 @@ public class ApplyStatAbility extends Ability{
                 sourcePlayer.getActivePokemon().applyStatus(givenStatus);
                 break;
             case OPPONENT_BENCH:
-                //TODO: need to implement method to get selection
+                if(otherPlayer.getBench().size() > 0){
+                    GameEngine.choosePokemonCard(player,targetType).applyStatus(givenStatus);
+                }
                 break;
             case YOUR_BENCH:
-                //TODO: need to implement method to get selection
+                if(sourcePlayer.getBench().size() > 0){
+                    GameEngine.choosePokemonCard(player,targetType).applyStatus(givenStatus);
+                }
                 break;
             case YOUR_POKEMON:
-                //TODO: need to implement method to get selection
+                GameEngine.choosePokemonCard(player,targetType).applyStatus(givenStatus);
                 break;
             case OPPONENT_POKEMON:
-                //TODO: need to implement method to get selection
+                GameEngine.choosePokemonCard(player,targetType).applyStatus(givenStatus);
                 break;
         }
 

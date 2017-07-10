@@ -116,7 +116,7 @@ public abstract class Player {
 		}
 		else{
 			GameEngine.w.updateInstructions(getActivePokemon().getName() + " used ability " + ability.name);
-			ability.use(Ability.Player.AI);
+			ability.use(GameEngine.getCurrentPlayer());
 			turnOver = true;
 		}
 	}

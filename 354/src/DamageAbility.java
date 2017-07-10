@@ -30,16 +30,20 @@ class DamageAbility extends Ability{
             sourcePlayer.getActivePokemon().removeHP(damage);
             break;
         case OPPONENT_BENCH:
-            //TODO: need to implement method to get selection
+            if(otherPlayer.getBench().size() > 0){
+                GameEngine.choosePokemonCard(player,targetType).removeHP(damage);
+            }
             break;
         case YOUR_BENCH:
-            //TODO: need to implement method to get selection
+            if(sourcePlayer.getBench().size() > 0){
+                GameEngine.choosePokemonCard(player,targetType).removeHP(damage);
+            }
             break;
         case YOUR_POKEMON:
-            //TODO: need to implement method to get selection
+            GameEngine.choosePokemonCard(player,targetType).removeHP(damage);
             break;
         case OPPONENT_POKEMON:
-            //TODO: need to implement method to get selection
+            GameEngine.choosePokemonCard(player,targetType).removeHP(damage);
             break;
     }
 

@@ -58,8 +58,10 @@ public class GameEngine {
 		}
 
 
-		//TODO showWinScreen();
-        System.out.println("end");
+		//announce win or loss
+		GameOverWindow g = new GameOverWindow(getWinner());
+		g.display();
+
     }
 
 	private static void switchTurn(){
@@ -79,6 +81,8 @@ public class GameEngine {
 	private static void handleMulligans(){
 		//player mulligans
 		while(player.cardManager.getFirstPokemon() == null){
+			GameEngine.w.updateInstructions("You had a mulligan. You redraw your hand. Your opponent draws another card.");
+
 			//shuffle hand into deck
 			player.cardManager.shuffleHandIntoDeck();
 
@@ -93,6 +97,8 @@ public class GameEngine {
 
 		//ai mulligans
 		while(autoPlayer.cardManager.getFirstPokemon() == null){
+			GameEngine.w.updateInstructions("Your opponent had a mulligan. Your opponent redraws their hand. You draw another card.");
+
 			//shuffle hand into deck
 			autoPlayer.cardManager.shuffleHandIntoDeck();
 
@@ -206,6 +212,15 @@ public class GameEngine {
 			}
 		}
 		return cardToReturn;
+	}
+
+	public static PokemonCard choosePokemonCard(Ability.Player p, Ability.Target target){
+		if(p == Ability.Player.PLAYER){
+			return choosePokemonCard(player, target);
+		}
+		else{
+			return choosePokemonCard(autoPlayer, target);
+		}
 	}
 
 	public static void checkForKnockouts(){
@@ -343,6 +358,33 @@ public class GameEngine {
 					pokemonCard.applyStatus(Status.NORMAL);
 				}
 				break;
+		}
+	}
+
+	public static Ability.Player getCurrentPlayer(){
+		if(currentPlayer == player){
+			return Ability.Player.PLAYER;
+		}
+		else{
+			return Ability.Player.AI;
+		}
+	}
+
+	public static Ability.Player getWinner(){
+		if(winner == player){
+			return Ability.Player.PLAYER;
+		}
+		else{
+			return Ability.Player.AI;
+		}
+	}
+
+	public static Ability.Player playerToEnum(Player p){
+		if(p == player){
+			return Ability.Player.PLAYER;
+		}
+		else{
+			return Ability.Player.AI;
 		}
 	}
 

@@ -34,16 +34,20 @@ public class DeenergizeAbility extends Ability{
                 targetPokemon = sourcePlayer.getActivePokemon();
                 break;
             case OPPONENT_BENCH:
-                //TODO: need to implement method to get selection
+                if(otherPlayer.getBench().size() > 0){
+                    targetPokemon = GameEngine.choosePokemonCard(player, targetType);
+                }
                 break;
             case YOUR_BENCH:
-                //TODO: need to implement method to get selection
+                if(sourcePlayer.getBench().size() > 0){
+                    targetPokemon = GameEngine.choosePokemonCard(player, targetType);
+                }
                 break;
             case YOUR_POKEMON:
-                //TODO: need to implement method to get selection
+                targetPokemon = GameEngine.choosePokemonCard(player, targetType);
                 break;
             case OPPONENT_POKEMON:
-                //TODO: need to implement method to get selection
+                targetPokemon = GameEngine.choosePokemonCard(player, targetType);
                 break;
         }
 

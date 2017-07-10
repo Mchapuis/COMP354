@@ -30,25 +30,31 @@ public class HealAbility extends Ability{
                 targetPokemon = sourcePlayer.getActivePokemon();
                 break;
             case OPPONENT_BENCH:
-                //TODO: need to implement method to get selection
+                if(otherPlayer.getBench().size() > 0){
+                    targetPokemon = GameEngine.choosePokemonCard(player, targetType);
+                }
                 break;
             case YOUR_BENCH:
-                //TODO: need to implement method to get selection
+                if(sourcePlayer.getBench().size() > 0){
+                    targetPokemon = GameEngine.choosePokemonCard(player, targetType);
+                }
                 break;
             case YOUR_POKEMON:
-                //TODO: need to implement method to get selection
+                targetPokemon = GameEngine.choosePokemonCard(player, targetType);
                 break;
             case OPPONENT_POKEMON:
-                //TODO: need to implement method to get selection
+                targetPokemon = GameEngine.choosePokemonCard(player, targetType);
                 break;
             default:
                 targetPokemon = otherPlayer.getActivePokemon();
         }
 
-        int maxHealAmount = targetPokemon.getMaxHP() - targetPokemon.getCurrentHP();
-        int amountToHeal = Math.min(healAmount, maxHealAmount);
-        targetPokemon.removeHP(-amountToHeal);
-        targetPokemon.setHasBeenHealed(true);
+        if (targetPokemon != null){
+            int maxHealAmount = targetPokemon.getMaxHP() - targetPokemon.getCurrentHP();
+            int amountToHeal = Math.min(healAmount, maxHealAmount);
+            targetPokemon.removeHP(-amountToHeal);
+            targetPokemon.setHasBeenHealed(true);
+        }
 
         return true;
     }

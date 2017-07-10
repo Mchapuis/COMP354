@@ -24,11 +24,15 @@ public class AIPlayer extends Player {
 		int index = 0;
 		boolean success = true;
 		while (success == true){
-			PokemonCard nextPoke = cardManager.getNextPokemon(index);
-			if (nextPoke != null && nextPoke.getCat() == PokemonCard.Category.BASIC) {
-			    success = movePokemonToBench(nextPoke);
+			PokemonCard nextPoke = cardManager.getNextPokemon(index++);
+			if (nextPoke != null) {
+			    if(nextPoke.getCat() == PokemonCard.Category.BASIC){
+			    	success = movePokemonToBench(nextPoke);
+				}
             }
-			else success = false;
+			else {
+				success = false;
+			}
 		}
 	}
 
