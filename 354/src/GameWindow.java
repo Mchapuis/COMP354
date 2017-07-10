@@ -3,7 +3,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
 
-public class MainWindow {
+public class GameWindow {
 	public static Object lock;
     public static Queue<Message> queue;
 	
@@ -143,8 +143,8 @@ public class MainWindow {
     	
     }
 
-   
-    public MainWindow(AIPlayer autoPlayer, HumanPlayer player){
+    //Constructor
+    public GameWindow(AIPlayer autoPlayer, HumanPlayer player){
     	this.autoPlayer = autoPlayer;
     	this.player = player;
     	
@@ -321,27 +321,7 @@ public class MainWindow {
         constraints.gridy = 5;
         constraints.gridwidth = 3;
 		sidebar.add(attachButton, constraints);
-		
-		letAIPlay = new JButton("End Turn");
-		letAIPlay.setVisible(false);
-		letAIPlay.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent e){
-				String side = "player";
-	    		String type = "letAIplay";
-	    		int index = 0;
-	    		
-	            synchronized(lock){
-	            	Message message = new Message(side, type, index);
-	                queue.add(message);
-	                lock.notifyAll();
-	            }
-			}
-		});
-		constraints.gridx = 0;
-        constraints.gridy = 6;
-        constraints.gridwidth = 3;
-        sidebar.add(letAIPlay, constraints);
-        
+
         retreatButton = new JButton("Retreat pokemon");
 		retreatButton.setVisible(false);
 		retreatButton.addActionListener(new ActionListener(){
@@ -401,6 +381,26 @@ public class MainWindow {
         constraints.gridy = 8;
         constraints.gridwidth = 3;
         sidebar.add(evolveButton, constraints);
+
+		letAIPlay = new JButton("End Turn");
+		letAIPlay.setVisible(false);
+		letAIPlay.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){
+				String side = "player";
+				String type = "letAIplay";
+				int index = 0;
+
+				synchronized(lock){
+					Message message = new Message(side, type, index);
+					queue.add(message);
+					lock.notifyAll();
+				}
+			}
+		});
+		constraints.gridx = 0;
+		constraints.gridy = 9;
+		constraints.gridwidth = 3;
+		sidebar.add(letAIPlay, constraints);
         
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 2;
@@ -457,12 +457,16 @@ public class MainWindow {
         //active
         AISide.add(AIActivePokemonContainer);
     }
-    
+
+	public void display(){
+		mainFrame.setVisible(true);
+	}
+
+	//Update GUI information entities
     public void updateInstructions(String text){
     	instructions.setText("             " + text);
 		System.out.println(text);
 	}
-    
     public void displayCard(Card card, boolean showMakeActive, boolean showAddToBench, boolean showAttachToPokemon, boolean showAttacks, boolean showLetAIPlay, boolean showRetreat, boolean showPlayItem, boolean showEvolve){
     	if (card != null) {
 	    	sidebarTitle.setText(card.getName());
@@ -536,7 +540,6 @@ public class MainWindow {
     	sidebar.validate();
     	sidebar.repaint();
     }
-
     public void displayCard(Message m){
         Card cardToBeDisplayed = null;
         CardManager sourceCardManager = null;
@@ -580,52 +583,20 @@ public class MainWindow {
             	break;
         }
     }
-    
-    public Card createCardFromMessage(Message m){
-    	CardManager sourceCardManager;
-    	if (m.getSide() == Message.Side.AI){
-    		sourceCardManager = autoPlayer.cardManager;
-    	} else {
-    		sourceCardManager = player.cardManager;
-    	}
-    	
-    	GenericCard card;
-    	if (m.getType() == Message.ButtonType.DECK){
-    		card = new GenericCard(sourceCardManager.getDeck().size());
-    	} else if (m.getType() == Message.ButtonType.DISCARD){
-    		card = new GenericCard(sourceCardManager.getDiscard().size());
-    	} else {
-    		card = new GenericCard(sourceCardManager.getPrizeCards().size());
-    	}
-    	
-    	 return card;
-    }
-    
-    public String getInstructions(){
-    	return instructions.getText();
-    }
-    
-    public Card getDisplayedCard(){
-    	return this.displayedCard;
-    }
 
-    public void display(){
-        mainFrame.setVisible(true);
-    }
-
-
+    //-----Update GUI Buttons
     public void updateAll(){
     	updateAISide();
     	updatePlayerSide();
     	updateLeftSidebar();
 	}
 
+	//Update AI buttons
     public void updateAISide(){
     	updateAIActivePokemon();
     	updateAIHand();
     	updateAIBench();
     }
-    
     public void updateAIActivePokemon(){
     	AIActivePokemonContainer.removeAll();
     	AIActivePokemonContainer.add(createJPanelFromCard(autoPlayer.getActivePokemon()));
@@ -634,7 +605,6 @@ public class MainWindow {
     	AIActivePokemonContainer.validate();
     	AIActivePokemonContainer.repaint();
     }
-    
     public void updateAIHand(){
     	AIHandContainer.removeAll();
     	for (Card c : autoPlayer.getHand()){
@@ -644,7 +614,6 @@ public class MainWindow {
     	AIHandContainer.validate();
     	AIHandContainer.repaint();
     }
-    
     public void updateAIBench(){
     	AIBenchContainer.removeAll();
 		int i = 0;
@@ -659,29 +628,13 @@ public class MainWindow {
 		AIBenchContainer.validate();
 		AIBenchContainer.repaint();
     }
-    
-    public void setPlayerActivePokemon(){
-    	playerActivePokemonContainer.removeAll();
-    	playerActivePokemonContainer.add(createJPanelFromCard(player.getActivePokemon()));
-    	playerActivePokemonContainer.invalidate();
-    	playerActivePokemonContainer.validate();
-    	playerActivePokemonContainer.repaint();
-    }
-    
-    public void removeFromPlayerHand(int index){
-    	playerHandContainer.remove(index);
-    	playerHandContainer.invalidate();
-    	playerHandContainer.validate();
-    	playerHandContainer.repaint();
-    }
-    
-    
+
+    //Update Player buttons
     public void updatePlayerSide(){
     	updatePlayerActivePokemon();
     	updatePlayerHand();
     	updatePlayerBench();
     }
-    
     public void updatePlayerActivePokemon(){
     	playerActivePokemonContainer.removeAll();
     	playerActivePokemonContainer.add(createJPanelFromCard(player.getActivePokemon()));
@@ -689,7 +642,6 @@ public class MainWindow {
     	playerActivePokemonContainer.validate();
     	playerActivePokemonContainer.repaint();
     }
-    
     public void updatePlayerHand(){
     	playerHandContainer.removeAll();
     	for (Card c : player.getHand()){
@@ -699,7 +651,6 @@ public class MainWindow {
     	playerHandContainer.validate();
     	playerHandContainer.repaint();
     }
-    
     public void updatePlayerBench(){
     	playerBenchContainer.removeAll();
     	int i = 0;
@@ -715,6 +666,18 @@ public class MainWindow {
     	playerBenchContainer.repaint();
     }
 
+    //Update Pile buttons
+	public void updateLeftSidebar(){
+		AILeftSidebar.invalidate();
+		AILeftSidebar.validate();
+		AILeftSidebar.repaint();
+		playerLeftSidebar.invalidate();
+		playerLeftSidebar.validate();
+		playerLeftSidebar.repaint();
+	}
+	//-----
+
+	//Create GUI entities
     public JPanel createJPanelFromCard(Card c){
     	JPanel card = new JPanel();
     	card.setPreferredSize(new Dimension(100, 120));
@@ -731,7 +694,6 @@ public class MainWindow {
     	card.add(button);
     	return card;
     }
-    
     public JPanel createJPanelFromStrings(String buttonName, String descriptionString){
     	JPanel card = new JPanel();
     	card.setPreferredSize(new Dimension(100, 120));
@@ -742,7 +704,6 @@ public class MainWindow {
     	card.add(button);
     	return card;
     }
-    
     public JPanel createJPanelFromPile(ArrayList<Card> pile, String buttonName){
     	JPanel card = new JPanel();
     	card.setPreferredSize(new Dimension(100, 120));
@@ -753,13 +714,29 @@ public class MainWindow {
     	card.add(button);
     	return card;
     }
-    
-    public void updateLeftSidebar(){
-    	AILeftSidebar.invalidate();
-    	AILeftSidebar.validate();
-    	AILeftSidebar.repaint();
-    	playerLeftSidebar.invalidate();
-    	playerLeftSidebar.validate();
-    	playerLeftSidebar.repaint();
-    }
+	public Card createCardFromMessage(Message m){
+		CardManager sourceCardManager;
+		if (m.getSide() == Message.Side.AI){
+			sourceCardManager = autoPlayer.cardManager;
+		} else {
+			sourceCardManager = player.cardManager;
+		}
+
+		GenericCard card;
+		if (m.getType() == Message.ButtonType.DECK){
+			card = new GenericCard(sourceCardManager.getDeck().size());
+		} else if (m.getType() == Message.ButtonType.DISCARD){
+			card = new GenericCard(sourceCardManager.getDiscard().size());
+		} else {
+			card = new GenericCard(sourceCardManager.getPrizeCards().size());
+		}
+
+		return card;
+	}
+
+	//Getters
+	public Card getDisplayedCard(){
+		return this.displayedCard;
+	}
+
 }

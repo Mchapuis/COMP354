@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 
 public abstract class Player {
+	protected CardManager cardManager;
 
 	//turn variables
 	boolean hasPlacedEnergy = false;
@@ -9,14 +10,9 @@ public abstract class Player {
 	boolean hasRetreatedActivePokemon = false;
 	boolean turnOver = false;
 
-	private void resetTurnVariables(){
-		hasPlacedEnergy = false;
-		hasPlayedSupportCard = false;
-		hasPlayedStadiumCard = false;
-		hasRetreatedActivePokemon = false;
-		turnOver = false;
-	}
+	public abstract void setup();
 
+	//turn playing algorithm
 	public void playTurn(){
 		resetTurnVariables();
 
@@ -32,62 +28,22 @@ public abstract class Player {
 				turnOver = true;
 			}
 		}
-		
-		GameEngine.w.updateLeftSidebar();
 	}
-
+	private void resetTurnVariables(){
+		hasPlacedEnergy = false;
+		hasPlayedSupportCard = false;
+		hasPlayedStadiumCard = false;
+		hasRetreatedActivePokemon = false;
+		turnOver = false;
+	}
 	public abstract void takeActions();
 
-	protected CardManager cardManager;
-	
-	public void moveCardFromHandToBottomOfDeck(Card card){
-		this.cardManager.moveCardFromHandToBottomOfDeck(card);
-		GameEngine.w.updateLeftSidebar();
-	}
-	
-	public PokemonCard getActivePokemon(){
-		return this.cardManager.getActivePokemon();
-	}
-	
-	public ArrayList<Card> getHand(){
-		return this.cardManager.getHand();
-	}
-	
-	public ArrayList<PokemonCard> getBench(){
-		return this.cardManager.getBench();
-	}
-	
-	public void setActivePokemon(PokemonCard pokemon){
-		this.cardManager.setActivePokemon(pokemon);
-	}
-	
-	public void attachEnergy(EnergyCard energy, PokemonCard pokemon){
-		this.cardManager.attachEnergy(energy, pokemon);
-	}
-	
+	//Individual turn Actions
 	public void drawCard(){
 		if(cardManager.getDeck().size() > 0){
 			this.cardManager.addCardToHandFromDeck(0);
 		}
-		GameEngine.w.updateLeftSidebar();
 	}
-	
-	public boolean movePokemonToBench(PokemonCard pokemon){
-		return this.cardManager.movePokemonToBench(pokemon);
-	}
-	
-	public ArrayList<Card> getDeck(){
-		return this.cardManager.getDeck();
-	}
-	
-	public ArrayList<Card> getDiscard(){
-		return this.cardManager.getDiscard();
-	}
-	
-	public ArrayList<Card> getPrizeCards(){
-		return this.cardManager.getPrizeCards();
-	}
-	
 	public void retreatPokemon(PokemonCard cardToSwapWith){
 		if(! hasRetreatedActivePokemon){
 			this.cardManager.retreatPokemon(cardToSwapWith);
@@ -97,11 +53,7 @@ public abstract class Player {
 			//send failure message
 		}
 	}
-
-	public abstract void setup();
-
 	public abstract boolean chooseNewActivePokemon();
-
 	public void attack(int attackIndex){
 		Ability ability = getActivePokemon().getAbilities().get(attackIndex);
 
@@ -131,8 +83,8 @@ public abstract class Player {
 			GameEngine.w.updateInstructions(getActivePokemon().getName() + " is paralyzed and can't retreat.");
 		}
 		else if(this.getActivePokemon().getStatus() == Status.STUCK){
-		    GameEngine.w.updateInstructions(getActivePokemon().getName() + " is stuck and can't retreat.");
-        }
+			GameEngine.w.updateInstructions(getActivePokemon().getName() + " is stuck and can't retreat.");
+		}
 		else{
 			PokemonCard replacement = GameEngine.choosePokemonCard(this, Ability.Target.YOUR_BENCH);
 			GameEngine.w.updateInstructions(getActivePokemon().getName() + " has been replaced with " + replacement.getName());
@@ -142,4 +94,33 @@ public abstract class Player {
 		}
 	}
 
+	//Getters
+	public ArrayList<Card> getHand(){
+		return this.cardManager.getHand();
+	}
+	public ArrayList<Card> getDeck(){
+		return this.cardManager.getDeck();
+	}
+	public ArrayList<Card> getDiscard(){
+		return this.cardManager.getDiscard();
+	}
+	public ArrayList<Card> getPrizeCards(){
+		return this.cardManager.getPrizeCards();
+	}
+	public ArrayList<PokemonCard> getBench(){
+		return this.cardManager.getBench();
+	}
+	public PokemonCard getActivePokemon(){
+		return this.cardManager.getActivePokemon();
+	}
+
+	//Setters
+	public void setActivePokemon(PokemonCard pokemon){
+		this.cardManager.setActivePokemon(pokemon);
+	}
+
+	//Other
+	public boolean movePokemonToBench(PokemonCard pokemon){
+		return this.cardManager.movePokemonToBench(pokemon);
+	}
 }

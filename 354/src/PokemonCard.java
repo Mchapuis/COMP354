@@ -15,7 +15,7 @@ public class PokemonCard extends Card {
 	private String description;
 	private Category cat;
 	private String elementalType;
-	private String evolvesFrom;
+	private String evolvesFrom = "";
 	private Type type;
 	private int maxHP;
 	private int energyToRetreat;
@@ -115,6 +115,9 @@ public class PokemonCard extends Card {
 		String desc = "<html><body>";
 		desc += "<br/>=================<br/>";
 		desc += "HP: " + this.currentHP +"/" + this.maxHP + "<br/>";
+		if(!evolvesFrom.equals("")){
+			desc += "Evolves from: " + evolvesFrom + "<br/>";
+		}
 		desc += "Retreat Cost: " + energyToRetreat + "<br/>";
 		desc += "Status: " + this.status + "<br/>";
 		desc += "Energy attached: ";

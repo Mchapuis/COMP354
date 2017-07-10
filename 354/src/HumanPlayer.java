@@ -131,7 +131,6 @@ public class HumanPlayer extends Player {
         GameEngine.w.displayCard(c, false, false, false, false, false, false, false, false);
         GameEngine.w.updateInstructions("Added " + c.getName() + " to bench");
     }
-
     public boolean chooseNewActivePokemon(){
         if(cardManager.getBench().size() == 0){
             return false;

@@ -3,7 +3,7 @@ import com.sun.tools.javac.jvm.Gen;
 public class GenericCard extends Card {
 
 	public Card shallowCopy() {
-		GenericCard r = new GenericCard("");
+		GenericCard r = new GenericCard("","");
 
 		r.ID = this.ID;
 		r.name = this.name;
@@ -16,16 +16,16 @@ public class GenericCard extends Card {
 	private String name;
 	private String description;
 
-	public GenericCard(String displayString){
+	public GenericCard(String titleString, String displayString){
 		this.ID = 0;
-		this.name = "";
+		this.name = titleString;
 		this.description = displayString;
 	}
 
 	public GenericCard(int sizeOfPile){
 		this.ID = 0;
-		this.name = "";
-		this.description = sizeOfPile + " cards";
+		this.name = sizeOfPile + " cards";
+		this.description = "";
 	}
 
 	public String getName() {
