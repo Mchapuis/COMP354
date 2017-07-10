@@ -3,12 +3,11 @@ import java.util.Map.Entry;
 
 public class DestatAbility extends Ability {
 
-	public DestatAbility(){
-    	this.energyRequired = new HashMap<EnergyCard, Integer>();
+    public DestatAbility(){
+        this.energyRequired = new HashMap<EnergyCard, Integer>();
     }
-	
-    public String realUse(Player player){
-    	String resultString = "";
+
+    public boolean realUse(Player player){
         CardManager sourcePlayer = null, otherPlayer = null;
         switch(player){
             case PLAYER:
@@ -20,33 +19,38 @@ public class DestatAbility extends Ability {
                 otherPlayer = playerCardManager;
                 break;
         }
-        
-        resultString += "Status NORMAL was applied to ";
 
+        PokemonCard targetPokemon = null;
         switch(targetType){
             case OPPONENT_ACTIVE:
-                otherPlayer.getActivePokemon().applyStatus(Status.NORMAL);
-                resultString += "opponent's active pokemon. ";
+                targetPokemon = otherPlayer.getActivePokemon();
                 break;
             case YOUR_ACTIVE:
-                sourcePlayer.getActivePokemon().applyStatus(Status.NORMAL);
-                resultString += "your active pokemon. ";
+                targetPokemon = sourcePlayer.getActivePokemon();
                 break;
             case OPPONENT_BENCH:
-                //TODO: need to implement method to get selection
+                if(otherPlayer.getBench().size() > 0){
+                    targetPokemon = GameEngine.choosePokemonCard(player,targetType);
+                }
                 break;
             case YOUR_BENCH:
-                //TODO: need to implement method to get selection
+                if(sourcePlayer.getBench().size() > 0){
+                    targetPokemon = GameEngine.choosePokemonCard(player,targetType);
+                }
                 break;
             case YOUR_POKEMON:
-                //TODO: need to implement method to get selection
+                targetPokemon = GameEngine.choosePokemonCard(player,targetType);
                 break;
             case OPPONENT_POKEMON:
-                //TODO: need to implement method to get selection
+                targetPokemon = GameEngine.choosePokemonCard(player,targetType);
                 break;
         }
 
-        return resultString;
+        if(targetPokemon != null){
+            targetPokemon.applyStatus(Status.NORMAL);
+        }
+
+        return true;
     }
 
     DestatAbility(String[] description) throws UnimplementedException{
@@ -77,20 +81,17 @@ public class DestatAbility extends Ability {
 
     }
     
-    public String getDescription(){
-    	String desc = "Name: " + this.name;
-    	desc += "<br/>";
-    	desc += "Status to apply: Normal";
-    	desc += "<br/>";
-    	desc += "Energy required: ";
-		desc += "<br/>";
-		for (Entry<EnergyCard, Integer> entry : energyRequired.entrySet()){
-			desc += "&nbsp;&nbsp;&nbsp;";
-			desc += entry.getKey().getType();
-			desc += ": ";
-			desc += entry.getValue();
-			desc += "<br/>";
-		}
-    	return desc;
+    public String getSimpleDescription(){
+        return "Removes any status from " + targetType.toString();
+    }
+
+    public Ability shallowCopy(){
+        DestatAbility returnCard = new DestatAbility();
+
+        returnCard.name = this.name;
+        returnCard.targetType = this.targetType;
+        returnCard.subsequentAbility  = this.subsequentAbility;
+
+        return returnCard;
     }
 }

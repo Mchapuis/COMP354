@@ -8,6 +8,10 @@ public class Deck {
 		cards = new ArrayList<Card>();
 	}
 	
+	public ArrayList<Card> getCards(){
+		return this.cards;
+	}
+	
 	public void shuffle(){
 		for (int i = 0; i < cards.size(); i++){
 			int rand = (int)(Math.random()*(cards.size()));

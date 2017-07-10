@@ -99,69 +99,130 @@ public class Parser {
 	}
 
 	public static Card parseCard(String line){
-		String[] splitString = line.split(":|,");
-		
-		if (splitString[0].equals("#")){
+		if(line.equals("")){
+		    return null;
+        }
+
+	    String[] tokens = line.split(":|,");
+
+		int index = 0;
+		String cardName = tokens[index++];
+
+		if(cardName.equals("#")){
 			return null;
-		} else if (splitString[1].equals("pokemon")){
-			PokemonCard poke = new PokemonCard(splitString[0], "Generic description", splitString[3], splitString[5], Integer.parseInt(splitString[6]), Integer.parseInt(splitString[10]));
-			try{
-				Ability ability1 = abilities.get(Integer.parseInt(splitString[15]) - 1);
-				/*System.out.println(poke.getName() + ": " + ability1.name + " - " + ability1.getClass());*/
-				EnergyCard energy1 = new EnergyCard(splitString[13]);
-				ability1.addEnergyRequired(energy1, Integer.parseInt(splitString[14]));
-				poke.addAbility(ability1);
-			} catch (NumberFormatException e){
-				Ability ability1 = abilities.get(Integer.parseInt(splitString[18]) - 1);
-				/*System.out.println(poke.getName() + ": " + ability1.name + " - " + ability1.getClass());*/
-				EnergyCard energy1 = new EnergyCard(splitString[13]);
-				ability1.addEnergyRequired(energy1, Integer.parseInt(splitString[14]));
-				EnergyCard energy2 = new EnergyCard(splitString[16]);
-				ability1.addEnergyRequired(energy2, Integer.parseInt(splitString[17]));
-				poke.addAbility(ability1);
-			}
-			
-			boolean moreAbilities = false;
-			try {
-				if (splitString.length > 19){
-					Integer.parseInt(splitString[19]);
-					moreAbilities = true;
-				}
-			} catch (NumberFormatException e) {
-				try {
-					if (splitString.length > 22){
-						Integer.parseInt(splitString[22]);
-						moreAbilities = true;
-					}
-				} catch (NumberFormatException e2) {
-					
-				}
-			}
-			
-			if (splitString.length > 16 && moreAbilities){
-				try{
-					Ability ability2 = abilities.get(Integer.parseInt(splitString[19]) - 1);
-					/*System.out.println(poke.getName() + ": " + ability2.name + " - " + ability2.getClass());*/
-					EnergyCard energy2 = new EnergyCard(splitString[17]);
-					ability2.addEnergyRequired(energy2, Integer.parseInt(splitString[18]));
-					poke.addAbility(ability2);
-				} catch (NumberFormatException e){
-					Ability ability2 = abilities.get(Integer.parseInt(splitString[22]) - 1);
-					/*System.out.println(poke.getName() + ": " + ability2.name + " - " + ability2.getClass());*/
-					EnergyCard energy2 = new EnergyCard(splitString[17]);
-					ability2.addEnergyRequired(energy2, Integer.parseInt(splitString[18]));
-					EnergyCard energy3 = new EnergyCard(splitString[20]);
-					ability2.addEnergyRequired(energy3, Integer.parseInt(splitString[21]));
-					poke.addAbility(ability2);
-				}
-			}
-			return poke;
-		} else if (splitString[1].equals("trainer")){
-			TrainerCard trainer = new TrainerCard();
-			return trainer;
-		} else {
-			EnergyCard energy = new EnergyCard(splitString[3]);
-			return energy;
 		}
+
+		//parse pokémon card
+		if(tokens[index].equals("pokemon")){
+			PokemonCard pokemonCard = new PokemonCard();
+			pokemonCard.setName(cardName);
+
+			index++; //advance index past card type
+			index++; //advance index past cat indicator
+
+			//get pokémon evolution category
+			switch (tokens[index]){
+				case "basic":
+					pokemonCard.setCat(PokemonCard.Category.BASIC);
+					break;
+				case "stage-one":
+					pokemonCard.setCat(PokemonCard.Category.STAGEONE);
+					index++; //advance index
+					pokemonCard.setEvolvesFrom(tokens[index]);
+					break;
+			}
+
+			index++; //advance index past pokemon category
+			index++; //advance index past cat indicator
+
+			//get pokémon elemental category
+			switch (tokens[index]){
+				case "colorless":
+					pokemonCard.setType(PokemonCard.Type.NORMAL);
+					break;
+				case "water":
+					pokemonCard.setType(PokemonCard.Type.WATER);
+					break;
+				case "lightning":
+					pokemonCard.setType(PokemonCard.Type.LIGHTNING);
+					break;
+				case "psychic":
+					pokemonCard.setType(PokemonCard.Type.PSYCHIC);
+					break;
+				case "fighting":
+					pokemonCard.setType(PokemonCard.Type.FIGHTING);
+					break;
+			}
+
+			index++; //advance index to hp
+
+			//get max hp
+			pokemonCard.setMaxHP(Integer.parseInt(tokens[index]));
+
+			index += 4; //advance index to retreat cost
+			pokemonCard.setEnergyToRetreat(Integer.parseInt(tokens[index]));
+
+			index += 2; //advance index to first attack
+
+            //add abilities
+            while(index < tokens.length - 1){
+                int colourlessCost = 0;
+                int waterCost = 0;
+                int lightningCost = 0;
+                int psychicCost = 0;
+                int fightingCost = 0;
+
+                //get costs
+                while(tokens[index].equals("cat")){
+                    index++; //advance index to type of energy
+
+                    switch(tokens[index]){
+                        case "colorless":
+                            index++;
+                            colourlessCost = Integer.parseInt(tokens[index]);
+                            break;
+                        case "water":
+                            index++;
+                            waterCost = Integer.parseInt(tokens[index]);
+                            break;
+                        case "lightning":
+                            index++;
+                            lightningCost = Integer.parseInt(tokens[index]);
+                            break;
+                        case "psychic":
+                            index++;
+                            psychicCost = Integer.parseInt(tokens[index]);
+                            break;
+                        case "fight":
+                            index++;
+                            fightingCost = Integer.parseInt(tokens[index]);
+                            break;
+						default:
+                        	index++; //catch bugs
+							break;
+                    }
+                    index++; //advance index to next cat or ability number
+                }
+
+                //add ability
+                Ability abilityToAdd = abilities.get(Integer.parseInt(tokens[index]) - 1).shallowCopy();
+                pokemonCard.addAbility(abilityToAdd);
+
+                index++;
+            }
+
+			return pokemonCard;
+		}
+		//parse trainer card
+		else if(tokens[index].equals("trainer")){
+			Ability trainerAbility = abilities.get(Integer.parseInt(tokens[tokens.length - 1]) - 1).shallowCopy();
+			return new TrainerCard(cardName, trainerAbility);
+		}
+		//parse energy card
+		else if(tokens[index].equals("energy")){
+			return new EnergyCard(tokens[3]);
+		}
+
+        return null;
 	}
 }

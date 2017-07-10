@@ -3,13 +3,12 @@ import java.util.Map.Entry;
 
 public class HealAbility extends Ability{
     public int healAmount = 0;
-    
+
     public HealAbility(){
-    	this.energyRequired = new HashMap<EnergyCard, Integer>();
+        this.energyRequired = new HashMap<EnergyCard, Integer>();
     }
 
-    public String realUse(Player player){
-    	String resultString = "";
+    public boolean realUse(Player player){
         CardManager sourcePlayer = null, otherPlayer = null;
         switch(player){
             case PLAYER:
@@ -26,35 +25,38 @@ public class HealAbility extends Ability{
         switch(targetType){
             case OPPONENT_ACTIVE:
                 targetPokemon = otherPlayer.getActivePokemon();
-                resultString += "Opponent's active pokemon ";
                 break;
             case YOUR_ACTIVE:
                 targetPokemon = sourcePlayer.getActivePokemon();
-                resultString += "Your active pokemon ";
                 break;
             case OPPONENT_BENCH:
-                //TODO: need to implement method to get selection
+                if(otherPlayer.getBench().size() > 0){
+                    targetPokemon = GameEngine.choosePokemonCard(player, targetType);
+                }
                 break;
             case YOUR_BENCH:
-                //TODO: need to implement method to get selection
+                if(sourcePlayer.getBench().size() > 0){
+                    targetPokemon = GameEngine.choosePokemonCard(player, targetType);
+                }
                 break;
             case YOUR_POKEMON:
-                //TODO: need to implement method to get selection
+                targetPokemon = GameEngine.choosePokemonCard(player, targetType);
                 break;
             case OPPONENT_POKEMON:
-                //TODO: need to implement method to get selection
+                targetPokemon = GameEngine.choosePokemonCard(player, targetType);
                 break;
             default:
                 targetPokemon = otherPlayer.getActivePokemon();
         }
 
-        int maxHealAmount = targetPokemon.getMaxHP() - targetPokemon.getCurrentHP();
-        int amountToHeal = Math.min(healAmount, maxHealAmount);
-        targetPokemon.removeHP(-amountToHeal);
-        targetPokemon.setHasBeenHealed(true);
-        
-        resultString += "was healed (+" + healAmount + " pts).";
-        return resultString;
+        if (targetPokemon != null){
+            int maxHealAmount = targetPokemon.getMaxHP() - targetPokemon.getCurrentHP();
+            int amountToHeal = Math.min(healAmount, maxHealAmount);
+            targetPokemon.removeHP(-amountToHeal);
+            targetPokemon.setHasBeenHealed(true);
+        }
+
+        return true;
     }
 
     HealAbility(String[] description) throws UnimplementedException{
@@ -91,21 +93,19 @@ public class HealAbility extends Ability{
         }
     }
     
-    public String getDescription(){
-    	String desc = "Name: " + this.name;
-    	desc += "<br/>";
-    	desc += "HP to add: ";
-    	desc += this.healAmount;
-    	desc += "<br/>";
-    	desc += "Energy required: ";
-		desc += "<br/>";
-		for (Entry<EnergyCard, Integer> entry : energyRequired.entrySet()){
-			desc += "&nbsp;&nbsp;&nbsp;";
-			desc += entry.getKey().getType();
-			desc += ": ";
-			desc += entry.getValue();
-			desc += "<br/>";
-		}
-    	return desc;
+    public String getSimpleDescription(){
+    	return "Heal up to " + healAmount + " HP on " + targetType.toString();
+    }
+
+    public Ability shallowCopy(){
+        HealAbility returnCard = new HealAbility();
+
+        returnCard.name = this.name;
+        returnCard.targetType = this.targetType;
+        returnCard.subsequentAbility  = this.subsequentAbility;
+
+        returnCard.healAmount = this.healAmount;
+
+        return returnCard;
     }
 }

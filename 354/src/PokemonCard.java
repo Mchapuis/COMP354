@@ -2,18 +2,20 @@ import java.util.*;
 
 public class PokemonCard extends Card {
 
-	private enum Category {
+	public enum Category {
 		BASIC, STAGEONE
 	}
 	
-	private enum Type {
-		LIGHTNING, NORMAL, PSYCHIC, WATER
+	public enum Type {
+		LIGHTNING, NORMAL, PSYCHIC, WATER, FIGHTING
 	}
 	
 	private int ID;
 	private String name;
 	private String description;
 	private Category cat;
+	private String elementalType;
+	private String evolvesFrom = "";
 	private Type type;
 	private int maxHP;
 	private int energyToRetreat;
@@ -21,10 +23,31 @@ public class PokemonCard extends Card {
 	private Status status;
 	private int currentHP;
 	private ArrayList<Ability> abilities;
-	private ArrayList<EnergyCard> energy;
+	public ArrayList<EnergyCard> energy;
 	private int numColorlessEnergy;
 
 	private boolean hasBeenHealed = false;
+
+	public Card shallowCopy(){
+		PokemonCard returnCard = new PokemonCard();
+
+		returnCard.ID = this.ID;
+		returnCard.name = this.name;
+		returnCard.description = this.description;
+		returnCard.cat = this.cat;
+		returnCard.elementalType = this.elementalType;
+		returnCard.evolvesFrom = this.evolvesFrom;
+		returnCard.type = this.type;
+		returnCard.maxHP = this.maxHP;
+		returnCard.energyToRetreat = this.energyToRetreat;
+		returnCard.status = this.status;
+		returnCard.currentHP = this.currentHP;
+		returnCard.abilities = this.abilities;
+		returnCard.numColorlessEnergy = this.numColorlessEnergy;
+		returnCard.hasBeenHealed = this.hasBeenHealed;
+
+		return returnCard;
+	}
 	
 	public PokemonCard(){
 		this.ID = 0;
@@ -57,6 +80,8 @@ public class PokemonCard extends Card {
 			this.type = Type.PSYCHIC;
 		} else if (type.equals("water")) {
 			this.type = Type.WATER;
+		} else if (type.equals("fighting")) {
+			this.type = Type.FIGHTING;
 		} else {
 			this.type = Type.NORMAL;
 		}
@@ -81,21 +106,20 @@ public class PokemonCard extends Card {
 	public String getName(){
 		return this.name;
 	}
+
+	public void setName(String name){
+		this.name = name;
+	}
 	
 	public String getDescription(){
 		String desc = "<html><body>";
-		desc += this.description;
-		desc += "<br/>";
-		desc += "=================";
-		desc += "<br/>";
-		desc += "HP: ";
-		desc += this.currentHP;
-		desc += "/";
-		desc += this.maxHP;
-		desc += "<br/>";
-		desc += "Status: ";
-		desc += this.status;
-		desc += "<br/>";
+		desc += "<br/>=================<br/>";
+		desc += "HP: " + this.currentHP +"/" + this.maxHP + "<br/>";
+		if(!evolvesFrom.equals("")){
+			desc += "Evolves from: " + evolvesFrom + "<br/>";
+		}
+		desc += "Retreat Cost: " + energyToRetreat + "<br/>";
+		desc += "Status: " + this.status + "<br/>";
 		desc += "Energy attached: ";
 		if (this.energy.size() == 0){
 			desc += "None";
@@ -110,23 +134,17 @@ public class PokemonCard extends Card {
 				}
 			}
 		}
-		desc += "<br/>";
-		desc += "=================";
-		desc += "<br/>";
-		desc += "Attacks: ";
+		desc += "<br/>=================<br/>";
+		desc += "<br/>Attacks: ";
 		if (this.abilities.size() == 0){
 			desc += "None";
 		} else {
-			desc += "<br/>";
-			desc += "-----------------";
-			desc += "<br/>";
+			desc += "<br/>-----------------<br/>";
 			int i = 0;
 			for (Ability a : this.abilities){
 				desc += a.getDescription();
 				if (i != this.abilities.size()){
-					desc += "<br/>";
-					desc += "-----------------";
-					desc += "<br/>";
+					desc += "<br/>-----------------<br/>";
 				}
 			}
 		}
@@ -136,10 +154,6 @@ public class PokemonCard extends Card {
 	
 	public String getSimpleDescription(){
 		return this.description;
-	}
-	
-	public void attack(){
-		
 	}
 	
 	public void attachEnergy(EnergyCard e){
@@ -166,12 +180,41 @@ public class PokemonCard extends Card {
     public int getCurrentHP(){
 	    return currentHP;
     }
-	
+
+    public Category getCat(){
+    	return cat;
+	}
+
+	public void setCat(Category category){
+    	this.cat = category;
+	}
+
+	public void setType(Type t){
+		this.type = t;
+	}
+
+	public void setMaxHP(int max){
+		this.maxHP = max;
+		this.currentHP = this.maxHP;
+	}
+
+	public void setEnergyToRetreat(int cost){
+		this.energyToRetreat = cost;
+	}
+
+	public String getEvolvesFrom(){
+		return evolvesFrom;
+	}
+
+	public void setEvolvesFrom(String evolvesFrom){
+		this.evolvesFrom = evolvesFrom;
+	}
+
 	public void removeHP(int points){
 		this.currentHP -= points;
 	}
 	
-	public boolean hasEnoughEnergy(int attackIndex){
+	public boolean hasEnoughEnergyForAttack(int attackIndex){
 		numColorlessEnergy = this.energy.size();
 		Ability ability = this.abilities.get(attackIndex);
 		
@@ -184,8 +227,6 @@ public class PokemonCard extends Card {
 			if (type == EnergyCard.Type.COLORLESS)
 				continue;
 			int amount = entry.getValue();
-			
-			/*System.out.println("Type needed: " + type + " (" + amount + ")");*/
 		
 			int count = 0;
 			for (EnergyCard energy : this.energy){
@@ -198,8 +239,6 @@ public class PokemonCard extends Card {
 					}
 				}
 			}
-			
-			/*System.out.println("Available of type " + type + ": " + count);*/
 			
 			if (count < amount){
 				enough = false;
@@ -219,16 +258,18 @@ public class PokemonCard extends Card {
 		
 		return enough;
 	}
+	
+	public boolean hasEnoughEnergyForRetreat(){		
+		return energy.size() >= energyToRetreat;
+	}
 
 	public void applyStatus(Status status){
 		this.status = status;
 	}
-	//TODO: remove this method when it is no longer being used by methods being refactored out
-	public void applyStatus(String status){
-		if (status.equals("PARALYZED")){
-			this.status = Status.PARALYZED;
-		}
-	}
+
+	public Status getStatus(){
+	    return status;
+    }
 	
 	public void setID(int ID){
 		this.ID = ID;
@@ -237,8 +278,13 @@ public class PokemonCard extends Card {
 	public boolean getHasBeenHealed(){
 		return hasBeenHealed;
 	}
+
 	public void setHasBeenHealed(boolean healed){
 		this.hasBeenHealed = healed;
 	}
-	
+
+	public int getEnergyToRetreat(){
+	    return energyToRetreat;
+    }
+
 }

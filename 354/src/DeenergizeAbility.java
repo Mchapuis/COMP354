@@ -6,14 +6,12 @@ public class DeenergizeAbility extends Ability{
     int amountToRemove;
 
     public DeenergizeAbility(){
-    	this.energyRequired = new HashMap<EnergyCard, Integer>();
+        this.energyRequired = new HashMap<EnergyCard, Integer>();
     }
-    
-    public String realUse(Player player){
+
+    public boolean realUse(Player player){
         //TODO: find out if deenergized energy goes to discard or hand
         //until we find out. it is discarded
-    	
-    	String resultString = "";
 
         CardManager sourcePlayer = null, otherPlayer = null;
         switch(player){
@@ -26,30 +24,30 @@ public class DeenergizeAbility extends Ability{
                 otherPlayer = playerCardManager;
                 break;
         }
-
-        resultString += amountToRemove + " energy was removed from ";
         
         PokemonCard targetPokemon = null;
         switch(targetType){
             case OPPONENT_ACTIVE:
                 targetPokemon = otherPlayer.getActivePokemon();
-                resultString += "opponent's active pokemon. ";
                 break;
             case YOUR_ACTIVE:
                 targetPokemon = sourcePlayer.getActivePokemon();
-                resultString += "your active pokemon. ";
                 break;
             case OPPONENT_BENCH:
-                //TODO: need to implement method to get selection
+                if(otherPlayer.getBench().size() > 0){
+                    targetPokemon = GameEngine.choosePokemonCard(player, targetType);
+                }
                 break;
             case YOUR_BENCH:
-                //TODO: need to implement method to get selection
+                if(sourcePlayer.getBench().size() > 0){
+                    targetPokemon = GameEngine.choosePokemonCard(player, targetType);
+                }
                 break;
             case YOUR_POKEMON:
-                //TODO: need to implement method to get selection
+                targetPokemon = GameEngine.choosePokemonCard(player, targetType);
                 break;
             case OPPONENT_POKEMON:
-                //TODO: need to implement method to get selection
+                targetPokemon = GameEngine.choosePokemonCard(player, targetType);
                 break;
         }
 
@@ -62,7 +60,7 @@ public class DeenergizeAbility extends Ability{
             }
         }
 
-        return resultString;
+        return true;
     }
 
     DeenergizeAbility(String[] description) throws UnimplementedException{
@@ -99,21 +97,19 @@ public class DeenergizeAbility extends Ability{
         }
     }
     
-    public String getDescription(){
-    	String desc = "Name: " + this.name;
-    	desc += "<br/>";
-    	desc += "Number energy to remove: ";
-    	desc += this.amountToRemove;
-    	desc += "<br/>";
-    	desc += "Energy required: ";
-		desc += "<br/>";
-		for (Entry<EnergyCard, Integer> entry : energyRequired.entrySet()){
-			desc += "&nbsp;&nbsp;&nbsp;";
-			desc += entry.getKey().getType();
-			desc += ": ";
-			desc += entry.getValue();
-			desc += "<br/>";
-		}
-    	return desc;
+    public String getSimpleDescription() {
+        return "Remove " + amountToRemove + " energy from " + targetType.toString();
+    }
+
+    public Ability shallowCopy(){
+        DeenergizeAbility returnCard = new DeenergizeAbility();
+
+        returnCard.name = this.name;
+        returnCard.targetType = this.targetType;
+        returnCard.subsequentAbility  = this.subsequentAbility;
+
+        returnCard.amountToRemove = this.amountToRemove;
+
+        return returnCard;
     }
 }

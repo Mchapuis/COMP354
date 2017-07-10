@@ -6,11 +6,10 @@ class DamageAbility extends Ability{
   private int damage;
 
   public DamageAbility(){
-  	this.energyRequired = new HashMap<EnergyCard, Integer>();
-  }
-  
-  public String realUse(Player player){
-	String resultString = "";
+        this.energyRequired = new HashMap<EnergyCard, Integer>();
+    }
+
+  public boolean realUse(Player player){
     CardManager sourcePlayer = null, otherPlayer = null;
     switch(player){
         case PLAYER:
@@ -26,33 +25,29 @@ class DamageAbility extends Ability{
     switch(targetType){
         case OPPONENT_ACTIVE:
             otherPlayer.getActivePokemon().removeHP(damage);
-            if (sourcePlayer.equals(playerCardManager))
-            	resultString += "Opponent's pokemon lost " + damage + " HP. ";
-            else 
-            	resultString += "Your pokemon lost " + damage + " HP. ";
             break;
         case YOUR_ACTIVE:
             sourcePlayer.getActivePokemon().removeHP(damage);
-            if (sourcePlayer.equals(playerCardManager))
-            	resultString += "Your pokemon lost " + damage + " HP. ";
-            else 
-            	resultString += "Opponent's pokemon lost " + damage + " HP. ";
             break;
         case OPPONENT_BENCH:
-            //TODO: need to implement method to get selection
+            if(otherPlayer.getBench().size() > 0){
+                GameEngine.choosePokemonCard(player,targetType).removeHP(damage);
+            }
             break;
         case YOUR_BENCH:
-            //TODO: need to implement method to get selection
+            if(sourcePlayer.getBench().size() > 0){
+                GameEngine.choosePokemonCard(player,targetType).removeHP(damage);
+            }
             break;
         case YOUR_POKEMON:
-            //TODO: need to implement method to get selection
+            GameEngine.choosePokemonCard(player,targetType).removeHP(damage);
             break;
         case OPPONENT_POKEMON:
-            //TODO: need to implement method to get selection
+            GameEngine.choosePokemonCard(player,targetType).removeHP(damage);
             break;
     }
 
-    return resultString;
+    return true;
   }
 
   DamageAbility(String [] description) throws UnimplementedException{
@@ -90,21 +85,19 @@ class DamageAbility extends Ability{
       }
   }
   
-  public String getDescription(){
-  	String desc = "Name: " + this.name;
-  	desc += "<br/>";
-  	desc += "Damage to inflict: ";
-  	desc += this.damage;
-  	desc += "<br/>";
-  	desc += "Energy required: ";
-	desc += "<br/>";
-	for (Entry<EnergyCard, Integer> entry : energyRequired.entrySet()){
-		desc += "&nbsp;&nbsp;&nbsp;";
-		desc += entry.getKey().getType();
-		desc += ": ";
-		desc += entry.getValue();
-		desc += "<br/>";
-	}
-  	return desc;
+  public String getSimpleDescription(){
+  	return "Deal " + damage + " damage to " + targetType.toString();
+  }
+
+  public Ability shallowCopy(){
+        DamageAbility returnCard = new DamageAbility();
+
+        returnCard.name = this.name;
+        returnCard.targetType = this.targetType;
+        returnCard.subsequentAbility  = this.subsequentAbility;
+
+        returnCard.damage = this.damage;
+
+        return returnCard;
   }
 }
