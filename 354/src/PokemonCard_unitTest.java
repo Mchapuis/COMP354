@@ -6,19 +6,19 @@ public class PokemonCard_unitTest {
 
 	@Test
 	public void pokemonHasEnergy_test() {
-		Attack attack = new Attack();
+		DeenergizeAbility ability = new DeenergizeAbility();
 		PokemonCard pokemon1 = new PokemonCard();
 		EnergyCard energy = new EnergyCard("COLORLESS");
 	
-		attack.addEnergyRequirement(energy, 1); 
-		pokemon1.addAttack(attack);
+		ability.addEnergyRequired(energy, 1); 
+		pokemon1.addAbility(ability);
 	
-		boolean hasEnergy = pokemon1.hasEnoughEnergy(0);
+		boolean hasEnergy = pokemon1.hasEnoughEnergyForAttack(0);
 		
 		assertFalse(hasEnergy);
 		
 		pokemon1.attachEnergy(energy);
-		hasEnergy = pokemon1.hasEnoughEnergy(0);
+		hasEnergy = pokemon1.hasEnoughEnergyForAttack(0);
 		
 		assertTrue(hasEnergy);
 	}
