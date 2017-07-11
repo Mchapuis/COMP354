@@ -16,8 +16,6 @@ public class GameEngine {
 	//
 	private static Player currentPlayer = player;
 	private static Player winner = null;
-	
-
 
 	public static void main(String[] args) {
 		//create and display the main game window
@@ -42,10 +40,10 @@ public class GameEngine {
 		    //check win (lose) condition of having no cards to draw
 		    if(currentPlayer.getDeck().size() == 0){
 		        if(currentPlayer == player){
-		            declareWinner(Ability.Player.PLAYER);
+		            declareWinner(Ability.Player.AI);
                 }
                 else{
-		            declareWinner(Ability.Player.AI);
+		            declareWinner(Ability.Player.PLAYER);
                 }
                 break;
             }
@@ -125,11 +123,12 @@ public class GameEngine {
 
 	//game processes
 	public static void checkForKnockouts(){
+		ArrayList<PokemonCard> cardsToDiscard = new ArrayList<>();
+
 		//check AI bench
-		for(PokemonCard p : autoPlayer.cardManager.getBench()){ //TODO fix concurrent modification exception in this
+		for(PokemonCard p : autoPlayer.cardManager.getBench()){
 			if(p.getCurrentHP() <= 0){
-				autoPlayer.cardManager.getBench().remove(p);
-				autoPlayer.cardManager.addPokemonCardToDiscard(p);
+				cardsToDiscard.add(p);
 
 				if(player.getPrizeCards().size() == 1){
 					declareWinner(Ability.Player.PLAYER);
@@ -141,11 +140,17 @@ public class GameEngine {
 			}
 		}
 
+		//discard dead bench pokemon
+		for(PokemonCard p : cardsToDiscard){
+			autoPlayer.cardManager.getBench().remove(p);
+			autoPlayer.cardManager.addPokemonCardToDiscard(p);
+		}
+		cardsToDiscard.clear();
+
 		//check player bench
 		for(PokemonCard p : player.cardManager.getBench()){
 			if(p.getCurrentHP() <= 0){
-				player.cardManager.getBench().remove(p);
-				player.cardManager.addPokemonCardToDiscard(p);
+				cardsToDiscard.add(p);
 
 				if(autoPlayer.getPrizeCards().size() == 1){
 					declareWinner(Ability.Player.AI);
@@ -157,9 +162,15 @@ public class GameEngine {
 			}
 		}
 
+		//discard dead bench pokemon
+		for(PokemonCard p : cardsToDiscard){
+			player.cardManager.getBench().remove(p);
+			player.cardManager.addPokemonCardToDiscard(p);
+		}
+		cardsToDiscard.clear();
+
 		//check AI active
 		if(autoPlayer.cardManager.getActivePokemon().getCurrentHP() <= 0){
-			autoPlayer.cardManager.addPokemonCardToDiscard(autoPlayer.getActivePokemon());
 			autoPlayer.cardManager.removeActivePokemon();
 
 			if(player.getPrizeCards().size() == 1){
@@ -178,7 +189,6 @@ public class GameEngine {
 
 		//check player active
 		if(player.cardManager.getActivePokemon().getCurrentHP() <= 0){
-			player.cardManager.addPokemonCardToDiscard(player.getActivePokemon());
 			player.cardManager.removeActivePokemon();
 
 			if(autoPlayer.getPrizeCards().size() == 1){

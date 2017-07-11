@@ -15,7 +15,6 @@ public class PokemonCard extends Card {
 	private String description;
 	private Category cat;
 	private String elementalType;
-	private String evolvesFrom = "";
 	private Type type;
 	private int maxHP;
 	private int energyToRetreat;
@@ -25,6 +24,9 @@ public class PokemonCard extends Card {
 	private ArrayList<Ability> abilities;
 	public ArrayList<EnergyCard> energy;
 	private int numColorlessEnergy;
+
+	private String evolvesFrom = "";
+	private PokemonCard evolvedFrom = null;
 
 	private boolean hasBeenHealed = false;
 
@@ -48,7 +50,8 @@ public class PokemonCard extends Card {
 
 		return returnCard;
 	}
-	
+
+	//Constructors
 	public PokemonCard(){
 		this.ID = 0;
 		this.name = "Undefined";
@@ -63,7 +66,6 @@ public class PokemonCard extends Card {
 		this.energy = new ArrayList<EnergyCard>();
 		this.numColorlessEnergy = 0;
 	}
-	
 	public PokemonCard(String name, String description, String cat, String type, int maxHP, int energyToRetreat){
 		this.name = name;
 		this.description = description;
@@ -94,23 +96,7 @@ public class PokemonCard extends Card {
 		this.abilities = new ArrayList<Ability>();
 		this.energy = new ArrayList<EnergyCard>();		
 	}
-	
-	public ArrayList<Ability> getAbilities(){
-		return this.abilities;
-	}
-	
-	public int getID() {
-		return this.ID;
-	}
-	
-	public String getName(){
-		return this.name;
-	}
 
-	public void setName(String name){
-		this.name = name;
-	}
-	
 	public String getDescription(){
 		String desc = "<html><body>";
 		desc += "<br/>=================<br/>";
@@ -151,11 +137,7 @@ public class PokemonCard extends Card {
 		desc += "</html></body>";		
 		return desc;
 	}
-	
-	public String getSimpleDescription(){
-		return this.description;
-	}
-	
+
 	public void attachEnergy(EnergyCard e){
 		energy.add(e);
 		numColorlessEnergy++;
@@ -165,49 +147,8 @@ public class PokemonCard extends Card {
 		energy.remove(e);
 	}
 	
-	public ArrayList<EnergyCard> getEnergy(){
-		return this.energy;
-	}
-	
 	public void addAbility(Ability ability){
 		abilities.add(ability);
-	}
-
-	public int getMaxHP(){
-	    return maxHP;
-    }
-
-    public int getCurrentHP(){
-	    return currentHP;
-    }
-
-    public Category getCat(){
-    	return cat;
-	}
-
-	public void setCat(Category category){
-    	this.cat = category;
-	}
-
-	public void setType(Type t){
-		this.type = t;
-	}
-
-	public void setMaxHP(int max){
-		this.maxHP = max;
-		this.currentHP = this.maxHP;
-	}
-
-	public void setEnergyToRetreat(int cost){
-		this.energyToRetreat = cost;
-	}
-
-	public String getEvolvesFrom(){
-		return evolvesFrom;
-	}
-
-	public void setEvolvesFrom(String evolvesFrom){
-		this.evolvesFrom = evolvesFrom;
 	}
 
 	public void removeHP(int points){
@@ -215,76 +156,149 @@ public class PokemonCard extends Card {
 	}
 	
 	public boolean hasEnoughEnergyForAttack(int attackIndex){
-		numColorlessEnergy = this.energy.size();
-		Ability ability = this.abilities.get(attackIndex);
-		
-		boolean enough = true;
-		HashMap<EnergyCard, Integer> energyRequired = ability.getEnergyRequired();
-		
-		for (Map.Entry<EnergyCard, Integer> entry : energyRequired.entrySet()) {
-			EnergyCard.Type type = entry.getKey().getType();
-			
-			if (type == EnergyCard.Type.COLORLESS)
-				continue;
-			int amount = entry.getValue();
-		
-			int count = 0;
-			for (EnergyCard energy : this.energy){
-				EnergyCard.Type typeToCompare = energy.getType();
-				if (typeToCompare == type){
-					count++;
-					numColorlessEnergy--;
-					if (count == amount){
-						break;
-					}
-				}
-			}
-			
-			if (count < amount){
-				enough = false;
-			}
-			
-		}
-		
-		for (Map.Entry<EnergyCard, Integer> entry : energyRequired.entrySet()) {
-			EnergyCard.Type type = entry.getKey().getType();
-			if (type == EnergyCard.Type.COLORLESS){
-				int amount = entry.getValue();
-				if (numColorlessEnergy < amount){
-					enough = false;
-				}
+
+		HashMap<EnergyCard.Type, Integer> energyRequired = abilities.get(attackIndex).getEnergyRequired();
+
+		int amountFightEnergy = 0;
+		int amountPsychicEnergy = 0;
+		int amountWaterEnergy = 0;
+		int amountLightningEnergy = 0;
+
+		for(EnergyCard e : energy){
+			EnergyCard.Type t = e.getType();
+			switch (t){
+				case FIGHT:
+					amountFightEnergy++;
+					break;
+				case LIGHTNING:
+					amountLightningEnergy++;
+					break;
+				case PSYCHIC:
+					amountPsychicEnergy++;
+					break;
+				case WATER:
+					amountWaterEnergy++;
+					break;
+				default:
 			}
 		}
-		
-		return enough;
+
+		int sum = 0;
+		if(energyRequired.containsKey(EnergyCard.Type.FIGHT)){
+			int needed = energyRequired.get(EnergyCard.Type.FIGHT);
+			if(needed > amountFightEnergy){
+				return false;
+			}
+			sum += needed;
+		}
+		if(energyRequired.containsKey(EnergyCard.Type.LIGHTNING)){
+			int needed = energyRequired.get(EnergyCard.Type.LIGHTNING);
+			if(needed > amountLightningEnergy){
+				return false;
+			}
+			sum += needed;
+		}
+		if(energyRequired.containsKey(EnergyCard.Type.PSYCHIC)){
+			int needed = energyRequired.get(EnergyCard.Type.PSYCHIC);
+			if(needed > amountPsychicEnergy){
+				return false;
+			}
+			sum += needed;
+		}
+		if(energyRequired.containsKey(EnergyCard.Type.WATER)){
+			int needed = energyRequired.get(EnergyCard.Type.WATER);
+			if(needed > amountWaterEnergy){
+				return false;
+			}
+			sum += needed;
+		}
+		if(energyRequired.containsKey(EnergyCard.Type.COLORLESS)){
+			int needed = energyRequired.get(EnergyCard.Type.COLORLESS);
+			int extra = (amountFightEnergy + amountLightningEnergy + amountPsychicEnergy + amountWaterEnergy) - sum;
+			if(needed > extra){
+				return false;
+			}
+		}
+
+		return true;
 	}
 	
 	public boolean hasEnoughEnergyForRetreat(){		
 		return energy.size() >= energyToRetreat;
 	}
 
-	public void applyStatus(Status status){
-		this.status = status;
+	//Getters
+	public PokemonCard getEvolvedFrom(){
+		return evolvedFrom;
 	}
-
+	public int getEnergyToRetreat(){
+		return energyToRetreat;
+	}
 	public Status getStatus(){
-	    return status;
-    }
-	
-	public void setID(int ID){
-		this.ID = ID;
+		return status;
 	}
-
+	public int getMaxHP(){
+		return maxHP;
+	}
+	public int getCurrentHP(){
+		return currentHP;
+	}
+	public Category getCat(){
+		return cat;
+	}
+	public String getSimpleDescription(){
+		return this.description;
+	}
+	public ArrayList<Ability> getAbilities(){
+		return this.abilities;
+	}
+	public int getID() {
+		return this.ID;
+	}
+	public String getName(){
+		return this.name;
+	}
+	public String getEvolvesFrom(){
+		return evolvesFrom;
+	}
 	public boolean getHasBeenHealed(){
 		return hasBeenHealed;
 	}
+	public ArrayList<EnergyCard> getEnergy(){
+		return this.energy;
+	}
 
+	//Setters
+	public void setType(Type t){
+		this.type = t;
+	}
+	public void setMaxHP(int max){
+		this.maxHP = max;
+		this.currentHP = this.maxHP;
+	}
+	public void setEnergyToRetreat(int cost){
+		this.energyToRetreat = cost;
+	}
+	public void setCat(Category category){
+		this.cat = category;
+	}
+	public void setEvolvesFrom(String evolvesFrom){
+		this.evolvesFrom = evolvesFrom;
+	}
+	public void setName(String name){
+		this.name = name;
+	}
+	public void applyStatus(Status status){
+		this.status = status;
+	}
+	public void setID(int ID){
+		this.ID = ID;
+	}
 	public void setHasBeenHealed(boolean healed){
 		this.hasBeenHealed = healed;
 	}
-
-	public int getEnergyToRetreat(){
-	    return energyToRetreat;
-    }
+	public void setEvolvedFrom(PokemonCard evolvedFrom){
+		this.evolvedFrom = evolvedFrom;
+	}
 
 }

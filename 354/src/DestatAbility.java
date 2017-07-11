@@ -4,7 +4,7 @@ import java.util.Map.Entry;
 public class DestatAbility extends Ability {
 
     public DestatAbility(){
-        this.energyRequired = new HashMap<EnergyCard, Integer>();
+        this.energyRequired = new HashMap<EnergyCard.Type, Integer>();
     }
 
     public boolean realUse(Player player){

@@ -18,7 +18,7 @@ public class ConditionAbility extends Ability{
     Ability testAbility = null;
     
     public ConditionAbility(){
-    	this.energyRequired = new HashMap<EnergyCard, Integer>();
+    	this.energyRequired = new HashMap<EnergyCard.Type, Integer>();
     }
 
     public boolean realUse(Player player){

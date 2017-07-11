@@ -23,7 +23,7 @@ abstract class Ability {
 	public String name;
 	Target targetType;
 	Ability subsequentAbility = null;
-	protected HashMap<EnergyCard, Integer> energyRequired = new HashMap<EnergyCard, Integer>();
+	protected HashMap<EnergyCard.Type, Integer> energyRequired = new HashMap<EnergyCard.Type, Integer>();
 
 	//---Methods
 
@@ -45,13 +45,18 @@ abstract class Ability {
         String desc = "Name: " + this.name;
         desc += "<br/>";
         desc += "Energy required: ";
-        for (Entry<EnergyCard, Integer> entry : energyRequired.entrySet()){
-            desc += "<br/>";
-            desc += "&nbsp;&nbsp;&nbsp;";
-            desc += entry.getKey().getType();
-            desc += ": ";
-            desc += entry.getValue();
-        }
+        if(energyRequired.size() == 0){
+        	desc += "None";
+		}
+		else{
+			for (Entry<EnergyCard.Type, Integer> entry : energyRequired.entrySet()){
+				desc += "<br/>";
+				desc += "&nbsp;&nbsp;&nbsp;";
+				desc += entry.getKey().toString();
+				desc += ": ";
+				desc += entry.getValue();
+			}
+		}
         return desc;
     }
 	protected String getRecursiveDescription(){
@@ -60,15 +65,15 @@ abstract class Ability {
     protected abstract String getSimpleDescription();
 
 	//
-	public void addEnergyRequired(EnergyCard energy, int amount){
-		this.energyRequired.put(energy, amount);
+	public void addEnergyRequired(EnergyCard.Type energyType, int amount){
+		this.energyRequired.put(energyType, amount);
 	}
 
 	//getter and setters
 	public void setName(String name){
 		this.name = name;
 	}
-	public HashMap<EnergyCard, Integer> getEnergyRequired(){
+	public HashMap<EnergyCard.Type, Integer> getEnergyRequired(){
 		return this.energyRequired;
 	}
 	public void setSubsequentAbility(Ability subAbility){

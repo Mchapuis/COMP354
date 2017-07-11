@@ -6,7 +6,7 @@ public class ApplyStatAbility extends Ability{
     private Status givenStatus;
     
     public ApplyStatAbility(){
-    	this.energyRequired = new HashMap<EnergyCard, Integer>();
+    	this.energyRequired = new HashMap<EnergyCard.Type, Integer>();
     }
 
     public boolean realUse(Player player){

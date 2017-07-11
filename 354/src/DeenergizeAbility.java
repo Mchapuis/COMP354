@@ -6,12 +6,10 @@ public class DeenergizeAbility extends Ability{
     int amountToRemove;
 
     public DeenergizeAbility(){
-        this.energyRequired = new HashMap<EnergyCard, Integer>();
+        this.energyRequired = new HashMap<EnergyCard.Type, Integer>();
     }
 
     public boolean realUse(Player player){
-        //TODO: find out if deenergized energy goes to discard or hand
-        //until we find out. it is discarded
 
         CardManager sourcePlayer = null, otherPlayer = null;
         switch(player){

@@ -7,7 +7,7 @@ class UnimplementedAbility extends Ability{
 
   UnimplementedAbility(){
     this.name = "Unimplemented Ability";
-    this.energyRequired = new HashMap<EnergyCard, Integer>();
+    this.energyRequired = new HashMap<EnergyCard.Type, Integer>();
   }
   
   public String getSimpleDescription(){

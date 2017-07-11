@@ -92,27 +92,60 @@ public class HumanPlayer extends Player {
                 break;
             case RETREAT:
                 retreatActive();
+                GameEngine.w.displayCard(new Message("player", "active", 0));
                 break;
             case PLAYITEM:
             	playItem();
+                GameEngine.w.displayCard(new Message("player", "active", 0));
             	break;
             case EVOLVE:
             	evolve();
+                GameEngine.w.displayCard(new Message("player", "active", 0));
             	break;
             default:
                 GameEngine.w.displayCard(m);
         }
 	}
 	
-	
-	//TODO: implement
+
 	public void playItem(){
-		System.out.println("PLAY ITEM");
+		if(!hasPlayedSupportCard){
+            TrainerCard t = (TrainerCard) GameEngine.w.getDisplayedCard();
+            cardManager.removeCardFromHand(t);
+            cardManager.addToDiscard(t);
+            t.getAbility().use(Ability.Player.PLAYER);
+            GameEngine.w.updateInstructions("Used trainer card " + t.getName());
+            hasPlayedSupportCard = true;
+        }
+        else{
+		    GameEngine.w.updateInstructions("You have already played one trainer card this turn and can't play another.");
+        }
 	}
-	
-	//TODO: implement
+
 	public void evolve(){
-		System.out.println("EVOLVE");
+		PokemonCard nextStage = (PokemonCard) GameEngine.w.getDisplayedCard();
+		PokemonCard initialPokemon = GameEngine.choosePokemonCard(this, Ability.Target.YOUR_POKEMON);
+
+		if(nextStage.getEvolvesFrom().equals(initialPokemon.getName())){
+		    nextStage.setEvolvedFrom(initialPokemon);
+		    nextStage.energy = initialPokemon.energy;
+
+		    if(initialPokemon == getActivePokemon()){
+		        setActivePokemon(nextStage);
+            }
+            else{
+		        getBench().remove(initialPokemon);
+		        getBench().add(nextStage);
+            }
+
+            cardManager.removeCardFromHand(nextStage);
+
+            GameEngine.w.updateInstructions(initialPokemon.getName() + " has evolved into " + nextStage.getName() + "!");
+        }
+        else{
+		    GameEngine.w.updateInstructions(nextStage.getName() + " only evolves from " + initialPokemon.getName());
+		    return;
+        }
 	}
 
 	public void attachEnergy(){

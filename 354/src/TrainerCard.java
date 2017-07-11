@@ -22,14 +22,11 @@ public class TrainerCard extends Card {
 	}
 
 	
-	public String getName() {
-		return this.name;
-	}
+
 	
 	public String getDescription() {
-		return this.description;
+		return "<html>" + this.ability.getDescription() + "</html>";
 	}
-	
 	public String getSimpleDescription(){
 		return this.description;
 	}
@@ -38,9 +35,7 @@ public class TrainerCard extends Card {
 		this.ID = ID;
 	}
 
-	public int getID() {
-		return this.ID;
-	}
+
 
 	public Card shallowCopy(){
 		TrainerCard r = new TrainerCard();
@@ -53,5 +48,16 @@ public class TrainerCard extends Card {
 
 		return r;
 	}
-	
+
+	//Getters
+	public int getID() {
+		return this.ID;
+	}
+	public String getName() {
+		return this.name;
+	}
+	public Ability getAbility(){
+		return ability;
+	}
+
 }
