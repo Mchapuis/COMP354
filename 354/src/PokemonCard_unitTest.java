@@ -13,12 +13,12 @@ public class PokemonCard_unitTest {
 		attack.addEnergyRequirement(energy, 1); 
 		pokemon1.addAttack(attack);
 	
-		boolean hasEnergy = pokemon1.hasEnoughEnergy(0);
+		boolean hasEnergy = pokemon1.hasEnoughEnergyForAttack(0);
 		
 		assertFalse(hasEnergy);
 		
 		pokemon1.attachEnergy(energy);
-		hasEnergy = pokemon1.hasEnoughEnergy(0);
+		hasEnergy = pokemon1.hasEnoughEnergyForAttack(0);
 		
 		assertTrue(hasEnergy);
 	}
