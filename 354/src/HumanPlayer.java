@@ -143,7 +143,7 @@ public class HumanPlayer extends Player {
             GameEngine.w.updateInstructions(initialPokemon.getName() + " has evolved into " + nextStage.getName() + "!");
         }
         else{
-		    GameEngine.w.updateInstructions(nextStage.getName() + " only evolves from " + initialPokemon.getName());
+		    GameEngine.w.updateInstructions(nextStage.getName() + " only evolves from " + nextStage.getEvolvesFrom());
 		    return;
         }
 	}

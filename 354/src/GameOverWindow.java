@@ -1,6 +1,12 @@
 import javax.swing.*;
 import java.awt.*;
 
+
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+
 public class GameOverWindow {
     private JFrame gameOverFrame;
 
@@ -32,7 +38,25 @@ public class GameOverWindow {
     }
 
     public static void main(String [] args){
-       GameOverWindow g = new GameOverWindow(Ability.Player.AI);
-       g.gameOverFrame.setVisible(true);
+        //I've been using this as a quick way to run short snippets of arbitrary code
+
+        //print description of all parsed abilities
+        try{
+            FileReader fileReader = new FileReader("abilities.txt");
+            BufferedReader bufferedReader = new BufferedReader(fileReader);
+
+            String line;
+            int i = 1;
+            while ((line = bufferedReader.readLine()) != null){
+                Ability a = Ability.parseAbilitiesLine(line);
+                System.out.println(i++ + ": " + a.getDescription());
+            }
+
+            bufferedReader.close();
+        } catch (FileNotFoundException e){
+           e.printStackTrace();
+        } catch (IOException e){
+            e.printStackTrace();
+        }
     }
 }

@@ -11,7 +11,7 @@ class UnimplementedAbility extends Ability{
   }
   
   public String getSimpleDescription(){
-	  return "This part of the ability is not implemented :(";
+	  return "UNIMPLEMENTED";
   }
 
   public Ability shallowCopy(){
