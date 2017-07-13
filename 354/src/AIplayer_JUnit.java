@@ -39,7 +39,7 @@ public class AIplayer_JUnit {
 		
 		// TODO: REGRESSION TEST make a test so this is failing if not null
 		// removing ActivePokemon() and check if we get null
-		aiPlayer_test.cardManager.discardActivePokemon();
+		aiPlayer_test.cardManager.addToDiscard(aiPlayer_test.cardManager.getActivePokemon());
 		assertNotNull(aiPlayer_test.cardManager.getActivePokemon());//TODO: should be assertNull
 		
 		// TODO: test moveCardFromHandToBottomOfDeck()

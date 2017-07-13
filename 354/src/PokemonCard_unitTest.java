@@ -10,7 +10,7 @@ public class PokemonCard_unitTest {
 		PokemonCard pokemon1 = new PokemonCard();
 		EnergyCard energy = new EnergyCard("COLORLESS");
 	
-		ability.addEnergyRequired(energy, 1); 
+		ability.addEnergyRequired(energy.getType(), 1); 
 		pokemon1.addAbility(ability);
 	
 		boolean hasEnergy = pokemon1.hasEnoughEnergyForAttack(0);

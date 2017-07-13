@@ -1,8 +1,5 @@
 import java.util.*;
 import java.util.concurrent.LinkedTransferQueue;
-
-
-
 public class GameEngine {
 	//GUI objects
 	public static GameWindow w;
@@ -16,9 +13,6 @@ public class GameEngine {
 	//
 	private static Player currentPlayer = player;
 	private static Player winner = null;
-	
-
-
 	public static void main(String[] args) {
 		//create and display the main game window
 		GameWindow.lock = lock;
