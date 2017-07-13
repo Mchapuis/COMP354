@@ -726,7 +726,13 @@ public class GameWindow {
 		if (m.getType() == Message.ButtonType.DECK){
 			card = new GenericCard(sourceCardManager.getDeck().size());
 		} else if (m.getType() == Message.ButtonType.DISCARD){
-			card = new GenericCard(sourceCardManager.getDiscard().size());
+			//make list of discarded cards
+			String list = "<html>";
+			for(Card c : sourceCardManager.getDiscard()){
+				list += c.getName() + "<br/>";
+			}
+			list += "</html>";
+			card = new GenericCard(Integer.toString(sourceCardManager.getDiscard().size()), list);
 		} else {
 			card = new GenericCard(sourceCardManager.getPrizeCards().size());
 		}

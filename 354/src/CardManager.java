@@ -78,17 +78,8 @@ public class CardManager {
 	}
 	
 	public void removeActivePokemon(){
-		discardActivePokemon();
+		addPokemonCardToDiscard(getActivePokemon());
 		activePokemon = null;
-	}
-	
-	public void discardActivePokemon(){
-		ArrayList<EnergyCard> energy = activePokemon.getEnergy();
-		for (EnergyCard card : energy){
-			discardPile.add(card);
-			activePokemon.removeEnergy(card);
-		}
-		discardPile.add(activePokemon);
 	}
 
 	public void attachEnergy(EnergyCard energy, PokemonCard pokemon){
@@ -122,13 +113,14 @@ public class CardManager {
 	}
 
 	public void addPokemonCardToDiscard(PokemonCard card){
-		//TODO update with evolution
 		//Does not remove card from anything
 		while(card.energy.size() > 0){
 			EnergyCard discard = card.energy.remove(0);
 			addToDiscard(discard);
 		}
-
+		if(card.getEvolvedFrom() != null){
+			addPokemonCardToDiscard(card.getEvolvedFrom());
+		}
 		discardPile.add(card);
 	}
 
@@ -157,6 +149,13 @@ public class CardManager {
 			System.out.println("bork");
 		}
 	}
+
+	public void removeCardFromHand(Card card){
+		if(hand.contains(card)){
+			hand.remove(card);
+		}
+	}
+
 
 	//Getters
 	public ArrayList<Card> getHand(){

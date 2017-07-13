@@ -7,11 +7,11 @@ class UnimplementedAbility extends Ability{
 
   UnimplementedAbility(){
     this.name = "Unimplemented Ability";
-    this.energyRequired = new HashMap<EnergyCard, Integer>();
+    this.energyRequired = new HashMap<EnergyCard.Type, Integer>();
   }
   
   public String getSimpleDescription(){
-	  return "This part of the ability is not implemented :(";
+	  return "UNIMPLEMENTED";
   }
 
   public Ability shallowCopy(){

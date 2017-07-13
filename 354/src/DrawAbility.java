@@ -5,7 +5,7 @@ public class DrawAbility extends Ability{
     int amountToDraw;
 
     public DrawAbility(){
-        this.energyRequired = new HashMap<EnergyCard, Integer>();
+        this.energyRequired = new HashMap<EnergyCard.Type, Integer>();
     }
 
     public boolean realUse(Player player){

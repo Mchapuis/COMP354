@@ -48,13 +48,19 @@ public class AIPlayer extends Player {
 		moveAllPokemonToBench();
 
 		//use first attack with available energy
+		boolean attacked = false;
 		int numberOfAttacks = getActivePokemon().getAbilities().size();
 		for (int i = numberOfAttacks - 1; i >= 0; i--){
-			attack(i);
-			if (true){ //TODO change to check for enough energy
+			if (getActivePokemon().hasEnoughEnergyForAttack(i)){
+				attack(i);
 				turnOver = true;
+				attacked = true;
 				break;
 			}
+		}
+
+		if(!attacked){
+			GameEngine.w.updateInstructions(getActivePokemon().getName() + " does not have enough energy for any attack and is forced to pass.");
 		}
 
 		turnOver = true;

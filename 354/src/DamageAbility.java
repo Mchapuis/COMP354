@@ -6,7 +6,7 @@ class DamageAbility extends Ability{
   private int damage;
 
   public DamageAbility(){
-        this.energyRequired = new HashMap<EnergyCard, Integer>();
+        this.energyRequired = new HashMap<EnergyCard.Type, Integer>();
     }
 
   public boolean realUse(Player player){

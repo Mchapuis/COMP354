@@ -5,7 +5,7 @@ public class HealAbility extends Ability{
     public int healAmount = 0;
 
     public HealAbility(){
-        this.energyRequired = new HashMap<EnergyCard, Integer>();
+        this.energyRequired = new HashMap<EnergyCard.Type, Integer>();
     }
 
     public boolean realUse(Player player){

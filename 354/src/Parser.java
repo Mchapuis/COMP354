@@ -204,8 +204,27 @@ public class Parser {
                     index++; //advance index to next cat or ability number
                 }
 
-                //add ability
+                //get ability
                 Ability abilityToAdd = abilities.get(Integer.parseInt(tokens[index]) - 1).shallowCopy();
+
+                //Set energy costs of ability
+                if(colourlessCost > 0){
+                	abilityToAdd.addEnergyRequired(EnergyCard.Type.COLORLESS, colourlessCost);
+				}
+				if(waterCost > 0){
+					abilityToAdd.addEnergyRequired(EnergyCard.Type.WATER, waterCost);
+				}
+				if(lightningCost > 0){
+					abilityToAdd.addEnergyRequired(EnergyCard.Type.LIGHTNING, lightningCost);
+				}
+				if(psychicCost > 0){
+					abilityToAdd.addEnergyRequired(EnergyCard.Type.PSYCHIC, psychicCost);
+				}
+				if(fightingCost > 0){
+					abilityToAdd.addEnergyRequired(EnergyCard.Type.FIGHT, fightingCost);
+				}
+
+				//add ability
                 pokemonCard.addAbility(abilityToAdd);
 
                 index++;
