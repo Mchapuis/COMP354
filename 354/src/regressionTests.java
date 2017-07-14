@@ -14,11 +14,11 @@ public class regressionTests {
 		// The method in question
 		AI_test.moveAllPokemonToBench();
 		
-		// the test
+		// the test. checking if the Stage One Pokemon added to the Hand was moved to the bench
 		int index =0;
 		while(index < AI_test.getBench().size()){
 			PokemonCard.Category PokemonCat = AI_test.getBench().get(index).getCat();
-			assertTrue(PokemonCat == PokemonCard.Category.BASIC);
+			if(PokemonCat != PokemonCard.Category.BASIC) fail("Fail: a "+ PokemonCat +" Pokemon was moved to the hand") ;
 			index++;
 		}
 
