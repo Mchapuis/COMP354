@@ -50,6 +50,9 @@ public class Deck_unitTest {
 		EnergyCard energy =new EnergyCard("colorless");
 		
 		Deck deck = new Deck();
+		//check deckSize
+		assertSame(deck.size(),0);
+		
 		deck.push(energy);
 		deck.push(trainer);
 		deck.push(pokemon);

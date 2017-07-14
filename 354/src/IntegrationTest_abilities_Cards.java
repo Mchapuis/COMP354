@@ -35,6 +35,9 @@ public class IntegrationTest_abilities_Cards {
 	
 		
 		human.setActivePokemon(Glameow);
+		PokemonCard active = human.getActivePokemon();
+		assertSame(active, Glameow);
+		
 		int deckSize = human.cardManager.getDeck().size();
 		
 		assertTrue(deckSize==47); //deck = 60 cards - 7 cards in hand - 6 Prize cards
@@ -47,7 +50,8 @@ public class IntegrationTest_abilities_Cards {
 		human.getActivePokemon().getAbilities().get(0).use(Ability.Player.PLAYER);
 		deckSize = human.cardManager.getDeck().size();
 		assertTrue(deckSize==44); //deck = 47 cards - 3 Draw
-
+		int handSize = human.cardManager.getHand().size();
+		assertTrue(handSize == 10); // hand = 7 + 3 cards added
 		
 		
 	}	
