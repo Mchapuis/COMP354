@@ -3,7 +3,7 @@ import java.util.ArrayList;
 public abstract class Player {
 	protected CardManager cardManager;
 
-	//turn variables
+	//turn Avariables
 	boolean hasPlacedEnergy = false;
 	boolean hasPlayedSupportCard = false;
 	boolean hasPlayedStadiumCard = false;
