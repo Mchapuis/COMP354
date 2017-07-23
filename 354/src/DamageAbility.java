@@ -3,7 +3,7 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 
 class DamageAbility extends Ability{
-  private int damage;
+  private ComplexAmount damage;
 
   public DamageAbility(){
         this.energyRequired = new HashMap<EnergyCard.Type, Integer>();
@@ -22,29 +22,39 @@ class DamageAbility extends Ability{
             break;
     }
 
+    PokemonCard targetPokemon = null;
+
     switch(targetType){
         case OPPONENT_ACTIVE:
-            otherPlayer.getActivePokemon().removeHP(damage);
+            targetPokemon = otherPlayer.getActivePokemon();
             break;
         case YOUR_ACTIVE:
-            sourcePlayer.getActivePokemon().removeHP(damage);
+            targetPokemon = sourcePlayer.getActivePokemon();
             break;
         case OPPONENT_BENCH:
             if(otherPlayer.getBench().size() > 0){
-                GameEngine.choosePokemonCard(player,targetType).removeHP(damage);
+                targetPokemon = GameEngine.choosePokemonCard(player,targetType);
             }
             break;
         case YOUR_BENCH:
             if(sourcePlayer.getBench().size() > 0){
-                GameEngine.choosePokemonCard(player,targetType).removeHP(damage);
+                targetPokemon = GameEngine.choosePokemonCard(player,targetType);
             }
             break;
         case YOUR_POKEMON:
-            GameEngine.choosePokemonCard(player,targetType).removeHP(damage);
+            targetPokemon = GameEngine.choosePokemonCard(player,targetType);
             break;
         case OPPONENT_POKEMON:
-            GameEngine.choosePokemonCard(player,targetType).removeHP(damage);
+            targetPokemon = GameEngine.choosePokemonCard(player,targetType);
             break;
+        case LAST:
+            targetPokemon = Ability.lastTargetedPokemon;
+            break;
+    }
+
+    if(targetPokemon != null){
+        targetPokemon.removeHP(damage.evaluate(player));
+        Ability.lastTargetedPokemon = targetPokemon;
     }
 
     return true;
@@ -79,14 +89,14 @@ class DamageAbility extends Ability{
       }
 
       try{
-          this.damage = Integer.valueOf(description[index]);
+          this.damage = new ComplexAmount(description[index]);
       }catch(Exception e){
           throw new UnimplementedException();
       }
   }
   
   public String getSimpleDescription(){
-  	return "Deal " + damage + " damage to " + targetType.toString();
+  	return "Deal " + damage.getDescription() + " damage to " + targetType.toString();
   }
 
   public Ability shallowCopy(){

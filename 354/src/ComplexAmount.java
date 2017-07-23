@@ -38,6 +38,14 @@ public class ComplexAmount{
             }
             return 0;
         }
+        private String getDescription(){
+            if(leftChild == null && rightChild == null){
+                return value;
+            }
+            else{
+                return "("+leftChild.getDescription()+value+rightChild.getDescription()+")";
+            }
+        }
     }
     private PTNode root = null;
 
@@ -364,7 +372,7 @@ public class ComplexAmount{
                         }
                     }
                     else if(tokens[2].equals("damage")){
-                        return singlePokemon.getMaxHP() - singlePokemon.getCurrentHP();
+                        return (singlePokemon.getMaxHP() - singlePokemon.getCurrentHP()) / 10; //10 is the value of 1 damage token
                     }
                 }
             }
@@ -373,22 +381,20 @@ public class ComplexAmount{
         return 0;
     }
 
+    public String getDescription(){
+        return root.getDescription();
+    }
+
     //for programmer's experimentation
     public static void main(String args[]){
        try{
-           GameEngine.player = new HumanPlayer();
-           PokemonCard p = new PokemonCard();
-           p.setMaxHP(90);
-           p.removeHP(20);
-           EnergyCard e = new EnergyCard("psychic");
-           p.attachEnergy(e);
-           GameEngine.player.setActivePokemon(p);
 
-           ComplexAmount c = new ComplexAmount("count(target:your-active:energy:psychic)*20");
-           System.out.println(c.evaluate(Ability.Player.PLAYER));
-           c = new ComplexAmount("1+2*3-4/2+2^6");
+           ComplexAmount c = new ComplexAmount("(1+2)*(3-4)/2+2^6");
            System.out.println(c.evaluate(Ability.Player.AI));
 
+           System.out.println("abcdef".matches(".*cde.*$"));
+
+           Ability.parseAbilitiesLine("Red Card:deck:target:opponent:destination:deck:count(opponent-hand),shuffle:target:opponent,draw:opponent:4");
        }
        catch(UnimplementedException e){ e.printStackTrace(); }
     }

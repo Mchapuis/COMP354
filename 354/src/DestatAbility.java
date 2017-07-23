@@ -44,10 +44,14 @@ public class DestatAbility extends Ability {
             case OPPONENT_POKEMON:
                 targetPokemon = GameEngine.choosePokemonCard(player,targetType);
                 break;
+            case LAST:
+                targetPokemon = Ability.lastTargetedPokemon;
+                break;
         }
 
         if(targetPokemon != null){
             targetPokemon.applyStatus(Status.NORMAL);
+            Ability.lastTargetedPokemon = targetPokemon;
         }
 
         return true;

@@ -30,7 +30,7 @@ public class CardManager {
 				deck.push(card);
 		}
 		
-		deck.shuffle();
+		//deck.shuffle();
 	}
 	private void selectHand(){
 		hand = new ArrayList<Card>();
@@ -79,6 +79,10 @@ public class CardManager {
 	
 	public void removeActivePokemon(){
 		addPokemonCardToDiscard(getActivePokemon());
+		activePokemon = null;
+	}
+
+	public void removeActivePokemonWithoutDiscard(){
 		activePokemon = null;
 	}
 
@@ -156,6 +160,9 @@ public class CardManager {
 		}
 	}
 
+	public void shuffleDeck(){
+		this.deck.shuffle();
+	}
 
 	//Getters
 	public ArrayList<Card> getHand(){

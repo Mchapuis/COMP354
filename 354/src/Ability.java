@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
@@ -12,7 +14,8 @@ abstract class Ability {
 		YOUR_ACTIVE, OPPONENT_ACTIVE, //targets the active pokemon
 		YOUR_POKEMON, OPPONENT_POKEMON, //targets choice of pokemon active or bench
 		YOUR_BENCH, OPPONENT_BENCH, //targets choice of pokemon on bench
-		YOU, OPPONENT //targets player in general
+		YOU, OPPONENT, //targets player in general
+		LAST //the last pokemon that was targeted
 	}
 	public enum Player{
 	    PLAYER,
@@ -24,6 +27,8 @@ abstract class Ability {
 	Target targetType;
 	Ability subsequentAbility = null;
 	protected HashMap<EnergyCard.Type, Integer> energyRequired = new HashMap<EnergyCard.Type, Integer>();
+
+	static PokemonCard lastTargetedPokemon = null;
 
 	//---Methods
 
@@ -116,7 +121,50 @@ abstract class Ability {
 			return new UnimplementedAbility();
 		}
 	}
+	private static String[] remergeCount(String [] description){
+		ArrayList<String> newDescription = null;
+		ArrayList<String> oldDescription = new ArrayList<>();
+
+		for(int i = 0; i < description.length; i++){
+			oldDescription.add(description[i]);
+		}
+
+		boolean done = false;
+		while(!done){
+			newDescription = new ArrayList<>();
+			done = true;
+
+			for(int i = 0; i < oldDescription.size(); i++){
+				if(oldDescription.get(i).matches(".*count\\([\\w]+$")){
+					done = false;
+					String mergedString = oldDescription.get(i);
+					for(int j = i+1; j < oldDescription.size(); j++){
+						mergedString += ":" + oldDescription.get(j);
+						i = j;
+						if(oldDescription.get(j).contains(")")){
+							break;
+						}
+					}
+					newDescription.add(mergedString);
+				}
+				else{
+					newDescription.add(oldDescription.get(i));
+				}
+			}
+
+			oldDescription = newDescription;
+		}
+
+
+
+		String returnArray[] = new String[newDescription.size()];
+		newDescription.toArray(returnArray);
+		return returnArray;
+	}
+
 	public static Ability makeAbility(String[] description) throws Exception{
+		description = remergeCount(description);
+
 		Ability returnAbility = null;
 
 		//branch based on ability type
@@ -152,17 +200,20 @@ abstract class Ability {
                     returnAbility = new UnimplementedAbility(); //TODO:
                     break;
                 case "redamage":
-                    returnAbility = new UnimplementedAbility(); //TODO:
+                    returnAbility = new RedamageAbility(description);
                     break;
                 case "search":
                     returnAbility = new UnimplementedAbility(); //TODO:
                     break;
                 case "swap":
-                    returnAbility = new UnimplementedAbility(); //TODO:
+                    returnAbility = new SwapAbility(description);
                     break;
                 case "add":
                     returnAbility = new UnimplementedAbility(); //TODO:
                     break;
+				case "shuffle":
+					returnAbility = new ShuffleAbility(description);
+					break;
                 default:
                     returnAbility = new UnimplementedAbility();
             }
@@ -190,6 +241,8 @@ abstract class Ability {
 				return Target.OPPONENT_BENCH;
 			case "your-bench":
 				return Target.YOUR_BENCH;
+			case "last":
+				return Target.LAST;
 		}
 		return Target.OPPONENT_ACTIVE;
 	}

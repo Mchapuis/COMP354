@@ -2,7 +2,7 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 
 public class HealAbility extends Ability{
-    public int healAmount = 0;
+    ComplexAmount healAmount = null;
 
     public HealAbility(){
         this.energyRequired = new HashMap<EnergyCard.Type, Integer>();
@@ -45,15 +45,20 @@ public class HealAbility extends Ability{
             case OPPONENT_POKEMON:
                 targetPokemon = GameEngine.choosePokemonCard(player, targetType);
                 break;
+            case LAST:
+                targetPokemon = Ability.lastTargetedPokemon;
+                break;
             default:
                 targetPokemon = otherPlayer.getActivePokemon();
         }
 
         if (targetPokemon != null){
             int maxHealAmount = targetPokemon.getMaxHP() - targetPokemon.getCurrentHP();
-            int amountToHeal = Math.min(healAmount, maxHealAmount);
+            int amountToHeal = Math.min(healAmount.evaluate(player), maxHealAmount);
             targetPokemon.removeHP(-amountToHeal);
             targetPokemon.setHasBeenHealed(true);
+
+            Ability.lastTargetedPokemon = targetPokemon;
         }
 
         return true;
@@ -87,14 +92,14 @@ public class HealAbility extends Ability{
         //set heal amount
         index++;
         try{
-            healAmount = Integer.valueOf(description[index]);
+            healAmount = new ComplexAmount(description[index]);
         }catch(Exception e){
             throw new UnimplementedException();
         }
     }
     
     public String getSimpleDescription(){
-    	return "Heal up to " + healAmount + " HP on " + targetType.toString();
+    	return "Heal up to " + healAmount.getDescription() + " HP on " + targetType.toString();
     }
 
     public Ability shallowCopy(){

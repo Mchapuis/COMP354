@@ -22,31 +22,40 @@ public class ApplyStatAbility extends Ability{
                 break;
         }
 
+        PokemonCard targetedPokemon = null;
+
         switch(targetType){
             case OPPONENT_ACTIVE:
-                otherPlayer.getActivePokemon().applyStatus(givenStatus);
+                targetedPokemon = otherPlayer.getActivePokemon();
                 break;
             case YOUR_ACTIVE:
-                sourcePlayer.getActivePokemon().applyStatus(givenStatus);
+                targetedPokemon = sourcePlayer.getActivePokemon();
                 break;
             case OPPONENT_BENCH:
                 if(otherPlayer.getBench().size() > 0){
-                    GameEngine.choosePokemonCard(player,targetType).applyStatus(givenStatus);
+                    targetedPokemon = GameEngine.choosePokemonCard(player,targetType);
                 }
                 break;
             case YOUR_BENCH:
                 if(sourcePlayer.getBench().size() > 0){
-                    GameEngine.choosePokemonCard(player,targetType).applyStatus(givenStatus);
+                    targetedPokemon = GameEngine.choosePokemonCard(player,targetType);
                 }
                 break;
             case YOUR_POKEMON:
-                GameEngine.choosePokemonCard(player,targetType).applyStatus(givenStatus);
+                targetedPokemon = GameEngine.choosePokemonCard(player,targetType);
                 break;
             case OPPONENT_POKEMON:
-                GameEngine.choosePokemonCard(player,targetType).applyStatus(givenStatus);
+                targetedPokemon = GameEngine.choosePokemonCard(player,targetType);
+                break;
+            case LAST:
+                targetedPokemon = Ability.lastTargetedPokemon;
                 break;
         }
 
+        if(targetedPokemon != null){
+            targetedPokemon.applyStatus(givenStatus);
+            Ability.lastTargetedPokemon = targetedPokemon;
+        }
         return true;
     }
 

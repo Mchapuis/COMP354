@@ -8,6 +8,7 @@ public class ConditionAbility extends Ability{
         CHOICE,
         HEALED,
         ABILITY,
+        BOOLEAN
     }
 
     ConditionType condType;
@@ -16,6 +17,9 @@ public class ConditionAbility extends Ability{
 
     //used only for ConditionType.ABILITY
     Ability testAbility = null;
+
+    //used only for ConditionType.BOOLEAN
+    BooleanExpression booleanExpression = null;
     
     public ConditionAbility(){
     	this.energyRequired = new HashMap<EnergyCard.Type, Integer>();
@@ -60,6 +64,9 @@ public class ConditionAbility extends Ability{
                 break;
             case ABILITY:
                 conditionPassed = testAbility.use(player);
+                break;
+            case BOOLEAN:
+                conditionPassed = booleanExpression.evaluate(player);
                 break;
         }
 
@@ -116,7 +123,8 @@ public class ConditionAbility extends Ability{
                 condType = ConditionType.CHOICE;
                 break;
             default:
-                throw new UnimplementedException();
+                condType = ConditionType.BOOLEAN;
+                booleanExpression = new BooleanExpression(description[index]);
         }
         index++;
 
@@ -217,6 +225,9 @@ public class ConditionAbility extends Ability{
                 break;
             case HEALED:
                 returnString += "If target has been healed, then " + conditionalAbility.getRecursiveDescription();
+                break;
+            case BOOLEAN:
+                returnString += "If " + booleanExpression.getDescription() + ", then " + conditionalAbility.getRecursiveDescription();
                 break;
         }
 
