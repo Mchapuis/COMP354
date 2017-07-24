@@ -4,9 +4,27 @@ import java.util.concurrent.LinkedTransferQueue;
 
 
 public class GameEngine {
+	/*
+	*                                  Full Screen annoying as fuck?
+	*                                         Disable here
+	*                                            |=====|
+	*                                            |=====|
+	*                                            |=====|
+	*                                            |=====|
+	*                                            |=====|
+	*                                            |=====|
+	*                                           _|=====|_
+	*                                           \|=====|/
+	*                                            \=====/
+	*                                             \===/
+	*                                              \=/
+	*                                               V
+	*  */
+	final static boolean displayGameInFullScreen = true;
+
 	//GUI objects
 	public static GameWindow w;
-	private static Object lock = new Object();
+	public static Object lock = new Object();
 	public static Queue<Message> queue = new LinkedTransferQueue<>();
 
 	//players
@@ -21,7 +39,7 @@ public class GameEngine {
 		//create and display the main game window
 		GameWindow.lock = lock;
 		GameWindow.queue = queue;
-		w = new GameWindow(autoPlayer, player);
+		w = new GameWindow(autoPlayer, player, displayGameInFullScreen);
 		w.display();
 
 		//give Ability class access to card managers
@@ -59,7 +77,8 @@ public class GameEngine {
 		}
 
 		//announce win or loss
-		GameOverWindow g = new GameOverWindow(getWinner());
+		GameOverWindow g = new GameOverWindow(getWinner(), displayGameInFullScreen);
+		w.close();
 		g.display();
     }
 
@@ -266,6 +285,7 @@ public class GameEngine {
 	}
 
     //card selection
+	//this should really be a set of abstract methods in Player, but why refactor when you can add new features?
 	private static PokemonCard getChoiceOfCard(Ability.Target target){
 		Message msg = null;
 		PokemonCard cardToReturn = null;
@@ -363,6 +383,34 @@ public class GameEngine {
 			return choosePokemonCard(autoPlayer, target);
 		}
 	}
+	public static Card chooseCardFromAHand(Ability.Player p, CardManager c){
+		//this whole method is lazily designed. deal with it
+		if(p == Ability.Player.PLAYER){
+			boolean cardSelected = false;
+			while(! cardSelected){
+				Message.Side s = null;
+				if(c == player.cardManager){
+					GameEngine.w.updateInstructions("Please select a card from your hand.");
+					s = Message.Side.PLAYER;
+				}
+				else{
+					GameEngine.w.updateInstructions("Please select a card from your opponent's hand.");
+					s = Message.Side.AI;
+				}
+				waitForInput();
+				Message msg = queue.remove();
+
+				if(msg.getSide() == s && msg.getType() == Message.ButtonType.HAND){
+					return c.getHand().get(msg.getIndex());
+				}
+
+			}
+		}
+		else{
+			return c.getHand().get(0);
+		}
+		return null;
+	}
 
 	//getters
 	public static Ability.Player getCurrentPlayer(){
@@ -394,5 +442,7 @@ public class GameEngine {
 	public static boolean winnerFound(){
 		return winner != null;
 	}
+
+
 
 }

@@ -10,7 +10,7 @@ import java.io.IOException;
 public class GameOverWindow {
     private JFrame gameOverFrame;
 
-    GameOverWindow(Ability.Player player){
+    GameOverWindow(Ability.Player player, boolean fullscreen){
         gameOverFrame = new JFrame();
         //Set window properties
         gameOverFrame = new JFrame("354 Pokemon Game");
@@ -18,6 +18,14 @@ public class GameOverWindow {
         gameOverFrame.setSize(new Dimension(200, 100));
         gameOverFrame.setResizable(false);
         gameOverFrame.setLayout(new BorderLayout());
+
+        GameWindow.centreWindow(gameOverFrame, 200, 100);
+
+        if(fullscreen){
+            gameOverFrame.setUndecorated(true);
+            gameOverFrame.getRootPane().setWindowDecorationStyle(JRootPane.NONE);
+            gameOverFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        }
 
         String winLose;
         if(player == Ability.Player.PLAYER){
@@ -35,6 +43,9 @@ public class GameOverWindow {
 
     public void display(){
         this.gameOverFrame.setVisible(true);
+    }
+    public void close(){
+        gameOverFrame.setVisible(false);
     }
 
     public static void main(String [] args){

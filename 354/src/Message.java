@@ -1,7 +1,7 @@
 
 public class Message {
 	public static enum Side{
-		PLAYER, AI
+		PLAYER, AI, NONE
 	}
 	
 	public static enum ButtonType{
@@ -18,7 +18,8 @@ public class Message {
 		LETAIPLAY, 
 		RETREAT, 
 		PLAYITEM, 
-		EVOLVE
+		EVOLVE,
+		CARDSELECTOR
 	}
 	
 	private Side side;
@@ -60,6 +61,8 @@ public class Message {
 			this.type = ButtonType.PLAYITEM;
 		} else if (type.equals("evolve")){
 			this.type = ButtonType.EVOLVE;
+		} else if (type.equals("cardselector")){
+			this.type = ButtonType.CARDSELECTOR;
 		}
 		
 		this.index = index;

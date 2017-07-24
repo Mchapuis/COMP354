@@ -144,7 +144,7 @@ public class GameWindow {
     }
 
     //Constructor
-    public GameWindow(AIPlayer autoPlayer, HumanPlayer player){
+    public GameWindow(AIPlayer autoPlayer, HumanPlayer player, boolean fullscreen){
     	this.autoPlayer = autoPlayer;
     	this.player = player;
     	
@@ -153,8 +153,14 @@ public class GameWindow {
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         mainFrame.setSize(new Dimension(1800, 850));
         mainFrame.setResizable(false);
-        mainFrame.setLayout(new GridBagLayout()); 
-        
+        mainFrame.setLayout(new GridBagLayout());
+
+		if(fullscreen){
+			mainFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+			mainFrame.setUndecorated(true);
+		}
+
+
         GridBagConstraints constraints = new GridBagConstraints();
 
         //active pokemon buttons
@@ -461,6 +467,9 @@ public class GameWindow {
 	public void display(){
 		mainFrame.setVisible(true);
 	}
+	public void close(){
+		mainFrame.setVisible(false);
+	}
 
 	//Update GUI information entities
     public void updateInstructions(String text){
@@ -743,6 +752,14 @@ public class GameWindow {
 	//Getters
 	public Card getDisplayedCard(){
 		return this.displayedCard;
+	}
+
+	//the following function was modified from https://stackoverflow.com/questions/144892/how-to-center-a-window-in-java
+	public static void centreWindow(Window frame, int window_width, int window_height) {
+		Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
+		int x = (int) ((dimension.getWidth() - frame.getWidth()) / 2) - window_width/2;
+		int y = (int) ((dimension.getHeight() - frame.getHeight()) / 2) - window_height/2;
+		frame.setLocation(x, y);
 	}
 
 }

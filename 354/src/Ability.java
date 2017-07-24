@@ -176,7 +176,7 @@ abstract class Ability {
                     returnAbility = new DamageAbility(description);
                     break;
                 case "deck":
-                    returnAbility = new UnimplementedAbility(); //TODO:
+                    returnAbility = new DeckAbility(description);
                     break;
                 case "draw":
                     returnAbility = new DrawAbility(description);
