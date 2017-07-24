@@ -113,6 +113,9 @@ public class GameEngine {
 
 			//opponent draws 1 card
 			autoPlayer.drawCard();
+
+			//update gui
+			GameEngine.w.updateAll();
 		}
 
 		//ai mulligans
@@ -129,6 +132,9 @@ public class GameEngine {
 
 			//opponent draws 1 card
 			player.drawCard();
+
+			//update gui
+			GameEngine.w.updateAll();
 		}
 	}
 	private static void rollForFirstTurn(){

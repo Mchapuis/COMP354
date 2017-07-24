@@ -39,22 +39,6 @@ public class CardManager {
 			Card card = deck.pop();
 			hand.add(card);
 		}
-		
-		while (getFirstPokemon() == null){
-			Iterator<Card> it = hand.iterator();
-			
-			while (it.hasNext()){
-				Card card = it.next();
-				deck.push(card);
-				it.remove();
-			}
-			
-			deck.shuffle();
-			for (int i = 0; i < 7; i++){
-				Card card = deck.pop();
-				hand.add(card);
-			}
-		}
 	}
 	private void selectPrizeCards(){
 		prizeCards = new ArrayList<Card>(6);
@@ -131,6 +115,10 @@ public class CardManager {
 	public void shuffleHandIntoDeck(){
 		for(Card c : hand){
 			deck.push(c);
+		}
+		int numberOfCardsInHand = hand.size();
+		for(int i = 0; i < numberOfCardsInHand; i++){
+			hand.remove(0);
 		}
 		deck.shuffle();
 	}
