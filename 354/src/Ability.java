@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
@@ -25,6 +24,7 @@ abstract class Ability {
     //ability data
 	public String name;
 	Target targetType;
+	boolean hasChoice = false;
 	Ability subsequentAbility = null;
 	protected HashMap<EnergyCard.Type, Integer> energyRequired = new HashMap<EnergyCard.Type, Integer>();
 
@@ -34,11 +34,15 @@ abstract class Ability {
 
 	//use ability and helper method
 	public boolean use(Player player){
-	    realUse(player);
+	    boolean passed = realUse(player);
 		if(subsequentAbility != null){
-	       return subsequentAbility.use(player);
+			boolean secondary;
+	       	secondary = subsequentAbility.use(player);
+	       	if(secondary == false){
+	       		passed = false;
+			}
         }
-        return false;
+        return passed;
     }
     public abstract boolean realUse(Player player);
 
@@ -65,7 +69,7 @@ abstract class Ability {
         return desc;
     }
 	protected String getRecursiveDescription(){
-	    return (subsequentAbility == null)? "<br/>"+getSimpleDescription():"<br/>"+getSimpleDescription()+subsequentAbility.getRecursiveDescription();
+	    return (subsequentAbility == null)? "<br/>"+getSimpleDescription():"<br/>"+getSimpleDescription()+" then "+subsequentAbility.getRecursiveDescription();
     }
     protected abstract String getSimpleDescription();
 
@@ -101,6 +105,9 @@ abstract class Ability {
 
 			//tokenize by comma
 			String [] sequentialAbilities = line.split(",");
+
+			//remerge parentheses
+			sequentialAbilities = remergeParentheses(sequentialAbilities);
 
 			//make first ability in sequence
 			Ability firstAbility = makeAbility(sequentialAbilities[0].split(":"));
@@ -161,6 +168,85 @@ abstract class Ability {
 		newDescription.toArray(returnArray);
 		return returnArray;
 	}
+	protected static String[] remergeParentheses(String[] description){
+		ArrayList<String> newDescription = null;
+		ArrayList<String> oldDescription = new ArrayList<>();
+
+		for(int i = 0; i < description.length; i++){
+			oldDescription.add(description[i]);
+		}
+
+		boolean done = false;
+		while(!done){
+			newDescription = new ArrayList<>();
+			done = true;
+
+			for(int i = 0; i < oldDescription.size(); i++){
+				if(oldDescription.get(i).contains("(")){
+					String mergedString = oldDescription.get(i);
+
+					if(oldDescription.get(i).endsWith(")") && (getParenthesesBalance(oldDescription.get(i))) == 1){
+						//do nothing
+					}
+					else if((getParenthesesBalance(oldDescription.get(i))&1)==1){
+						done = false;
+						for(int j = i+1; j < oldDescription.size(); j++){
+							mergedString += "," + oldDescription.get(j);
+							i = j;
+							if((countCharInString(oldDescription.get(j), ')')&1) == 1){
+								break;
+							}
+						}
+					}
+					newDescription.add(mergedString);
+				}
+				else{
+					newDescription.add(oldDescription.get(i));
+				}
+			}
+
+			oldDescription = newDescription;
+		}
+
+		String returnArray[] = new String[newDescription.size()];
+		newDescription.toArray(returnArray);
+		return returnArray;
+	}
+	private static int getParenthesesBalance(String s){
+		int length = s.length();
+		int leftCount = 0;
+		int rightCount = 0;
+		for(int i = 0; i < length; i++){
+			char c = s.charAt(i);
+			if(c == '('){
+				leftCount++;
+			}
+			else if(c == ')'){
+				rightCount++;
+			}
+		}
+		return leftCount - rightCount;
+	}
+	private static int countCharInString(String s, char c){
+		int count = 0;
+		int stringLength = s.length();
+		for(int i = 0; i < stringLength; i++){
+			if(s.charAt(i) == c){
+				count++;
+			}
+		}
+		return count;
+	}
+	protected static void removeStartEndParentheses(String[] description){
+		int lastCharIndex = description.length - 1;
+		if(description[0].startsWith("(") && description[lastCharIndex].endsWith(")")){
+			//remove first character from first string
+			description[0] = description[0].substring(1);
+			//remove last character from last string
+			description[lastCharIndex] = description[lastCharIndex].substring(0, description[lastCharIndex].length() - 1);
+		}
+	}
+
 
 	public static Ability makeAbility(String[] description) throws Exception{
 		description = remergeCount(description);
@@ -197,19 +283,19 @@ abstract class Ability {
                     returnAbility = new DeenergizeAbility(description);
                     break;
                 case "reenergize":
-                    returnAbility = new UnimplementedAbility(); //TODO:
+                    returnAbility = new ReEnergizeAbility(description);
                     break;
                 case "redamage":
                     returnAbility = new RedamageAbility(description);
                     break;
                 case "search":
-                    returnAbility = new UnimplementedAbility(); //TODO:
+                    returnAbility = new SearchAbility(description);
                     break;
                 case "swap":
                     returnAbility = new SwapAbility(description);
                     break;
                 case "add":
-                    returnAbility = new UnimplementedAbility(); //TODO:
+                    returnAbility = new AddAbility(description);
                     break;
 				case "shuffle":
 					returnAbility = new ShuffleAbility(description);
@@ -243,6 +329,8 @@ abstract class Ability {
 				return Target.YOUR_BENCH;
 			case "last":
 				return Target.LAST;
+			case "your-pokemon": //exception for wally card
+				return Target.YOUR_POKEMON;
 		}
 		return Target.OPPONENT_ACTIVE;
 	}

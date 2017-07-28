@@ -19,7 +19,9 @@ public class Message {
 		RETREAT, 
 		PLAYITEM, 
 		EVOLVE,
-		CARDSELECTOR
+		CARDSELECTOR,
+		SELECT,
+		CHOICE
 	}
 	
 	private Side side;
@@ -63,7 +65,12 @@ public class Message {
 			this.type = ButtonType.EVOLVE;
 		} else if (type.equals("cardselector")){
 			this.type = ButtonType.CARDSELECTOR;
+		} else if (type.equals("select")){
+			this.type = ButtonType.SELECT;
+		} else if (type.equals("choice")){
+			this.type = ButtonType.CHOICE;
 		}
+
 		
 		this.index = index;
 	}

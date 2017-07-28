@@ -39,7 +39,7 @@ Haunter:pokemon:cat:stage-one:Gastly:cat:psychic:70:retreat:cat:colorless:1:atta
 Gastly:pokemon:cat:basic:cat:psychic:50:retreat:cat:colorless:1:attacks:cat:psychic:1:51
 Diglett:pokemon:cat:basic:cat:fight:50:retreat:cat:colorless:1:attacks:cat:fight:1:52,cat:colorless:1,cat:fight:1:53
 Dugtrio:pokemon:cat:stage-one:Diglett:cat:fight:90:retreat:cat:colorless:1:attacks:cat:fight:1:54,cat:colorless:2,cat:fight:1:55
-Test Trainer:trainer:cat:item:73
+Test Trainer:trainer:cat:item:57
 Slowpoke:pokemon:cat:basic:cat:psychic:50:retreat:cat:colorless:1:attacks:cat:colorless:1:57,cat:psychic:2:58
 Hitmonlee:pokemon:cat:basic:cat:fight:90:retreat:cat:colorless:1:attacks:cat:fight:1:59,cat:fight:2:60
 Hitmonchan:pokemon:cat:basic:cat:fight:90:retreat:cat:colorless:1:attacks:cat:colorless:2:61,cat:colorless:2,cat:fight:1:62

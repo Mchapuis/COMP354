@@ -350,7 +350,8 @@ public class ComplexAmount{
                 }
             }
             else if(tokens[1].equals("last")){
-                //TODO
+                PokemonCard p = Ability.lastTargetedPokemon;
+                return (p.getMaxHP()-p.getCurrentHP())/10;
             }
 
             if(countFromSinglePokemon){
@@ -388,13 +389,8 @@ public class ComplexAmount{
     //for programmer's experimentation
     public static void main(String args[]){
        try{
-
            ComplexAmount c = new ComplexAmount("(1+2)*(3-4)/2+2^6");
            System.out.println(c.evaluate(Ability.Player.AI));
-
-           System.out.println("abcdef".matches(".*cde.*$"));
-
-           Ability.parseAbilitiesLine("Red Card:deck:target:opponent:destination:deck:count(opponent-hand),shuffle:target:opponent,draw:opponent:4");
        }
        catch(UnimplementedException e){ e.printStackTrace(); }
     }

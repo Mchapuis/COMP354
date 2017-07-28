@@ -5,7 +5,7 @@ Flying Elekick:dam:target:opponent-active:50
 Nuzzle:cond:flip:applystat:status:paralyzed:opponent-active
 Quick Attack:dam:target:opponent-active:20,cond:flip:dam:target:opponent-active:10
 Circle Circuit:dam:target:opponent-active:20*count(target:your-bench)
-Thunderbolt:dam:target:opponent-active:10,deenergize:target:your-active:count(target:your-active:energy)
+Thunderbolt:dam:target:opponent-active:100,deenergize:target:your-active:count(target:your-active:energy)
 Rain Splash:dam:target:opponent-active:20
 Soaking Horn:dam:target:opponent-active:10,cond:healed:target:your-active:dam:target:opponent-active:80
 Reckless Charge:dam:target:opponent-active:40,dam:target:your-active:10
@@ -54,7 +54,7 @@ Mud Slap:dam:target:opponent-active:20
 Earthquake:dam:target:opponent-active:60,dam:target:your-bench:10
 Rock Tumble:dam:target:opponent-active:60
 Scratch:dam:target:opponent-active:10
-Spacing Out:cond:flip:heal:target:your-active:10
+Spacing Out:cond:choice:heal:target:your-active:10
 Scavenge:cond:ability:deenergize:target:your-active:1:(search:target:your:source:discard:filter:cat:item:1)
 Stretch Kick:dam:target:choice:opponent-bench:30
 Spiral Kick:dam:target:opponent-active:30
@@ -64,7 +64,7 @@ Beatdown:dam:target:opponent-active:40
 Twinkle:applystat:status:asleep:opponent-active
 Fake Out:dam:target:opponent-active:30,cond:flip:applystat:status:paralyzed:opponent-active
 Ambush:dam:target:opponent-active:40,cond:flip:dam:target:opponent-active:30
-Floral Crown:add:target:your:trigger:opponent:turn-end:(heal:target:self:20)
+Floral Crown:add:target:your:(dam:target:opponent-active:60,dam:target:opponent-active:count(target:opponent-active:energy)*10)
 Poké Ball:cond:flip:search:target:your:source:deck:filter:pokemon:1
 Shauna:deck:target:your:destination:discard:count(your-hand),shuffle:target:you,draw:5
 Pokémon Fan Club:search:target:your:source:deck:filter:pokemon:cat:basic:2,shuffle:target:you

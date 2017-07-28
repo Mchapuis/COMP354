@@ -13,10 +13,12 @@ public class CardPickerWindow{
     private JButton prevButton = null;
     private JButton nextButton = null;
     private JButton selectButton = null;
+    private JButton doneButton = null;
     JLabel instructions = null;
     JPanel cardDescription = null;
 
     ArrayList<Card> cardsToSelectFrom = null;
+    ArrayList<Integer> cardsSelected = null;
     int currentCard = 0;
 
     CardPickerWindow(String instructions, ArrayList<Card> cardsToSelectFrom, boolean fullscreen){
@@ -24,20 +26,23 @@ public class CardPickerWindow{
         prevButton = new JButton("Previous Card");
         nextButton = new JButton("Next Card");
         selectButton = new JButton("Select");
-        this.instructions = new JLabel(instructions);
+        doneButton = new JButton("Done");
+        this.instructions = new JLabel("<html>"+instructions+"</html>");
         this.cardsToSelectFrom = cardsToSelectFrom;
+        this.cardsSelected = new ArrayList<>();
 
         cpFrame.setResizable(false);
         cpFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-        cpFrame.setUndecorated(true);
-        cpFrame.getRootPane().setWindowDecorationStyle(JRootPane.NONE);
         GameWindow.centreWindow(cpFrame, WINDOW_WIDTH, WINDOW_HEIGHT);
 
         if(fullscreen){
             cpFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+            cpFrame.setUndecorated(true);
+            cpFrame.getRootPane().setWindowDecorationStyle(JRootPane.NONE);
         }
 
         prevButton.setEnabled(false);
+        nextButton.setEnabled(cardsToSelectFrom.size() > 1);
 
         prevButton.addActionListener(new ActionListener()
         {
@@ -47,6 +52,7 @@ public class CardPickerWindow{
                 showCard(currentCard);
                 prevButton.setEnabled(currentCard > 0);
                 nextButton.setEnabled(currentCard < cardsToSelectFrom.size() - 1);
+                selectButton.setEnabled(! cardsSelected.contains(currentCard));
             }
         });
 
@@ -58,6 +64,7 @@ public class CardPickerWindow{
                 showCard(currentCard);
                 prevButton.setEnabled(currentCard > 0);
                 nextButton.setEnabled(currentCard < cardsToSelectFrom.size() - 1);
+                selectButton.setEnabled(! cardsSelected.contains(currentCard));
             }
         });
 
@@ -65,9 +72,28 @@ public class CardPickerWindow{
         {
             public void actionPerformed(ActionEvent e)
             {
+                selectButton.setEnabled(false);
+                cardsSelected.add(currentCard);
+
                 String side = "none";
                 String type = "cardselector";
                 int index = currentCard;
+
+                synchronized(GameEngine.lock){
+                    Message message = new Message(side, type, index);
+                    GameEngine.queue.add(message);
+                    GameEngine.lock.notifyAll();
+                }
+            }
+        });
+
+        doneButton.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                String side = "none";
+                String type = "cardselector";
+                int index = -1;
 
                 synchronized(GameEngine.lock){
                     Message message = new Message(side, type, index);
@@ -87,6 +113,7 @@ public class CardPickerWindow{
         JPanel p3 = new JPanel();
         p3.add(prevButton);
         p3.add(selectButton);
+        p3.add(doneButton);
         p3.add(nextButton);
 
         GridBagConstraints c1 = new GridBagConstraints();
@@ -134,30 +161,5 @@ public class CardPickerWindow{
 
         cardDescription.repaint();
         cardDescription.validate();
-    }
-
-
-
-    public static void main(String [] args){
-        Ability a1 = Ability.parseAbilitiesLine("Electroslug:dam:target:opponent-active:90");
-        Ability a2 = Ability.parseAbilitiesLine("Bite:dam:target:opponent-active:10");
-        Ability a3 = Ability.parseAbilitiesLine("Fury Attack:dam:target:opponent-active:40,cond:flip:dam:target:opponent-active:40,cond:flip:dam:target:opponent-active:40,cond:flip:dam:target:opponent-active:40");
-
-        PokemonCard p = new PokemonCard();
-        p.addAbility(a1);
-        p.addAbility(a2);
-        p.setName("poki");
-
-        PokemonCard p2 = new PokemonCard();
-        p2.addAbility(a3);
-        p2.setName("mans");
-
-        ArrayList<Card> list = new ArrayList<>();
-        list.add(p);
-        list.add(p2);
-
-        CardPickerWindow cp = new CardPickerWindow("some instructions blah blah blah blah blah blah blah blah blah ", list, GameEngine.displayGameInFullScreen);
-        cp.display();
-
     }
 }

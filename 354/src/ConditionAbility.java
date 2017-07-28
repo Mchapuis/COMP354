@@ -1,3 +1,5 @@
+import com.sun.org.glassfish.gmbal.GmbalException;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -33,7 +35,25 @@ public class ConditionAbility extends Ability{
                 conditionPassed = RandomNumberGenerator.flipACoin();
                 break;
             case CHOICE:
-                //TODO: get anastasia to make a GUI prompt for this
+                ChoiceWindow c = new ChoiceWindow("Do you want to apply the ability [" + conditionalAbility.getRecursiveDescription() + "]" + (elseAbility==null?"":" otherwise ability ["+elseAbility.getRecursiveDescription()+"] will be applied."));
+                c.display();
+                GameEngine.w.close();
+                while(true){
+                    GameEngine.waitForInput();
+                    Message msg = GameEngine.queue.remove();
+                    if(msg.getType() == Message.ButtonType.CHOICE){
+                        if(msg.getIndex() == 1){
+                            conditionPassed = true;
+                            break;
+                        }
+                        else{
+                            conditionPassed = false;
+                            break;
+                        }
+                    }
+                }
+                GameEngine.w.display();
+                c.close();
                 break;
             case HEALED:
                 CardManager sourcePlayer = null, otherPlayer = null;
@@ -101,7 +121,39 @@ public class ConditionAbility extends Ability{
                 indexOfElse = i+1;
                 try{
                     String[] newDescription = Arrays.copyOfRange(description, indexOfElse, description.length);
-                    elseAbility = makeAbility(newDescription);
+                    //make the ability
+                    removeStartEndParentheses(newDescription);
+                    String d = "";
+                    boolean first = true;
+                    for(String s : newDescription){
+                        if(! first){
+                            d += ":" + s;
+                        }
+                        else{
+                            d += s;
+                            first = false;
+                        }
+                    }
+                    //tokenize by comma
+                    String [] sequentialAbilities = d.split(",");
+
+                    //remerge parentheses
+                    sequentialAbilities = remergeParentheses(sequentialAbilities);
+
+                    try{
+                        //make first ability in sequence
+                        elseAbility = makeAbility(sequentialAbilities[0].split(":"));
+
+                        //make subsequent abilites and attach them sequentialy
+                        Ability latestAbility = elseAbility;
+                        for(int j = 1; j < sequentialAbilities.length; j++){
+                            Ability newAbility = makeAbility(sequentialAbilities[j].split(":"));
+                            latestAbility.setSubsequentAbility(newAbility);
+                            latestAbility = newAbility;
+                        }
+                    }catch(Exception e){
+                        throw new UnimplementedException();
+                    }
                 }catch(Exception e){
                     elseAbility = new UnimplementedAbility();
                 }
@@ -150,12 +202,38 @@ public class ConditionAbility extends Ability{
                 nextAbilityDescription = Arrays.copyOfRange(description, index, indexOfElse);
             }
 
+            //make the ability
             removeStartEndParentheses(nextAbilityDescription);
+            String d = "";
+            boolean first = true;
+            for(String s : nextAbilityDescription){
+                if(! first){
+                    d += ":" + s;
+                }
+                else{
+                    d += s;
+                    first = false;
+                }
+            }
+            //tokenize by comma
+            String [] sequentialAbilities = d.split(",");
 
-            try {
-                conditionalAbility = makeAbility(nextAbilityDescription);
-            } catch (Exception e) {
-                conditionalAbility = new UnimplementedAbility();
+            //remerge parentheses
+            sequentialAbilities = remergeParentheses(sequentialAbilities);
+
+            try{
+                //make first ability in sequence
+                conditionalAbility = makeAbility(sequentialAbilities[0].split(":"));
+
+                //make subsequent abilites and attach them sequentialy
+                Ability latestAbility = conditionalAbility;
+                for(int i = 1; i < sequentialAbilities.length; i++){
+                    Ability newAbility = makeAbility(sequentialAbilities[i].split(":"));
+                    latestAbility.setSubsequentAbility(newAbility);
+                    latestAbility = newAbility;
+                }
+            }catch(Exception e){
+                throw new UnimplementedException();
             }
         }
         else if(condType == ConditionType.ABILITY){
@@ -178,14 +256,40 @@ public class ConditionAbility extends Ability{
             }
 
             //make the ability
-            String[] nextAbilityDescription = Arrays.copyOfRange(description, startIndex, endIndex);
+            String[] nextAbilityDescription = Arrays.copyOfRange(description, startIndex, endIndex+1);
             removeStartEndParentheses(nextAbilityDescription);
+            String d = "";
+            boolean first = true;
+            for(String s : nextAbilityDescription){
+                if(! first){
+                    d += ":" + s;
+                }
+                else{
+                    d += s;
+                    first = false;
+                }
+            }
+            //tokenize by comma
+            String [] sequentialAbilities = d.split(",");
+
+            //remerge parentheses
+            sequentialAbilities = remergeParentheses(sequentialAbilities);
 
             try{
-                conditionalAbility = makeAbility(nextAbilityDescription);
+                //make first ability in sequence
+                conditionalAbility = makeAbility(sequentialAbilities[0].split(":"));
+
+                //make subsequent abilites and attach them sequentialy
+                Ability latestAbility = conditionalAbility;
+                for(int i = 1; i < sequentialAbilities.length; i++){
+                    Ability newAbility = makeAbility(sequentialAbilities[i].split(":"));
+                    latestAbility.setSubsequentAbility(newAbility);
+                    latestAbility = newAbility;
+                }
             }catch(Exception e){
-                conditionalAbility = new UnimplementedAbility();
+                throw new UnimplementedException();
             }
+
 
             //make the ability that gets tested for success
             nextAbilityDescription = Arrays.copyOfRange(description, index, startIndex);
@@ -200,39 +304,31 @@ public class ConditionAbility extends Ability{
 
     }
 
-    private static void removeStartEndParentheses(String[] description){
-        int lastCharIndex = description.length - 1;
-        if(description[0].startsWith("(") && description[lastCharIndex].endsWith(")")){
-            //remove first character from first string
-            description[0] = description[0].substring(1);
-            //remove last character from last string
-            description[lastCharIndex] = description[lastCharIndex].substring(0, description[lastCharIndex].length() - 1);
-        }
-    }
+
     
     public String getSimpleDescription(){
     	String returnString = "";
 
     	switch (condType){
             case ABILITY:
-                returnString += "If subsequent ability is used, then " + conditionalAbility.getRecursiveDescription();
+                returnString += "If ability [" + testAbility.getRecursiveDescription() + "] is used, then [" + conditionalAbility.getRecursiveDescription()+"]";
                 break;
             case CHOICE:
-                returnString += "Player's choice to " + conditionalAbility.getRecursiveDescription();
+                returnString += "Player's choice to [" + conditionalAbility.getRecursiveDescription()+"]";
                 break;
             case FLIP:
-                returnString += "50% chance to " + conditionalAbility.getRecursiveDescription();
+                returnString += "50% chance to [" + conditionalAbility.getRecursiveDescription()+"]";
                 break;
             case HEALED:
-                returnString += "If target has been healed, then " + conditionalAbility.getRecursiveDescription();
+                returnString += "If target has been healed, then [" + conditionalAbility.getRecursiveDescription()+"]";
                 break;
             case BOOLEAN:
-                returnString += "If " + booleanExpression.getDescription() + ", then " + conditionalAbility.getRecursiveDescription();
+                returnString += "If [" + booleanExpression.getDescription()+"]" + ", then [" + conditionalAbility.getRecursiveDescription()+"]";
                 break;
         }
 
         if(elseAbility != null){
-    	    returnString += "<br/>Otherwise, " + elseAbility.getRecursiveDescription();
+    	    returnString += "<br/>Otherwise, [" + elseAbility.getRecursiveDescription()+"]";
         }
 
         return returnString;

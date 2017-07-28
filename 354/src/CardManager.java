@@ -12,25 +12,34 @@ public class CardManager {
 	private PokemonCard activePokemon;
 
 	//Constructor and helper methods
-	public CardManager(){
-		buildDeck();
+	public CardManager(String deckFile){
+		buildDeck(deckFile);
 		selectHand();
 		selectPrizeCards();
 		discardPile = new ArrayList<Card>();
 		bench = new ArrayList<PokemonCard>();
 	}
-	private void buildDeck(){
+	private void buildDeck(String deckFile){
 		deck = new Deck();
 		
-		ArrayList<Integer> cardNumbers = Parser.readInDeck("deck1.txt");
+		ArrayList<Integer> cardNumbers = Parser.readInDeck(deckFile);
 		
 		for (Integer num : cardNumbers){
 			Card card = Parser.cards.get(num - 1).shallowCopy();
 			if (card != null)
 				deck.push(card);
 		}
+
+		if(GameEngine.validateDecks){
+			if(! deck.validate()){
+				System.out.println(deckFile + " is not a valid deck. The game will now close.");
+				System.exit(1);
+			}
+		}
 		
-		//deck.shuffle();
+		if(GameEngine.shuffleDecksAtGameStart){
+			deck.shuffle();
+		}
 	}
 	private void selectHand(){
 		hand = new ArrayList<Card>();
@@ -150,6 +159,15 @@ public class CardManager {
 
 	public void shuffleDeck(){
 		this.deck.shuffle();
+	}
+
+	public boolean benchHasBasicPokemon(){
+		for(PokemonCard p : bench){
+			if(p.getCat() == PokemonCard.Category.BASIC){
+				return true;
+			}
+		}
+		return false;
 	}
 
 	//Getters
