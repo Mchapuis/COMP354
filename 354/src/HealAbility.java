@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
@@ -21,38 +22,48 @@ public class HealAbility extends Ability{
                 break;
         }
 
-        PokemonCard targetPokemon = null;
+        ArrayList<PokemonCard> targetedPokemon = new ArrayList<>();
         switch(targetType){
-            case OPPONENT_ACTIVE:
-                targetPokemon = otherPlayer.getActivePokemon();
-                break;
-            case YOUR_ACTIVE:
-                targetPokemon = sourcePlayer.getActivePokemon();
-                break;
             case OPPONENT_BENCH:
-                if(otherPlayer.getBench().size() > 0){
-                    targetPokemon = GameEngine.choosePokemonCard(player, targetType);
+                if(hasChoice){
+                    if(otherPlayer.getBench().size() > 0){
+                        targetedPokemon.add(GameEngine.choosePokemonCard(player,targetType));
+                    }
+                }
+                else{
+                    for(PokemonCard p : otherPlayer.getBench()){
+                        targetedPokemon.add(p);
+                    }
                 }
                 break;
             case YOUR_BENCH:
-                if(sourcePlayer.getBench().size() > 0){
-                    targetPokemon = GameEngine.choosePokemonCard(player, targetType);
+                if(hasChoice){
+                    if(sourcePlayer.getBench().size() > 0){
+                        targetedPokemon.add(GameEngine.choosePokemonCard(player,targetType));
+                    }
+                }
+                else{
+                    for(PokemonCard p : sourcePlayer.getBench()){
+                        targetedPokemon.add(p);
+                    }
                 }
                 break;
-            case YOUR_POKEMON:
-                targetPokemon = GameEngine.choosePokemonCard(player, targetType);
+            case OPPONENT_ACTIVE:
+                targetedPokemon.add(otherPlayer.getActivePokemon());
                 break;
+            case YOUR_ACTIVE:
+                targetedPokemon.add(sourcePlayer.getActivePokemon());
+                break;
+            case YOUR_POKEMON:
             case OPPONENT_POKEMON:
-                targetPokemon = GameEngine.choosePokemonCard(player, targetType);
+                targetedPokemon.add(GameEngine.choosePokemonCard(player,targetType)) ;
                 break;
             case LAST:
-                targetPokemon = Ability.lastTargetedPokemon;
+                targetedPokemon.add(Ability.lastTargetedPokemon);
                 break;
-            default:
-                targetPokemon = otherPlayer.getActivePokemon();
         }
 
-        if (targetPokemon != null){
+        for(PokemonCard targetPokemon : targetedPokemon){
             int maxHealAmount = targetPokemon.getMaxHP() - targetPokemon.getCurrentHP();
             int amountToHeal = Math.min(healAmount.evaluate(player), maxHealAmount);
             targetPokemon.removeHP(-amountToHeal);
@@ -86,6 +97,7 @@ public class HealAbility extends Ability{
         //set target
         if(description[index].equals("choice")){
             index++;
+            hasChoice = true;
         }
         targetType = parseTarget(description[index]);
 

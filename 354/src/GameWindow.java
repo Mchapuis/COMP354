@@ -504,25 +504,10 @@ public class GameWindow {
 	    	makeActiveButton.setVisible(showMakeActive);
 	    	addToBenchButton.setVisible(showAddToBench);
 	    	attachButton.setVisible(showAttachToPokemon);
-	    	
-	    	if (showAttacks){
-	    		attack1.setVisible(false);
-    			attack2.setVisible(false);
-    			attack3.setVisible(false);
-    			
-    			attack1.setVisible(true);
-        		if (player.getActivePokemon().getAbilities().size() > 1)
-        			attack2.setVisible(true);
-        		if (player.getActivePokemon().getAbilities().size() > 2)
-        			attack3.setVisible(true);
-	    	} else {
-	    		attack1.setVisible(false);
-    			attack2.setVisible(false);
-    			attack3.setVisible(false);
-	    	}
-	    	
+			attack1.setVisible(showAttacks);
+			attack2.setVisible(showAttacks && player.getActivePokemon().getAbilities().size() > 1);
+			attack3.setVisible(showAttacks && player.getActivePokemon().getAbilities().size() > 2);
 	    	letAIPlay.setVisible(showLetAIPlay);
-	    	
 	    	playItemButton.setVisible(showPlayItem);
 	    	retreatButton.setVisible(showRetreat);
 	    	evolveButton.setVisible(showEvolve);

@@ -179,6 +179,7 @@ public class DeckAbility extends Ability{
         returnCard.name = this.name;
         returnCard.targetType = this.targetType;
         returnCard.subsequentAbility  = this.subsequentAbility;
+        returnCard.hasChoice = this.hasChoice;
 
         returnCard.amountToDeck = this.amountToDeck;
         returnCard.destination = this.destination;

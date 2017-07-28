@@ -404,6 +404,7 @@ public class SearchAbility extends Ability{
         returnCard.name = this.name;
         returnCard.targetType = this.targetType;
         returnCard.subsequentAbility  = this.subsequentAbility;
+        returnCard.hasChoice = this.hasChoice;
 
         returnCard.wallyTargetPokemon = this.wallyTargetPokemon;
         returnCard.amountToSearch = this.amountToSearch;
