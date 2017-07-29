@@ -24,7 +24,7 @@ Pokémon Center Lady:trainer:cat:supporter:34
 Clemont:trainer:cat:supporter:35
 Lightning:energy:cat:lightning
 Water:energy:cat:water
-Test Pokémon:pokemon:cat:basic:cat:colorless:600:retreat:cat:colorless:1:attacks:cat:colorless:1:1
+Test Pokémon:pokemon:cat:basic:cat:colorless:100:retreat:cat:colorless:1:attacks:cat:colorless:1:54,cat:colorless:1:59
 Meowstic:pokemon:cat:stage-one:Espurr:cat:psychic:90:retreat:cat:colorless:1:attacks:cat:psychic:1:36,cat:psychic:3:37
 Jynx:pokemon:cat:basic:cat:psychic:70:retreat:cat:colorless:1:attacks:cat:colorless:2,cat:psychic:1:38
 Jirachi:pokemon:cat:basic:cat:psychic:70:retreat:cat:colorless:1:attacks:cat:psychic:1:39,cat:colorless:2,cat:psychic:1:40
