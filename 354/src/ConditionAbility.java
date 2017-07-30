@@ -345,6 +345,7 @@ public class ConditionAbility extends Ability{
         returnCard.conditionalAbility = this.conditionalAbility;
         returnCard.elseAbility = this.elseAbility;
         returnCard.testAbility = this.testAbility;
+        returnCard.booleanExpression = this.booleanExpression;
 
         return returnCard;
     }

@@ -2,6 +2,8 @@ import java.util.*;
 import java.util.concurrent.LinkedTransferQueue;
 
 
+//TODO add card picker support to deenergize and retreat costs
+//TODO make AI slightly smarter
 
 public class GameEngine {
 	/* 	For testers'/teacher's benefit

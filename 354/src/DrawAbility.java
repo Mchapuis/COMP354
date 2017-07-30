@@ -30,7 +30,8 @@ public class DrawAbility extends Ability{
         }
 
         //draw cards
-        for(int i = 0; i < amountToDraw.evaluate(player); i++){
+        int times = amountToDraw.evaluate(player);
+        for(int i = 0; i < times; i++){
             if(sourcePlayer.getDeck().size() > 0){
                 sourcePlayer.addCardToHandFromDeck(0);
             }

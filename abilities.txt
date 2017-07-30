@@ -72,3 +72,6 @@ Switch:swap:source:your-active:destination:choice:your-bench
 Energy Switch:reenergize:target:choice:your:1:target:choice:your:1
 Red Card:deck:target:opponent:destination:deck:count(opponent-hand),shuffle:target:opponent,draw:opponent:4
 Wally:search:target:choice:your-pokemon:cat:basic:source:deck:filter:evolves-from:target:last:1,shuffle:target:you
+An Offer They Can't Refuse:swap:source:your-active:destination:opponent-active
+Explosive Trade:swap:source:your-active:destination:opponent-active,dam:target:opponent-active:200
+Hand Equilizer:cond:count(opponent-hand)>count(your-hand):draw:count(opponent-hand)-count(your-hand):else:draw:1
