@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
@@ -22,31 +23,51 @@ public class ApplyStatAbility extends Ability{
                 break;
         }
 
+        ArrayList<PokemonCard> targetedPokemon = new ArrayList<>();
         switch(targetType){
-            case OPPONENT_ACTIVE:
-                otherPlayer.getActivePokemon().applyStatus(givenStatus);
-                break;
-            case YOUR_ACTIVE:
-                sourcePlayer.getActivePokemon().applyStatus(givenStatus);
-                break;
             case OPPONENT_BENCH:
-                if(otherPlayer.getBench().size() > 0){
-                    GameEngine.choosePokemonCard(player,targetType).applyStatus(givenStatus);
+                if(hasChoice){
+                    if(otherPlayer.getBench().size() > 0){
+                        targetedPokemon.add(GameEngine.choosePokemonCard(player,targetType));
+                    }
+                }
+                else{
+                    for(PokemonCard p : otherPlayer.getBench()){
+                        targetedPokemon.add(p);
+                    }
                 }
                 break;
             case YOUR_BENCH:
-                if(sourcePlayer.getBench().size() > 0){
-                    GameEngine.choosePokemonCard(player,targetType).applyStatus(givenStatus);
+                if(hasChoice){
+                    if(sourcePlayer.getBench().size() > 0){
+                        targetedPokemon.add(GameEngine.choosePokemonCard(player,targetType));
+                    }
+                }
+                else{
+                    for(PokemonCard p : sourcePlayer.getBench()){
+                        targetedPokemon.add(p);
+                    }
                 }
                 break;
-            case YOUR_POKEMON:
-                GameEngine.choosePokemonCard(player,targetType).applyStatus(givenStatus);
+            case OPPONENT_ACTIVE:
+                targetedPokemon.add(otherPlayer.getActivePokemon());
                 break;
+            case YOUR_ACTIVE:
+                targetedPokemon.add(sourcePlayer.getActivePokemon());
+                break;
+            case YOUR_POKEMON:
             case OPPONENT_POKEMON:
-                GameEngine.choosePokemonCard(player,targetType).applyStatus(givenStatus);
+                targetedPokemon.add(GameEngine.choosePokemonCard(player,targetType)) ;
+                break;
+            case LAST:
+                targetedPokemon.add(Ability.lastTargetedPokemon);
                 break;
         }
 
+        for(PokemonCard p : targetedPokemon){
+            p.applyStatus(givenStatus);
+            Ability.lastTargetedPokemon = p;
+        }
         return true;
     }
 
@@ -94,6 +115,7 @@ public class ApplyStatAbility extends Ability{
 
         if(description[index].equals("choice")){
             index++;
+            hasChoice = true;
         }
         this.targetType = parseTarget(description[index++]);
 
