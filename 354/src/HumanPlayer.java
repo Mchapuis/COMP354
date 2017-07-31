@@ -1,13 +1,13 @@
 
 public class HumanPlayer extends Player {
 
-	public HumanPlayer(String deckFile){
-		cardManager = new CardManager(deckFile);
+	public HumanPlayer(){
+		cardManager = new CardManager();
 	}
 
 	public void setup(){
 	    //select active pokemon
-		GameEngine.log("Select a Pokémon in your hand to be your active Pokémon");
+		GameEngine.w.updateInstructions("Select a Pokémon in your hand to be your active Pokémon");
 		boolean hasSelectedActivePokemon = false;
         while(!hasSelectedActivePokemon){
             GameEngine.waitForInput();
@@ -17,28 +17,24 @@ public class HumanPlayer extends Player {
                 int index = m.getIndex();
                 Card c = cardManager.getHand().get(index);
                 if(c instanceof PokemonCard && ((PokemonCard) c).getCat() == PokemonCard.Category.BASIC){
-                        GameEngine.w.displayCard(c, true, false, false, false, false, false, false, false, false);
+                        GameEngine.w.displayCard(c, true, false, false, false, false, false, false, false);
                 }
                 else{
-                    GameEngine.w.displayCard(c, false, false, false, false, false, false, false, false, false);
+                    GameEngine.w.displayCard(c, false, false, false, false, false, false, false, false);
                 }
             }
             else if(m.getType() == Message.ButtonType.MAKEACTIVE){
                 PokemonCard c = (PokemonCard) GameEngine.w.getDisplayedCard();
                 cardManager.setActivePokemon(c);
-                GameEngine.updateGUI();
-                GameEngine.w.displayCard(c, false, false, false, false, false, false, false, false, false);
-                GameEngine.log("Made " + c.getName() + " active Pokémon.");
+                GameEngine.w.updatePlayerSide();
+                GameEngine.w.displayCard(c, false, false, false, false, false, false, false, false);
+                GameEngine.w.updateInstructions("Made " + c.getName() + " active Pokémon.");
                 hasSelectedActivePokemon = true;
-            }
-            else{
-                GenericCard g = new GenericCard("Hidden","<html>You can not look at this until the end of the setup phase. To end the setup phase, select a pokemon from your hand to be your active pokemon. Then click on your active pokemon.</html>");
-                GameEngine.w.displayCard(g,false,false,false,false,false,false,false,false,false);
             }
         }
 
         //select bench pokemon
-        GameEngine.log("Select Pokémon in your hand to be benched. Click on your active Pokémon when you're done.");
+        GameEngine.w.updateInstructions("Select Pokémon in your hand to be benched. Click on your active Pokémon when you're done.");
 
         boolean doneBenchingPokemon = false;
         while(!doneBenchingPokemon){
@@ -49,19 +45,19 @@ public class HumanPlayer extends Player {
                 int index = m.getIndex();
                 Card c = cardManager.getHand().get(index);
                 if(c instanceof PokemonCard && ((PokemonCard) c).getCat() == PokemonCard.Category.BASIC){
-                    GameEngine.w.displayCard(c, false, true, false, false, false, false, false, false, false);
+                    GameEngine.w.displayCard(c, false, true, false, false, false, false, false, false);
                 }
                 else{
-                    GameEngine.w.displayCard(c, false, false, false, false, false, false, false, false,false);
+                    GameEngine.w.displayCard(c, false, false, false, false, false, false, false, false);
                 }
             }
             else if(m.getType() == Message.ButtonType.ADDTOBENCH){
                 PokemonCard c = (PokemonCard) GameEngine.w.getDisplayedCard();
                 cardManager.getBench().add(c);
                 cardManager.getHand().remove(c);
-                GameEngine.updateGUI();
-                GameEngine.w.displayCard(c, false, false, false, false, false, false, false, false,false);
-                GameEngine.log("Added " + c.getName() + " to bench");
+                GameEngine.w.updatePlayerSide();
+                GameEngine.w.displayCard(c, false, false, false, false, false, false, false, false);
+                GameEngine.w.updateInstructions("Added " + c.getName() + " to bench");
 
                 if(cardManager.getBench().size() == 5){
                     doneBenchingPokemon = true;
@@ -69,10 +65,6 @@ public class HumanPlayer extends Player {
             }
             else if(m.getType() == Message.ButtonType.ACTIVE && m.getSide() == Message.Side.PLAYER){
                 doneBenchingPokemon = true;
-            }
-            else{
-                GenericCard g = new GenericCard("Hidden","<html>You can not look at this until the end of the setup phase. To end the setup phase, select a pokemon from your hand to be your active pokemon. Then click on your active pokemon.</html>");
-                GameEngine.w.displayCard(g,false,false,false,false,false,false,false,false,false);
             }
         }
 	}
@@ -114,19 +106,19 @@ public class HumanPlayer extends Player {
                 GameEngine.w.displayCard(m);
         }
 	}
+	
 
 	public void playItem(){
 		if(!hasPlayedSupportCard){
             TrainerCard t = (TrainerCard) GameEngine.w.getDisplayedCard();
             cardManager.removeCardFromHand(t);
             cardManager.addToDiscard(t);
-            GameEngine.updateGUI();
             t.getAbility().use(Ability.Player.PLAYER);
-            GameEngine.log("Used trainer card " + t.getName());
+            GameEngine.w.updateInstructions("Used trainer card " + t.getName());
             hasPlayedSupportCard = true;
         }
         else{
-		    GameEngine.log("You have already played one trainer card this turn and can't play another.");
+		    GameEngine.w.updateInstructions("You have already played one trainer card this turn and can't play another.");
         }
 	}
 
@@ -137,9 +129,6 @@ public class HumanPlayer extends Player {
 		if(nextStage.getEvolvesFrom().equals(initialPokemon.getName())){
 		    nextStage.setEvolvedFrom(initialPokemon);
 		    nextStage.energy = initialPokemon.energy;
-		    if(nextStage.getEnergyToRetreat() == 0){
-		        nextStage.setEnergyToRetreat(initialPokemon.getEnergyToRetreat());
-            }
 
 		    if(initialPokemon == getActivePokemon()){
 		        setActivePokemon(nextStage);
@@ -151,10 +140,10 @@ public class HumanPlayer extends Player {
 
             cardManager.removeCardFromHand(nextStage);
 
-            GameEngine.log(initialPokemon.getName() + " has evolved into " + nextStage.getName() + "!");
+            GameEngine.w.updateInstructions(initialPokemon.getName() + " has evolved into " + nextStage.getName() + "!");
         }
         else{
-		    GameEngine.log(nextStage.getName() + " only evolves from " + nextStage.getEvolvesFrom());
+		    GameEngine.w.updateInstructions(nextStage.getName() + " only evolves from " + nextStage.getEvolvesFrom());
 		    return;
         }
 	}
@@ -171,9 +160,9 @@ public class HumanPlayer extends Player {
         PokemonCard c = (PokemonCard) GameEngine.w.getDisplayedCard();
         cardManager.getBench().add(c);
         cardManager.getHand().remove(c);
-        GameEngine.updateGUI();
-        GameEngine.w.displayCard(c, false, false, false, false, false, false, false, false, false);
-        GameEngine.log("Added " + c.getName() + " to bench");
+        GameEngine.w.updatePlayerSide();
+        GameEngine.w.displayCard(c, false, false, false, false, false, false, false, false);
+        GameEngine.w.updateInstructions("Added " + c.getName() + " to bench");
     }
     public boolean chooseNewActivePokemon(){
         if(cardManager.getBench().size() == 0){

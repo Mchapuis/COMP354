@@ -1,9 +1,8 @@
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
 public class HealAbility extends Ability{
-    ComplexAmount healAmount = null;
+    public int healAmount = 0;
 
     public HealAbility(){
         this.energyRequired = new HashMap<EnergyCard.Type, Integer>();
@@ -22,54 +21,39 @@ public class HealAbility extends Ability{
                 break;
         }
 
-        ArrayList<PokemonCard> targetedPokemon = new ArrayList<>();
+        PokemonCard targetPokemon = null;
         switch(targetType){
+            case OPPONENT_ACTIVE:
+                targetPokemon = otherPlayer.getActivePokemon();
+                break;
+            case YOUR_ACTIVE:
+                targetPokemon = sourcePlayer.getActivePokemon();
+                break;
             case OPPONENT_BENCH:
-                if(hasChoice){
-                    if(otherPlayer.getBench().size() > 0){
-                        targetedPokemon.add(GameEngine.choosePokemonCard(player,targetType));
-                    }
-                }
-                else{
-                    for(PokemonCard p : otherPlayer.getBench()){
-                        targetedPokemon.add(p);
-                    }
+                if(otherPlayer.getBench().size() > 0){
+                    targetPokemon = GameEngine.choosePokemonCard(player, targetType);
                 }
                 break;
             case YOUR_BENCH:
-                if(hasChoice){
-                    if(sourcePlayer.getBench().size() > 0){
-                        targetedPokemon.add(GameEngine.choosePokemonCard(player,targetType));
-                    }
+                if(sourcePlayer.getBench().size() > 0){
+                    targetPokemon = GameEngine.choosePokemonCard(player, targetType);
                 }
-                else{
-                    for(PokemonCard p : sourcePlayer.getBench()){
-                        targetedPokemon.add(p);
-                    }
-                }
-                break;
-            case OPPONENT_ACTIVE:
-                targetedPokemon.add(otherPlayer.getActivePokemon());
-                break;
-            case YOUR_ACTIVE:
-                targetedPokemon.add(sourcePlayer.getActivePokemon());
                 break;
             case YOUR_POKEMON:
+                targetPokemon = GameEngine.choosePokemonCard(player, targetType);
+                break;
             case OPPONENT_POKEMON:
-                targetedPokemon.add(GameEngine.choosePokemonCard(player,targetType)) ;
+                targetPokemon = GameEngine.choosePokemonCard(player, targetType);
                 break;
-            case LAST:
-                targetedPokemon.add(Ability.lastTargetedPokemon);
-                break;
+            default:
+                targetPokemon = otherPlayer.getActivePokemon();
         }
 
-        for(PokemonCard targetPokemon : targetedPokemon){
+        if (targetPokemon != null){
             int maxHealAmount = targetPokemon.getMaxHP() - targetPokemon.getCurrentHP();
-            int amountToHeal = Math.min(healAmount.evaluate(player), maxHealAmount);
+            int amountToHeal = Math.min(healAmount, maxHealAmount);
             targetPokemon.removeHP(-amountToHeal);
             targetPokemon.setHasBeenHealed(true);
-
-            Ability.lastTargetedPokemon = targetPokemon;
         }
 
         return true;
@@ -97,21 +81,20 @@ public class HealAbility extends Ability{
         //set target
         if(description[index].equals("choice")){
             index++;
-            hasChoice = true;
         }
         targetType = parseTarget(description[index]);
 
         //set heal amount
         index++;
         try{
-            healAmount = new ComplexAmount(description[index]);
+            healAmount = Integer.valueOf(description[index]);
         }catch(Exception e){
             throw new UnimplementedException();
         }
     }
     
     public String getSimpleDescription(){
-    	return "Heal up to " + healAmount.getDescription() + " HP on " + targetType.toString();
+    	return "Heal up to " + healAmount + " HP on " + targetType.toString();
     }
 
     public Ability shallowCopy(){

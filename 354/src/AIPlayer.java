@@ -1,7 +1,7 @@
 public class AIPlayer extends Player {
 
-	public AIPlayer(String deckFile){
-		cardManager = new CardManager(deckFile);
+	public AIPlayer(){
+		cardManager = new CardManager();
 	}
 	
 	public PokemonCard getActivePokemon(){
@@ -60,7 +60,7 @@ public class AIPlayer extends Player {
 		}
 
 		if(!attacked){
-			GameEngine.log(getActivePokemon().getName() + " does not have enough energy for any attack and is forced to pass.");
+			GameEngine.w.updateInstructions(getActivePokemon().getName() + " does not have enough energy for any attack and is forced to pass.");
 		}
 
 		turnOver = true;
@@ -70,7 +70,7 @@ public class AIPlayer extends Player {
 		this.selectActivePokemon();
 		this.moveAllPokemonToBench();
 
-		GameEngine.updateGUI();
+		GameEngine.w.updateAISide();
 	}
 
 	public boolean chooseNewActivePokemon(){

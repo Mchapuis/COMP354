@@ -24,7 +24,7 @@ Pokémon Center Lady:trainer:cat:supporter:34
 Clemont:trainer:cat:supporter:35
 Lightning:energy:cat:lightning
 Water:energy:cat:water
-Test Pokémon:pokemon:cat:basic:cat:colorless:100:retreat:cat:colorless:1:attacks:cat:colorless:1:54,cat:colorless:1:59,cat:colorless:1:76
+#
 Meowstic:pokemon:cat:stage-one:Espurr:cat:psychic:90:retreat:cat:colorless:1:attacks:cat:psychic:1:36,cat:psychic:3:37
 Jynx:pokemon:cat:basic:cat:psychic:70:retreat:cat:colorless:1:attacks:cat:colorless:2,cat:psychic:1:38
 Jirachi:pokemon:cat:basic:cat:psychic:70:retreat:cat:colorless:1:attacks:cat:psychic:1:39,cat:colorless:2,cat:psychic:1:40
@@ -39,7 +39,7 @@ Haunter:pokemon:cat:stage-one:Gastly:cat:psychic:70:retreat:cat:colorless:1:atta
 Gastly:pokemon:cat:basic:cat:psychic:50:retreat:cat:colorless:1:attacks:cat:psychic:1:51
 Diglett:pokemon:cat:basic:cat:fight:50:retreat:cat:colorless:1:attacks:cat:fight:1:52,cat:colorless:1,cat:fight:1:53
 Dugtrio:pokemon:cat:stage-one:Diglett:cat:fight:90:retreat:cat:colorless:1:attacks:cat:fight:1:54,cat:colorless:2,cat:fight:1:55
-Test Trainer:trainer:cat:item:77
+#
 Slowpoke:pokemon:cat:basic:cat:psychic:50:retreat:cat:colorless:1:attacks:cat:colorless:1:57,cat:psychic:2:58
 Hitmonlee:pokemon:cat:basic:cat:fight:90:retreat:cat:colorless:1:attacks:cat:fight:1:59,cat:fight:2:60
 Hitmonchan:pokemon:cat:basic:cat:fight:90:retreat:cat:colorless:1:attacks:cat:colorless:2:61,cat:colorless:2,cat:fight:1:62
@@ -56,3 +56,4 @@ Red Card:trainer:cat:item:73
 Wally:trainer:cat:supporter:74
 Fight:energy:cat:fight
 Psychic:energy:cat:psychic
+

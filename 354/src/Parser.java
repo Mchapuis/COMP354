@@ -157,15 +157,12 @@ public class Parser {
 			index++; //advance index to hp
 
 			//get max hp
-			pokemonCard.setMaxHP(Integer.parseInt(tokens[index++]));
+			pokemonCard.setMaxHP(Integer.parseInt(tokens[index]));
 
-			if(tokens[index].equals("retreat")){
-				index += 3; //advance index to retreat cost
-				pokemonCard.setEnergyToRetreat(Integer.parseInt(tokens[index]));
-				index++;
-			}
+			index += 4; //advance index to retreat cost
+			pokemonCard.setEnergyToRetreat(Integer.parseInt(tokens[index]));
 
-			index++; //advance index to first attack
+			index += 2; //advance index to first attack
 
             //add abilities
             while(index < tokens.length - 1){

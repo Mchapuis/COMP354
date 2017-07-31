@@ -30,9 +30,6 @@ public class PokemonCard extends Card {
 
 	private boolean hasBeenHealed = false;
 
-	public ArrayList<Ability> abilitiesTriggeredOpponentTurnEnd = new ArrayList<>();
-	public ArrayList<Ability> abilitiesTriggeredOwnTurnEnd = new ArrayList<>();
-
 	public Card shallowCopy(){
 		PokemonCard returnCard = new PokemonCard();
 

@@ -2,7 +2,7 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 
 public class DrawAbility extends Ability{
-    ComplexAmount amountToDraw;
+    int amountToDraw;
 
     public DrawAbility(){
         this.energyRequired = new HashMap<EnergyCard.Type, Integer>();
@@ -12,26 +12,15 @@ public class DrawAbility extends Ability{
         CardManager sourcePlayer = null;
         switch(player){
             case PLAYER:
-                if(targetType == Target.YOU){
-                    sourcePlayer = playerCardManager;
-                }
-                else{
-                    sourcePlayer = AICardManager;
-                }
+                sourcePlayer = playerCardManager;
                 break;
             case AI:
-                if(targetType == Target.YOU){
-                    sourcePlayer = AICardManager;
-                }
-                else{
-                    sourcePlayer = playerCardManager;
-                }
+                sourcePlayer = AICardManager;
                 break;
         }
 
         //draw cards
-        int times = amountToDraw.evaluate(player);
-        for(int i = 0; i < times; i++){
+        for(int i = 0; i < amountToDraw; i++){
             if(sourcePlayer.getDeck().size() > 0){
                 sourcePlayer.addCardToHandFromDeck(0);
             }
@@ -51,30 +40,16 @@ public class DrawAbility extends Ability{
             throw new UnimplementedException();
         }
 
-        //get target if specified
-        if(description[index].equals("opponent")){
-            index++;
-            targetType = Target.OPPONENT;
-        }
-        else{
-            targetType = Target.YOU;
-        }
-
         //get amount to draw
         try{
-            amountToDraw = new ComplexAmount(description[index]);
+            amountToDraw = Integer.valueOf(description[index]);
         }catch(Exception e){
             throw new UnimplementedException();
         }
     }
     
     public String getSimpleDescription(){
-    	if(targetType == Target.YOU){
-            return "Draw " + amountToDraw.getDescription() + " cards";
-        }
-        else{
-    	    return "Opponent draws " + amountToDraw.getDescription() + " cards";
-        }
+    	return "Draw " + amountToDraw + " cards";
     }
 
     public Ability shallowCopy(){
@@ -83,7 +58,6 @@ public class DrawAbility extends Ability{
         returnCard.name = this.name;
         returnCard.targetType = this.targetType;
         returnCard.subsequentAbility  = this.subsequentAbility;
-        returnCard.hasChoice = this.hasChoice;
 
         returnCard.amountToDraw = this.amountToDraw;
 

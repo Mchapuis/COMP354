@@ -3,25 +3,6 @@ public class EnergyCard extends Card {
 	public enum Type{
 		COLORLESS, FIGHT, PSYCHIC, LIGHTNING, WATER
 	}
-
-	public static Type typeFromString(String s){
-		switch(s){
-			case "colorless":
-			case "colourless":
-				return Type.COLORLESS;
-			case "fighting":
-			case "fight":
-				return Type.FIGHT;
-			case "psychic":
-				return Type.PSYCHIC;
-			case "lightning":
-				return Type.LIGHTNING;
-			case "water":
-				return Type.WATER;
-			default:
-				return Type.COLORLESS;
-		}
-	}
 	
 	private int ID;
 	private String name;
