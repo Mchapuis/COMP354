@@ -69,7 +69,9 @@ abstract class Ability {
         return desc;
     }
 	protected String getRecursiveDescription(){
+
 	    return (subsequentAbility == null)? "<br/>"+getSimpleDescription():"<br/>"+getSimpleDescription()+" then "+subsequentAbility.getRecursiveDescription();
+
     }
     protected abstract String getSimpleDescription();
 

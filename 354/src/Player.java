@@ -67,7 +67,9 @@ public abstract class Player {
 			GameEngine.log(getActivePokemon().getName() + " is paralyzed and cannot attack.");
 		}
 		else{
+
 			GameEngine.log(getActivePokemon().getName() + " used ability " + ability.name);
+
 			ability.use(GameEngine.getCurrentPlayer());
 			turnOver = true;
 		}
