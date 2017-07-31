@@ -3,7 +3,7 @@ import java.util.ArrayList;
 public abstract class Player {
 	protected CardManager cardManager;
 
-	//turn variables
+	//turn Avariables
 	boolean hasPlacedEnergy = false;
 	boolean hasPlayedSupportCard = false;
 	boolean hasPlayedStadiumCard = false;
@@ -17,12 +17,12 @@ public abstract class Player {
 		resetTurnVariables();
 
 		this.drawCard();
-        GameEngine.w.updatePlayerSide();
+        GameEngine.updateGUI();
 
 		while(!turnOver){
 			takeActions();
 			GameEngine.checkForKnockouts();
-			GameEngine.w.updateAll();
+			GameEngine.updateGUI();
 
 			if(GameEngine.winnerFound()){
 				turnOver = true;
@@ -58,36 +58,38 @@ public abstract class Player {
 		Ability ability = getActivePokemon().getAbilities().get(attackIndex);
 
 		if(!getActivePokemon().hasEnoughEnergyForAttack(attackIndex)){
-			GameEngine.w.updateInstructions(getActivePokemon().getName() + " does not have enough energy to attack.");
+			GameEngine.log(getActivePokemon().getName() + " does not have enough energy to attack.");
 		}
 		else if(getActivePokemon().getStatus() == Status.ASLEEP){
-			GameEngine.w.updateInstructions(getActivePokemon().getName() + " is asleep and cannot attack.");
+			GameEngine.log(getActivePokemon().getName() + " is asleep and cannot attack.");
 		}
 		else if(getActivePokemon().getStatus() == Status.PARALYZED){
-			GameEngine.w.updateInstructions(getActivePokemon().getName() + " is paralyzed and cannot attack.");
+			GameEngine.log(getActivePokemon().getName() + " is paralyzed and cannot attack.");
 		}
 		else{
-			//GameEngine.w.updateInstructions(getActivePokemon().getName() + " used ability " + ability.name);
+
+			GameEngine.log(getActivePokemon().getName() + " used ability " + ability.name);
+
 			ability.use(GameEngine.getCurrentPlayer());
 			turnOver = true;
 		}
 	}
 	public void retreatActive(){
 		if(! this.getActivePokemon().hasEnoughEnergyForRetreat()){
-			GameEngine.w.updateInstructions(getActivePokemon().getName() + " does not have enough energy to retreat.");
+			GameEngine.log(getActivePokemon().getName() + " does not have enough energy to retreat.");
 		}
 		else if(this.getActivePokemon().getStatus() ==  Status.ASLEEP){
-			GameEngine.w.updateInstructions(getActivePokemon().getName() + " is asleep and can't retreat.");
+			GameEngine.log(getActivePokemon().getName() + " is asleep and can't retreat.");
 		}
 		else if(this.getActivePokemon().getStatus() == Status.PARALYZED){
-			GameEngine.w.updateInstructions(getActivePokemon().getName() + " is paralyzed and can't retreat.");
+			GameEngine.log(getActivePokemon().getName() + " is paralyzed and can't retreat.");
 		}
 		else if(this.getActivePokemon().getStatus() == Status.STUCK){
-			GameEngine.w.updateInstructions(getActivePokemon().getName() + " is stuck and can't retreat.");
+			GameEngine.log(getActivePokemon().getName() + " is stuck and can't retreat.");
 		}
 		else{
 			PokemonCard replacement = GameEngine.choosePokemonCard(this, Ability.Target.YOUR_BENCH);
-			GameEngine.w.updateInstructions(getActivePokemon().getName() + " has been replaced with " + replacement.getName());
+			GameEngine.log(getActivePokemon().getName() + " has been replaced with " + replacement.getName());
 			this.getActivePokemon().applyStatus(Status.NORMAL);
 			this.retreatPokemon(replacement);
 			hasRetreatedActivePokemon = true;
