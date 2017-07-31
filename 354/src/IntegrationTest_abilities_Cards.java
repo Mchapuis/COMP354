@@ -9,7 +9,6 @@ public class IntegrationTest_abilities_Cards {
 
 	@Test
 	public void test() {
-//		fail("Not yet implemented");
 							
 		PokemonCard Glameow = new PokemonCard("Glameow", "pokemon", "basic","colorless", 60, 2);
 		EnergyCard energy = new EnergyCard("FIGHT");
