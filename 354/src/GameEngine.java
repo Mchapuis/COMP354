@@ -1,4 +1,6 @@
+
 import java.util.*;
+import java.util.concurrent.LinkedTransferQueue;
 
 
 //TODO add card picker support to deenergize and retreat costs
@@ -52,6 +54,9 @@ public class GameEngine {
 	public static AIPlayer autoPlayer = new AIPlayer(AI_DECK);
 	public static HumanPlayer player = new HumanPlayer(PLAYER_DECK);
 
+	//
+	private static Player currentPlayer = player;
+	private static Player winner = null;
 
 	public static void main(String[] args){
 		//create and display the main game window
@@ -60,24 +65,40 @@ public class GameEngine {
 		w = new GameWindow(autoPlayer, player, displayGameInFullScreen);
 		w.display();
 
+		//give Ability class access to card managers
+		Ability.playerCardManager = player.cardManager;
+		Ability.AICardManager = autoPlayer.cardManager;
 
+		handleMulligans(); //ensures each player has at least one pokemon
 
-	public static GameWindow w;
+		setupPhase(); //players choose their initial active and benched pokemon
 
+		rollForFirstTurn(); //determines which player gets to start
 
+		//play game until there is a winner
+		while(true){
 
-	private static Object lock = new Object();
+		    //check win (lose) condition of having no cards to draw
+		    if(currentPlayer.getDeck().size() == 0){
+		        if(currentPlayer == player){
+		            declareWinner(Ability.Player.AI);
+                }
+                else{
+		            declareWinner(Ability.Player.PLAYER);
+                }
+                break;
+            }
 
-
-
-	public static Queue<Message> queue = new LinkedTransferQueue<>();
-
+			currentPlayer.playTurn();
+			if(winnerFound()){ break; }
 
 			useTurnTriggerAbilities();
 			updateStatusEffectsAll();
             checkForKnockouts();
             if(winnerFound()){ break; }
 
+			switchTurn();
+		}
 
 		//announce win or loss
 		GameOverWindow g = new GameOverWindow(getWinner(), displayGameInFullScreen);
@@ -85,9 +106,20 @@ public class GameEngine {
 		g.display();
     }
 
+			useTurnTriggerAbilities();
+			updateStatusEffectsAll();
+            checkForKnockouts();
+            if(winnerFound()){ break; }
 
-
-	public static AIPlayer autoPlayer = new AIPlayer();
+	public static void waitForInput(){
+		try{
+			synchronized(lock){
+				lock.wait();
+			}
+		}catch(InterruptedException e){
+			e.printStackTrace();
+		}
+	}
 
 	//initial game phases
 	private static void setupPhase(){
@@ -99,9 +131,13 @@ public class GameEngine {
 		while(player.cardManager.getFirstPokemon() == null){
 			GameEngine.log("You had a mulligan. You redraw your hand. Your opponent draws another card.");
 
+			//shuffle hand into deck
+			player.cardManager.shuffleHandIntoDeck();
 
-	public static HumanPlayer player = new HumanPlayer();
-
+			//draw new hand
+			for(int i = 0; i < CardManager.STARTING_HAND_SIZE; i++){
+				player.drawCard();
+			}
 
 			//opponent draws 1 card
 			autoPlayer.drawCard();
@@ -114,9 +150,13 @@ public class GameEngine {
 		while(autoPlayer.cardManager.getFirstPokemon() == null){
 			GameEngine.log("Your opponent had a mulligan. Your opponent redraws their hand. You draw another card.");
 
+			//shuffle hand into deck
+			autoPlayer.cardManager.shuffleHandIntoDeck();
 
-	//
-
+			//draw new hand
+			for(int i = 0; i < CardManager.STARTING_HAND_SIZE; i++){
+				autoPlayer.drawCard();
+			}
 
 			//opponent draws 1 card
 			player.drawCard();
@@ -134,29 +174,82 @@ public class GameEngine {
 		}
 	}
 
+	//game processes
+	public static void checkForKnockouts(){
+		ArrayList<PokemonCard> cardsToDiscard = new ArrayList<>();
 
+		//check AI bench
+		for(PokemonCard p : autoPlayer.cardManager.getBench()){
+			if(p.getCurrentHP() <= 0){
+				cardsToDiscard.add(p);
 
-	private static Player winner = null;
+				if(player.getPrizeCards().size() == 1){
+					declareWinner(Ability.Player.PLAYER);
+					return;
+				}
+				else{
+					player.cardManager.drawPrizeCard();
+				}
+			}
+		}
 
+		//discard dead bench pokemon
+		for(PokemonCard p : cardsToDiscard){
+			autoPlayer.cardManager.getBench().remove(p);
+			autoPlayer.cardManager.addPokemonCardToDiscard(p);
+		}
+		cardsToDiscard.clear();
 
+		//check player bench
+		for(PokemonCard p : player.cardManager.getBench()){
+			if(p.getCurrentHP() <= 0){
+				cardsToDiscard.add(p);
 
-	public static void main(String[] args) {
+				if(autoPlayer.getPrizeCards().size() == 1){
+					declareWinner(Ability.Player.AI);
+					return;
+				}
+				else{
+					autoPlayer.cardManager.drawPrizeCard();
+				}
+			}
+		}
 
+		//discard dead bench pokemon
+		for(PokemonCard p : cardsToDiscard){
+			player.cardManager.getBench().remove(p);
+			player.cardManager.addPokemonCardToDiscard(p);
+		}
+		cardsToDiscard.clear();
 
+		//check AI active
+		if(autoPlayer.cardManager.getActivePokemon().getCurrentHP() <= 0){
+			autoPlayer.cardManager.removeActivePokemon();
 
-		//create and display the main game window
+			if(player.getPrizeCards().size() == 1){
+				declareWinner(Ability.Player.PLAYER);
+				return;
+			}
+			else{
+				player.cardManager.drawPrizeCard();
+			}
 
+			if(! autoPlayer.chooseNewActivePokemon()){
+				declareWinner(Ability.Player.PLAYER);
+				return;
+			}
+		}
 
+		//check player active
+		if(player.cardManager.getActivePokemon().getCurrentHP() <= 0){
+			player.cardManager.removeActivePokemon();
 
-		GameWindow.lock = lock;
-
-
-
-		GameWindow.queue = queue;
-
-
-
-		w = new GameWindow(autoPlayer, player);
+			if(autoPlayer.getPrizeCards().size() == 1){
+				declareWinner(Ability.Player.AI);
+			}
+			else{
+				autoPlayer.cardManager.drawPrizeCard();
+			}
 
 			if(! player.chooseNewActivePokemon()){
 				declareWinner(Ability.Player.AI);
@@ -213,13 +306,50 @@ public class GameEngine {
 			updateStatusEffectsSingle(player, p);
 		}
 
+		//update statuses on player active
+		updateStatusEffectsSingle(player, player.getActivePokemon());
 
+		//update statuses on ai bench
+		for(PokemonCard p : autoPlayer.getBench()){
+			updateStatusEffectsSingle(autoPlayer, p);
+		}
 
+		//update statuses on ai active
+		updateStatusEffectsSingle(autoPlayer, autoPlayer.getActivePokemon());
+	}
+	private static void updateStatusEffectsSingle(Player belongsTo, PokemonCard pokemonCard){
+		Status s = pokemonCard.getStatus();
 
-
-
-
-		//give Ability class access to card managers
+		switch(s){
+			case ASLEEP:
+				//50% chance to wake up
+				if(RandomNumberGenerator.flipACoin()){
+					pokemonCard.applyStatus(Status.NORMAL);
+				}
+				break;
+			case NORMAL:
+				//do nothing
+				break;
+			case PARALYZED:
+				//100% chance to become unparalyzed after owner's turn
+				if(currentPlayer == belongsTo){
+					pokemonCard.applyStatus(Status.NORMAL);
+				}
+				break;
+			case POISONED:
+				//deals damage at end of owner's turn
+				if(currentPlayer == belongsTo){
+					pokemonCard.removeHP(10);
+				}
+				break;
+			case STUCK:
+				//100% chance to become unstuck after owner's turn
+				if(currentPlayer == belongsTo){
+					pokemonCard.applyStatus(Status.NORMAL);
+				}
+				break;
+		}
+	}
 
     //card selection
 	//this should really be a set of abstract methods in Player, but why refactor when you can add new features?
@@ -457,6 +587,3 @@ public class GameEngine {
 		w.updateAll();
 	}
 
-
-
-}
