@@ -38,6 +38,7 @@ public class GameWindow {
     private JButton retreatButton = null;
     private JButton playItemButton = null;
     private JButton evolveButton = null;
+	private JButton selectButton = null;
     
     private JPanel AIHandContainer = null;
     private JPanel AIBenchContainer = null;
@@ -144,7 +145,7 @@ public class GameWindow {
     }
 
     //Constructor
-    public GameWindow(AIPlayer autoPlayer, HumanPlayer player){
+    public GameWindow(AIPlayer autoPlayer, HumanPlayer player, boolean fullscreen){
     	this.autoPlayer = autoPlayer;
     	this.player = player;
     	
@@ -153,8 +154,14 @@ public class GameWindow {
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         mainFrame.setSize(new Dimension(1800, 850));
         mainFrame.setResizable(false);
-        mainFrame.setLayout(new GridBagLayout()); 
-        
+        mainFrame.setLayout(new GridBagLayout());
+
+		if(fullscreen){
+			mainFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+			mainFrame.setUndecorated(true);
+		}
+
+
         GridBagConstraints constraints = new GridBagConstraints();
 
         //active pokemon buttons
@@ -382,6 +389,26 @@ public class GameWindow {
         constraints.gridwidth = 3;
         sidebar.add(evolveButton, constraints);
 
+		selectButton = new JButton("Select");
+		selectButton.setVisible(false);
+		selectButton.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){
+				String side = "player";
+				String type = "select";
+				int index = 0;
+
+				synchronized(lock){
+					Message message = new Message(side, type, index);
+					queue.add(message);
+					lock.notifyAll();
+				}
+			}
+		});
+		constraints.gridx = 0;
+		constraints.gridy = 8;
+		constraints.gridwidth = 3;
+		sidebar.add(selectButton, constraints);
+
 		letAIPlay = new JButton("End Turn");
 		letAIPlay.setVisible(false);
 		letAIPlay.addActionListener(new ActionListener(){
@@ -461,74 +488,30 @@ public class GameWindow {
 	public void display(){
 		mainFrame.setVisible(true);
 	}
+	public void close(){
+		mainFrame.setVisible(false);
+	}
 
 	//Update GUI information entities
     public void updateInstructions(String text){
     	instructions.setText("             " + text);
-		System.out.println(text);
 	}
-    public void displayCard(Card card, boolean showMakeActive, boolean showAddToBench, boolean showAttachToPokemon, boolean showAttacks, boolean showLetAIPlay, boolean showRetreat, boolean showPlayItem, boolean showEvolve){
+    public void displayCard(Card card, boolean showMakeActive, boolean showAddToBench, boolean showAttachToPokemon, boolean showAttacks, boolean showLetAIPlay, boolean showRetreat, boolean showPlayItem, boolean showEvolve, boolean showSelect){
     	if (card != null) {
 	    	sidebarTitle.setText(card.getName());
 	    	sidebarText.setText(card.getDescription());
 	    	
-	    	if (showMakeActive){
-	    		makeActiveButton.setVisible(true);
-	    	} else {
-	    		makeActiveButton.setVisible(false);
-	    	}
-	    	
-	    	if (showAddToBench){
-	    		addToBenchButton.setVisible(true);
-	    	} else {
-	    		addToBenchButton.setVisible(false);
-	    	}
-	    	
-	    	if (showAttachToPokemon){
-	    		attachButton.setVisible(true);
-	    	} else {
-	    		attachButton.setVisible(false);
-	    	}
-	    	
-	    	if (showAttacks){
-	    		attack1.setVisible(false);
-    			attack2.setVisible(false);
-    			attack3.setVisible(false);
-    			
-    			attack1.setVisible(true);
-        		if (player.getActivePokemon().getAbilities().size() > 1)
-        			attack2.setVisible(true);
-        		if (player.getActivePokemon().getAbilities().size() > 2)
-        			attack3.setVisible(true);
-	    	} else {
-	    		attack1.setVisible(false);
-    			attack2.setVisible(false);
-    			attack3.setVisible(false);
-	    	}
-	    	
-	    	if (showLetAIPlay){
-	    		letAIPlay.setVisible(true);
-	    	} else {
-	    		letAIPlay.setVisible(false);
-	    	}
-	    	
-	    	if (showPlayItem){
-	    		playItemButton.setVisible(true);
-	    	} else {
-	    		playItemButton.setVisible(false);
-	    	}
-	    	
-	    	if (showRetreat){
-	    		retreatButton.setVisible(true);
-	    	} else {
-	    		retreatButton.setVisible(false);
-	    	}
-	    	
-	    	if (showEvolve){
-	    		evolveButton.setVisible(true);
-	    	} else {
-	    		evolveButton.setVisible(false);
-	    	}
+	    	makeActiveButton.setVisible(showMakeActive);
+	    	addToBenchButton.setVisible(showAddToBench);
+	    	attachButton.setVisible(showAttachToPokemon);
+			attack1.setVisible(showAttacks);
+			attack2.setVisible(showAttacks && player.getActivePokemon().getAbilities().size() > 1);
+			attack3.setVisible(showAttacks && player.getActivePokemon().getAbilities().size() > 2);
+	    	letAIPlay.setVisible(showLetAIPlay);
+	    	playItemButton.setVisible(showPlayItem);
+	    	retreatButton.setVisible(showRetreat);
+	    	evolveButton.setVisible(showEvolve);
+	    	selectButton.setVisible(showSelect);
     	} else {
     		sidebarTitle.setText("");
 	    	sidebarText.setText("");
@@ -558,13 +541,13 @@ public class GameWindow {
             case ACTIVE:
                 cardToBeDisplayed = sourceCardManager.getActivePokemon();
                 isCat1Pokemon = cardToBeDisplayed instanceof PokemonCard && ((PokemonCard) cardToBeDisplayed).getCat() == PokemonCard.Category.BASIC;
-                displayCard(cardToBeDisplayed, false, false, false, isPlayers, true, isPlayers, false, false);
+                displayCard(cardToBeDisplayed, false, false, false, isPlayers, true, isPlayers, false, false,false);
                 break;
             case BENCH:
                 if(m.getIndex() < sourceCardManager.getBench().size()){
                     cardToBeDisplayed = sourceCardManager.getBench().get(m.getIndex());
                     isCat1Pokemon = cardToBeDisplayed instanceof PokemonCard && ((PokemonCard) cardToBeDisplayed).getCat() == PokemonCard.Category.BASIC;
-                    displayCard(cardToBeDisplayed, false, false, false, false, true, false, false, false);
+                    displayCard(cardToBeDisplayed, false, false, false, false, true, false, false, false, false);
                 }
                 break;
             case HAND:
@@ -574,12 +557,12 @@ public class GameWindow {
                     boolean isCat2Pokemon = cardToBeDisplayed instanceof PokemonCard && ((PokemonCard) cardToBeDisplayed).getCat() == PokemonCard.Category.STAGEONE;
                     boolean canAttachEnergy = cardToBeDisplayed instanceof EnergyCard && player.hasPlacedEnergy == false;
                     boolean isTrainerCard = cardToBeDisplayed instanceof TrainerCard;
-                    displayCard(cardToBeDisplayed, false, isCat1Pokemon && isPlayers, canAttachEnergy, false, true, false, isTrainerCard && isPlayers, isCat2Pokemon && isPlayers);
+                    displayCard(cardToBeDisplayed, false, isCat1Pokemon && isPlayers, canAttachEnergy, false, true, false, isTrainerCard && isPlayers, isCat2Pokemon && isPlayers, false);
                 }
                 break;
             default:
             	cardToBeDisplayed = createCardFromMessage(m);
-            	displayCard(cardToBeDisplayed, false, false, false, false, false, false, false, false);
+            	displayCard(cardToBeDisplayed, false, false, false, false, false, false, false, false, false);
             	break;
         }
     }
@@ -743,6 +726,14 @@ public class GameWindow {
 	//Getters
 	public Card getDisplayedCard(){
 		return this.displayedCard;
+	}
+
+	//the following function was modified from https://stackoverflow.com/questions/144892/how-to-center-a-window-in-java
+	public static void centreWindow(Window frame, int window_width, int window_height) {
+		Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
+		int x = (int) ((dimension.getWidth() - frame.getWidth()) / 2) - window_width/2;
+		int y = (int) ((dimension.getHeight() - frame.getHeight()) / 2) - window_height/2;
+		frame.setLocation(x, y);
 	}
 
 }

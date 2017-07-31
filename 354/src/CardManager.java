@@ -12,25 +12,34 @@ public class CardManager {
 	private PokemonCard activePokemon;
 
 	//Constructor and helper methods
-	public CardManager(){
-		buildDeck();
+	public CardManager(String deckFile){
+		buildDeck(deckFile);
 		selectHand();
 		selectPrizeCards();
 		discardPile = new ArrayList<Card>();
 		bench = new ArrayList<PokemonCard>();
 	}
-	private void buildDeck(){
+	private void buildDeck(String deckFile){
 		deck = new Deck();
 		
-		ArrayList<Integer> cardNumbers = Parser.readInDeck("deck1.txt");
+		ArrayList<Integer> cardNumbers = Parser.readInDeck(deckFile);
 		
 		for (Integer num : cardNumbers){
 			Card card = Parser.cards.get(num - 1).shallowCopy();
 			if (card != null)
 				deck.push(card);
 		}
+
+		if(GameEngine.validateDecks){
+			if(! deck.validate()){
+				System.out.println(deckFile + " is not a valid deck. The game will now close.");
+				System.exit(1);
+			}
+		}
 		
-		deck.shuffle();
+		if(GameEngine.shuffleDecksAtGameStart){
+			deck.shuffle();
+		}
 	}
 	private void selectHand(){
 		hand = new ArrayList<Card>();
@@ -38,22 +47,6 @@ public class CardManager {
 		for (int i = 0; i < 7; i++){
 			Card card = deck.pop();
 			hand.add(card);
-		}
-		
-		while (getFirstPokemon() == null){
-			Iterator<Card> it = hand.iterator();
-			
-			while (it.hasNext()){
-				Card card = it.next();
-				deck.push(card);
-				it.remove();
-			}
-			
-			deck.shuffle();
-			for (int i = 0; i < 7; i++){
-				Card card = deck.pop();
-				hand.add(card);
-			}
 		}
 	}
 	private void selectPrizeCards(){
@@ -79,6 +72,10 @@ public class CardManager {
 	
 	public void removeActivePokemon(){
 		addPokemonCardToDiscard(getActivePokemon());
+		activePokemon = null;
+	}
+
+	public void removeActivePokemonWithoutDiscard(){
 		activePokemon = null;
 	}
 
@@ -128,6 +125,10 @@ public class CardManager {
 		for(Card c : hand){
 			deck.push(c);
 		}
+		int numberOfCardsInHand = hand.size();
+		for(int i = 0; i < numberOfCardsInHand; i++){
+			hand.remove(0);
+		}
 		deck.shuffle();
 	}
 
@@ -156,6 +157,18 @@ public class CardManager {
 		}
 	}
 
+	public void shuffleDeck(){
+		this.deck.shuffle();
+	}
+
+	public boolean benchHasBasicPokemon(){
+		for(PokemonCard p : bench){
+			if(p.getCat() == PokemonCard.Category.BASIC){
+				return true;
+			}
+		}
+		return false;
+	}
 
 	//Getters
 	public ArrayList<Card> getHand(){

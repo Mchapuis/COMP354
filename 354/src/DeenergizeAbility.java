@@ -3,7 +3,7 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 
 public class DeenergizeAbility extends Ability{
-    int amountToRemove;
+    ComplexAmount amountToRemove;
 
     public DeenergizeAbility(){
         this.energyRequired = new HashMap<EnergyCard.Type, Integer>();
@@ -47,15 +47,19 @@ public class DeenergizeAbility extends Ability{
             case OPPONENT_POKEMON:
                 targetPokemon = GameEngine.choosePokemonCard(player, targetType);
                 break;
+            case LAST:
+                targetPokemon = Ability.lastTargetedPokemon;
+                break;
         }
 
         if(targetPokemon != null){
             ArrayList<EnergyCard> energy = targetPokemon.getEnergy();
-            for(int i = 0; i < amountToRemove && !energy.isEmpty(); i++){
+            for(int i = 0; i < amountToRemove.evaluate(player) && !energy.isEmpty(); i++){
                 EnergyCard e = energy.get(0);
                 sourcePlayer.addToDiscard(e);
                 energy.remove(e);
             }
+            Ability.lastTargetedPokemon = targetPokemon;
         }
 
         return true;
@@ -89,14 +93,14 @@ public class DeenergizeAbility extends Ability{
 
         //get amount
         try{
-            amountToRemove = Integer.valueOf(description[index]);
+            amountToRemove = new ComplexAmount(description[index]);
         }catch(Exception e){
             throw new UnimplementedException();
         }
     }
     
     public String getSimpleDescription() {
-        return "Remove " + amountToRemove + " energy from " + targetType.toString();
+        return "Remove " + amountToRemove.getDescription() + " energy from " + targetType.toString();
     }
 
     public Ability shallowCopy(){
@@ -105,6 +109,7 @@ public class DeenergizeAbility extends Ability{
         returnCard.name = this.name;
         returnCard.targetType = this.targetType;
         returnCard.subsequentAbility  = this.subsequentAbility;
+        returnCard.hasChoice = this.hasChoice;
 
         returnCard.amountToRemove = this.amountToRemove;
 
