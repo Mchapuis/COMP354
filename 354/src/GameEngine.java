@@ -6,7 +6,7 @@ import java.util.concurrent.LinkedTransferQueue;
 //TODO add card picker support to deenergize and retreat costs
 //TODO make AI slightly smarter
 
-public class GameEngine {
+public class GameEngine{
 	/* 	For testers'/teacher's benefit
 	*   Some quick settings can be changed here.
 	*
@@ -78,24 +78,27 @@ public class GameEngine {
 		//play game until there is a winner
 		while(true){
 
-		    //check win (lose) condition of having no cards to draw
-		    if(currentPlayer.getDeck().size() == 0){
-		        if(currentPlayer == player){
-		            declareWinner(Ability.Player.AI);
-                }
-                else{
-		            declareWinner(Ability.Player.PLAYER);
-                }
-                break;
-            }
+			//check win (lose) condition of having no cards to draw
+			if(currentPlayer.getDeck().size() == 0){
+				if(currentPlayer == player){
+					declareWinner(Ability.Player.AI);
+				} else{
+					declareWinner(Ability.Player.PLAYER);
+				}
+				break;
+			}
 
 			currentPlayer.playTurn();
-			if(winnerFound()){ break; }
+			if(winnerFound()){
+				break;
+			}
 
 			useTurnTriggerAbilities();
 			updateStatusEffectsAll();
-            checkForKnockouts();
-            if(winnerFound()){ break; }
+			checkForKnockouts();
+			if(winnerFound()){
+				break;
+			}
 
 			switchTurn();
 		}
@@ -104,7 +107,7 @@ public class GameEngine {
 		GameOverWindow g = new GameOverWindow(getWinner(), displayGameInFullScreen);
 		w.close();
 		g.display();
-    }
+	}
 
 
 	public static void waitForInput(){
@@ -112,7 +115,7 @@ public class GameEngine {
 			synchronized(lock){
 				lock.wait();
 			}
-		}catch(InterruptedException e){
+		} catch(InterruptedException e){
 			e.printStackTrace();
 		}
 	}
@@ -122,6 +125,7 @@ public class GameEngine {
 		player.setup();
 		autoPlayer.setup();
 	}
+
 	private static void handleMulligans(){
 		//player mulligans
 		while(player.cardManager.getFirstPokemon() == null){
@@ -161,11 +165,11 @@ public class GameEngine {
 			GameEngine.updateGUI();
 		}
 	}
+
 	private static void rollForFirstTurn(){
 		if(RandomNumberGenerator.flipACoin()){
 			currentPlayer = player;
-		}
-		else{
+		} else{
 			currentPlayer = autoPlayer;
 		}
 	}
@@ -182,8 +186,7 @@ public class GameEngine {
 				if(player.getPrizeCards().size() == 1){
 					declareWinner(Ability.Player.PLAYER);
 					return;
-				}
-				else{
+				} else{
 					player.cardManager.drawPrizeCard();
 				}
 			}
@@ -204,8 +207,7 @@ public class GameEngine {
 				if(autoPlayer.getPrizeCards().size() == 1){
 					declareWinner(Ability.Player.AI);
 					return;
-				}
-				else{
+				} else{
 					autoPlayer.cardManager.drawPrizeCard();
 				}
 			}
@@ -225,12 +227,11 @@ public class GameEngine {
 			if(player.getPrizeCards().size() == 1){
 				declareWinner(Ability.Player.PLAYER);
 				return;
-			}
-			else{
+			} else{
 				player.cardManager.drawPrizeCard();
 			}
 
-			if(! autoPlayer.chooseNewActivePokemon()){
+			if(!autoPlayer.chooseNewActivePokemon()){
 				declareWinner(Ability.Player.PLAYER);
 				return;
 			}
@@ -242,33 +243,32 @@ public class GameEngine {
 
 			if(autoPlayer.getPrizeCards().size() == 1){
 				declareWinner(Ability.Player.AI);
-			}
-			else{
+			} else{
 				autoPlayer.cardManager.drawPrizeCard();
 			}
 
-			if(! player.chooseNewActivePokemon()){
+			if(!player.chooseNewActivePokemon()){
 				declareWinner(Ability.Player.AI);
 				return;
 			}
 		}
 	}
+
 	private static void switchTurn(){
 		if(currentPlayer == player){
 			currentPlayer = autoPlayer;
-		}
-		else{
+		} else{
 			currentPlayer = player;
 		}
 	}
+
 	private static void useTurnTriggerAbilities(){
 		Player player1 = currentPlayer, otherPlayer = null;
 		Ability.Player op = null;
 		if(currentPlayer == player){
 			otherPlayer = autoPlayer;
 			op = Ability.Player.AI;
-		}
-		else{
+		} else{
 			otherPlayer = player;
 			op = Ability.Player.PLAYER;
 		}
@@ -313,6 +313,7 @@ public class GameEngine {
 		//update statuses on ai active
 		updateStatusEffectsSingle(autoPlayer, autoPlayer.getActivePokemon());
 	}
+
 	private static void updateStatusEffectsSingle(Player belongsTo, PokemonCard pokemonCard){
 		Status s = pokemonCard.getStatus();
 
@@ -347,7 +348,7 @@ public class GameEngine {
 		}
 	}
 
-    //card selection
+	//card selection
 	//this should really be a set of abstract methods in Player, but why refactor when you can add new features?
 	private static PokemonCard getChoiceOfCard(Ability.Target target){
 		PokemonCard cardToReturn = null;
@@ -384,8 +385,7 @@ public class GameEngine {
 		if(ms == Message.Side.PLAYER){
 			sourceCardManager = player.cardManager;
 			otherCardManager = autoPlayer.cardManager;
-		}
-		else{
+		} else{
 			sourceCardManager = autoPlayer.cardManager;
 			otherCardManager = player.cardManager;
 		}
@@ -449,46 +449,47 @@ public class GameEngine {
 
 		return cardToReturn;
 	}
+
 	public static PokemonCard choosePokemonCard(Player p, Ability.Target target){
 		PokemonCard cardToReturn;
-		
-		if (p == player){
+
+		if(p == player){
 			cardToReturn = getChoiceOfCard(target);
-			while (cardToReturn == null) {
+			while(cardToReturn == null){
 				cardToReturn = getChoiceOfCard(target);
 			}
-		} else {
-			if (target == Ability.Target.OPPONENT_BENCH){
+		} else{
+			if(target == Ability.Target.OPPONENT_BENCH){
 				cardToReturn = player.cardManager.getFirstCardOfBench();
-			} else if (target == Ability.Target.YOUR_BENCH){
+			} else if(target == Ability.Target.YOUR_BENCH){
 				cardToReturn = autoPlayer.cardManager.getFirstCardOfBench();
-			} else if (target == Ability.Target.OPPONENT_POKEMON){
+			} else if(target == Ability.Target.OPPONENT_POKEMON){
 				cardToReturn = player.cardManager.getActivePokemon();
-			} else {
+			} else{
 				cardToReturn = autoPlayer.cardManager.getFirstCardOfBench();
 			}
 		}
 		return cardToReturn;
 	}
+
 	public static PokemonCard choosePokemonCard(Ability.Player p, Ability.Target target){
 		if(p == Ability.Player.PLAYER){
 			return choosePokemonCard(player, target);
-		}
-		else{
+		} else{
 			return choosePokemonCard(autoPlayer, target);
 		}
 	}
+
 	public static Card chooseCardFromAHand(Ability.Player p, CardManager c){
 		//this whole method is lazily designed. deal with it
 		if(p == Ability.Player.PLAYER){
 			boolean cardSelected = false;
-			while(! cardSelected){
+			while(!cardSelected){
 				Message.Side s = null;
 				if(c == player.cardManager){
 					GameEngine.log("Please select a card from your hand.");
 					s = Message.Side.PLAYER;
-				}
-				else{
+				} else{
 					GameEngine.log("Please select a card from your opponent's hand.");
 					s = Message.Side.AI;
 				}
@@ -502,8 +503,7 @@ public class GameEngine {
 				CardManager sourceCardManager = null;
 				if(ms == Message.Side.PLAYER){
 					sourceCardManager = player.cardManager;
-				}
-				else{
+				} else{
 					sourceCardManager = autoPlayer.cardManager;
 				}
 
@@ -536,8 +536,7 @@ public class GameEngine {
 						break;
 				}
 			}
-		}
-		else{
+		} else{
 			return c.getHand().get(0);
 		}
 		return null;
@@ -547,19 +546,19 @@ public class GameEngine {
 	public static Ability.Player getCurrentPlayer(){
 		if(currentPlayer == player){
 			return Ability.Player.PLAYER;
-		}
-		else{
+		} else{
 			return Ability.Player.AI;
 		}
 	}
+
 	public static Ability.Player getWinner(){
 		if(winner == player){
 			return Ability.Player.PLAYER;
-		}
-		else{
+		} else{
 			return Ability.Player.AI;
 		}
 	}
+
 	public static void declareWinner(Ability.Player p){
 		switch(p){
 			case AI:
@@ -570,6 +569,7 @@ public class GameEngine {
 				break;
 		}
 	}
+
 	public static boolean winnerFound(){
 		return winner != null;
 	}
@@ -579,7 +579,9 @@ public class GameEngine {
 		System.out.println(text);
 		GameEngine.w.updateInstructions(text);
 	}
+
 	public static void updateGUI(){
 		w.updateAll();
 	}
+}
 
