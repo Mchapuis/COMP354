@@ -2,11 +2,11 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-public class regressionTests {
+public class regressionTest_1 {
 
 	@Test
 	public void test() {
-		AIPlayer AI_test = new AIPlayer();
+		AIPlayer AI_test = new AIPlayer("deck1.txt");
 		PokemonCard StageOnePokemon = (PokemonCard) Parser.parseCard("Frogadier:pokemon:cat:stage-one:Froakie:cat:water:70:attacks:cat:colorless:2:13"
 );
 		AI_test.cardManager.getHand().add(StageOnePokemon);

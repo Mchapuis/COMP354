@@ -30,7 +30,7 @@ public class IntegrationTest_abilities_Cards {
 		assertTrue(attachedAbility instanceof DrawAbility); // check if the ability added is of the same type
 		
 		
-		HumanPlayer human = new HumanPlayer();
+		HumanPlayer human = new HumanPlayer("deck1.txt");
 	
 		
 		human.setActivePokemon(Glameow);

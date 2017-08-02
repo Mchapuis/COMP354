@@ -8,7 +8,7 @@ public class HumanPlayer_JUnit {
 	public void test() {
 		
 		// Creating variables
-		HumanPlayer hp_test = new HumanPlayer();
+		HumanPlayer hp_test = new HumanPlayer("deck1.txt");
 		
 		// Check if Human Player is not null is not null at the start of the game
 		assertNotNull(hp_test);
