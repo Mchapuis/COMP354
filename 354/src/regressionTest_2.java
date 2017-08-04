@@ -12,14 +12,13 @@ public class regressionTest_2 {
 	@Test
 	public void test() throws UnimplementedException {
 		String abilityDesc = "Tierno:draw:count(your-hand)";
-		String[] descArray = abilityDesc.split(":");
 		Ability draw_test = Ability.parseAbilitiesLine(abilityDesc);
 		
 		HumanPlayer playerA = new HumanPlayer("deck1.txt");
 		int handBeforeDraw = playerA.cardManager.getHand().size();
-		
+		Ability.playerCardManager = playerA.cardManager;
+		GameEngine.player= playerA;
 		PokemonCard pokemonA = new PokemonCard("Glameow", "pokemon", "basic","colorless", 60, 2);
-		draw_test.playerCardManager = playerA.cardManager;
 		
 		playerA.setActivePokemon(pokemonA);
 		playerA.getActivePokemon().addAbility(draw_test);
@@ -27,7 +26,7 @@ public class regressionTest_2 {
 		playerA.getActivePokemon().getAbilities().get(0).use(Ability.Player.PLAYER);
 		
 		int handAfterDraw = playerA.cardManager.getHand().size();
-		System.out.println(handAfterDraw);
+		
 		//the amount to draw calculated should be equal to the hand. so the hand size should double
 		assertEquals(handAfterDraw, (2*handBeforeDraw));
 	}

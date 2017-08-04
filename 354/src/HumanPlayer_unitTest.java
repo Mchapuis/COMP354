@@ -2,7 +2,7 @@ import static org.junit.Assert.*;
 import java.util.ArrayList;
 import org.junit.Test;
 
-public class HumanPlayer_JUnit {
+public class HumanPlayer_unitTest {
 
 	@Test
 	public void test() {
@@ -21,17 +21,14 @@ public class HumanPlayer_JUnit {
 		PokemonCard poke_test = hp_test.getActivePokemon();
 		assertNull(poke_test);
 		
-		// set active Pokemon card and check if active pokemon of player is not null
+		// set active Pokemon card and check if active pokemon of player is the same
 		poke_test = new PokemonCard();
 		hp_test.cardManager.setActivePokemon(poke_test);
 		PokemonCard check_poke = hp_test.getActivePokemon();
-		assertNotNull(check_poke);
+		assertEquals(check_poke, poke_test);
 		
-		// TODO: test to do
-		// Set active pokemon and attach and energy
-		// Get HP from opponent before attack --- TODO: getHP() function doesn't exist
-		// Attack AI
-		// Check the damage before and after the attack
+		
+		
 	}
 
 }

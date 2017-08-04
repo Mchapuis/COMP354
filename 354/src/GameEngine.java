@@ -122,7 +122,7 @@ public class GameEngine {
 		player.setup();
 		autoPlayer.setup();
 	}
-	private static void handleMulligans(){
+	protected static void handleMulligans(){
 		//player mulligans
 		while(player.cardManager.getFirstPokemon() == null){
 			GameEngine.log("You had a mulligan. You redraw your hand. Your opponent draws another card.");
