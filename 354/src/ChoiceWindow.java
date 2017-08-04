@@ -88,10 +88,4 @@ public class ChoiceWindow{
     public void close(){
         cpFrame.setVisible(false);
     }
-
-    public static void main(String[] args){
-        ChoiceWindow w = new ChoiceWindow("instructions of some sort");
-        w.display();
-    }
-
 }

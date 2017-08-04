@@ -2,10 +2,6 @@
 import java.util.*;
 import java.util.concurrent.LinkedTransferQueue;
 
-
-//TODO add card picker support to deenergize and retreat costs
-//TODO make AI slightly smarter
-
 public class GameEngine{
 	/* 	For testers'/teacher's benefit
 	*   Some quick settings can be changed here.
@@ -322,6 +318,7 @@ public class GameEngine{
 				//50% chance to wake up
 				if(RandomNumberGenerator.flipACoin()){
 					pokemonCard.applyStatus(Status.NORMAL);
+					GameEngine.log(pokemonCard.getName() + " woke up!");
 				}
 				break;
 			case NORMAL:
@@ -331,18 +328,21 @@ public class GameEngine{
 				//100% chance to become unparalyzed after owner's turn
 				if(currentPlayer == belongsTo){
 					pokemonCard.applyStatus(Status.NORMAL);
+					GameEngine.log(pokemonCard.getName() + " recovered from paralysis!");
 				}
 				break;
 			case POISONED:
 				//deals damage at end of owner's turn
 				if(currentPlayer == belongsTo){
 					pokemonCard.removeHP(10);
+					GameEngine.log(pokemonCard.getName() + " took damage from poison.");
 				}
 				break;
 			case STUCK:
 				//100% chance to become unstuck after owner's turn
 				if(currentPlayer == belongsTo){
 					pokemonCard.applyStatus(Status.NORMAL);
+					GameEngine.log(pokemonCard.getName() + " became unstuck!");
 				}
 				break;
 		}
@@ -584,4 +584,3 @@ public class GameEngine{
 		w.updateAll();
 	}
 }
-
